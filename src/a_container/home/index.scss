@@ -1,0 +1,26 @@
+.home{
+	padding:100px 0 0 0;
+	.box{
+		margin:0 auto;
+		text-align:center;
+		.title{
+			font-size:24px;
+		}
+		.info{
+			margin-top:10px;
+			color:#888;
+		}
+		.link{
+			margin-top:40px;
+			font-size:12px;
+			color:#888;
+			a{
+				color:#888;
+				text-decoration: none;
+				&:hover{
+					text-decoration: underline;
+				}
+			}
+		}
+	}
+}

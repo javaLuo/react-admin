@@ -1,0 +1,23 @@
+.page{
+	width:100%;
+	max-width:1200px;
+	margin:0 auto;
+	padding:40px;
+	letter-spacing: 1px;
+	.box{
+		margin-top:40px;
+		.list{
+			margin-bottom: 20px;
+			p{
+				font-size:14px;
+				padding: 5px 10px;
+				margin:10px 0;
+				background-color:#eeeeff;
+			}
+			div{
+				color:#888;
+				font-size:12px;
+			}
+		}
+	}
+}

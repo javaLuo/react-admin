@@ -1,0 +1,35 @@
+.sider{
+  box-shadow: 2px 0 6px rgba(0,21,41,.35);
+  .menuLogo{
+    height: 64px;
+    background-color: #002140;
+    &.hide{
+      a{
+        justify-content: center;
+        div{
+          overflow: hidden;
+          opacity: 0;
+          width: 0;
+        }
+      }
+    }
+    a{
+      display: flex;
+      height: 100%;
+      align-items: center;
+      img{
+        width: 40px;
+        flex: none;
+        margin-left: 12px;
+      }
+      div{
+        color: #fff;
+        width: 100%;
+        font-size: 24px;
+        padding-left: 10px;
+        white-space:nowrap;
+        transition: all .3s;
+      }
+    }
+  }
+}

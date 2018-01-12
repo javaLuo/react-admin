@@ -1,0 +1,19 @@
+.header{
+  background-color: #fff;
+  padding: 0;
+  box-shadow: 0 1px 4px rgba(0,21,41,.08);
+  overflow: hidden;
+  .trigger{
+    padding: 0 24px;
+    font-size: 20px;
+    cursor: pointer;
+    line-height: 64px;
+    transition: all .3s;
+    &.fold{
+      transform: rotate(180deg);
+    }
+    &:hover{
+      background-color: #D1E3FA;
+    }
+  }
+}
