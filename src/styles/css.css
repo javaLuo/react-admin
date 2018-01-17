@@ -34,7 +34,8 @@ sub{bottom: -.25em;}
 :global(.all_warp){word-break:break-all;word-wrap:break-word;} /* 强制换行 */
 :global(.all_b){-moz-box-sizing:border-box;-webkit-box-sizing:border-box;box-sizing:border-box;}	/* 内框模式 */
 :global(.all_clear:after){content:".";height:0;overflow:hidden;visibility:hidden;display:block;clear:both;} /* 清楚浮动 */
-:global(.all_trans){transition:all 200ms;-webkit-transition:all 200ms;}/* 过渡效果 */
+:global(.all_trans){transition:all 300ms;-webkit-transition:all 300ms;}/* 过渡效果 */
+:global(.all_trans5){transition:all 500ms;-webkit-transition:all 500ms;}/* 过渡效果 */
 
 /* 美化滚动条 */
 ::-webkit-scrollbar {

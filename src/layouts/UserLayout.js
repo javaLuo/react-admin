@@ -16,18 +16,19 @@ import { Link, Route, Switch, Redirect} from 'react-router-dom';
 // 路由子页面
 // ==================
 import Bundle from '../a_component/bundle';
-import lazeNotFound from 'bundle-loader?lazy&name=home!../a_container/notfound';
+import lazeNotFound from 'bundle-loader?lazy&name=notfound!../a_container/notfound';
+import lazeLogin from 'bundle-loader?lazy&name=login!../a_container/Login';
+
 const NotFound = (props) => (<Bundle load={lazeNotFound}>{(NotFound) => <NotFound {...props} />}</Bundle>);
+const Login = (props) => (<Bundle load={lazeLogin}>{(Login) => <Login {...props} />}</Bundle>);
 
 // ==================
 // 所需的所有组件
 // ==================
-import { Layout, Breadcrumb } from 'antd';
-import Header from '../a_component/Header';
-import Menu from '../a_component/Menu';
+import { Layout } from 'antd';
+
 import Footer from '../a_component/Footer';
-import Bread from '../a_component/Bread';
-import css from './BasicLayouts.scss';
+import css from './UserLayout.scss';
 
 
 // ==================
@@ -64,21 +65,14 @@ export default class AppContainer extends React.PureComponent {
     render() {
         return (
             <Layout className={css.page}>
-                <Menu collapsed={this.state.collapsed} />
-                <Layout>
-                    <Header
-                        collapsed={this.state.collapsed}
-                        onToggle={this.onToggle}
-                    />
-                    <Bread />
-                    <Content className={css.content}>
-                        <Switch>
-                            <Redirect exact from="/" to="/dashboard/analysis" />
-                            <Route render={NotFound} />
-                        </Switch>
-                    </Content>
-                    <Footer />
-                </Layout>
+                <Content className={css.content}>
+                    <Switch>
+                        <Redirect exact from="/user" to="/user/login" />
+                        <Route exact path="/user/login" component={Login} />
+                        <Route render={NotFound} />
+                    </Switch>
+                </Content>
+                <Footer />
             </Layout>
         );
     }

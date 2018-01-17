@@ -8,7 +8,8 @@ import { bindActionCreators } from 'redux';
 import createHistory from 'history/createHashHistory';        // 锚点模式的history
 
 /** 下面是代码不分割的用法 **/
-import BasicLayouts from '../layouts/BasicLayouts';
+import BasicLayout from '../layouts/BasicLayout';
+import UserLayout from '../layouts/UserLayout';
 
 /** 普通组件 **/
 import css from './index.scss';
@@ -44,7 +45,8 @@ export default class RootContainer extends React.Component {
         <Route render={(props) => {
           return (
             <Switch>
-              <Route path="/" render={(props) => this.onEnter(BasicLayouts, props)} />
+              <Route path="/user" render={(props) => this.onEnter(UserLayout, props)} />
+              <Route path="/" render={(props) => this.onEnter(BasicLayout, props)} />
             </Switch>
           );
         }}/>

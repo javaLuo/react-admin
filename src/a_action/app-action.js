@@ -41,3 +41,21 @@ export const fetchTest = (params = {}) => async(dispatch) => {
     message.error('网络错误，请重试');
   }
 };
+
+
+/**
+ * 登录
+ * @params: { username, password }
+ * **/
+export const onLogin = (params = {}) => async(dispatch) => {
+    try {
+        const res = await Fetchapi.newFetch('api/login', params);
+        dispatch({
+            type: 'APP.onLogin',
+            payload: res.data,
+        });
+        return res.data;
+    } catch(err) {
+        message.error('网络错误，请重试');
+    }
+};
