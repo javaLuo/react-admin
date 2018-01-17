@@ -84,8 +84,14 @@ class LoginContainer extends React.Component {
       
       this.props.actions.onLogin({username: values.username, password: values.password}).then((res) => {
           console.log('返回了什么：', res);
-          if (res.status === 200) { // 登录成功
+          if (res.status === 200) { // 登录成功，用户信息已由action保存到store，sessionStorage中也保存了必要信息
               message.success(res.message);
+              if (me.state.rememberPassword) {
+                  localStorage.setItem('userLoginInfo', JSON.stringify({username: values.username, password: tools.compile(values.password)})); // 保存用户名和密码
+              } else {
+                  localStorage.removeItem('userLoginInfo');
+              }
+              setTimeout(() => this.props.history.replace('/'));  // 跳转到主页
           } else {  // 登录失败
               message.error(res.message);
           }

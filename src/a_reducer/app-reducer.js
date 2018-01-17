@@ -1,38 +1,38 @@
 /** 通用reducer **/
 
 const initState = {
-  num: 0,           // 页面测试数据 初始值0
-  fetchvalue: [],   // 异步测试数据
+  userinfo: null, // 用户信息
 };
 
-// ============================================
-// action handling function
 
 const actDefault = (state) => state;
 
-const testAdd = (state, action) => {
-  const { payload } = action;
+const onLogin = (state, { payload }) => {
   return Object.assign({}, state, {
-    num: payload,
+      userinfo: payload,
   });
 };
 
-
-const testFetch = (state, action) => {
-  const { payload } = action;
+const onLogout = (state, { payload }) => {
   return Object.assign({}, state, {
-    fetchvalue: payload,
+      userinfo: null,
   });
 };
-// ============================================
-// reducer function
+
+const setUserInfo = (state, { payload }) => {
+  return Object.assign({}, state, {
+      userinfo: payload,
+  });
+};
 
 const reducerFn = (state = initState, action) => {
   switch (action.type) {
-  case 'TEST::add':       // 测试页 - 按钮点击出发num改变
-    return testAdd(state, action);
-  case 'TEST::testFetch': // 测试页 - 保存异步请求的数据
-    return testFetch(state, action);
+  case 'APP.onLogin':   // 登录成功时触发，保存用户信息
+    return onLogin(state, action);
+  case 'APP.onLogout':  // 退出登录，清除用户信息
+    return onLogout(state, action);
+  case 'APP.setUserInfo': // 设置用户信息，用于同步sessionStorage中的用户信息到store
+    return setUserInfo(state, action);
   default:
     return actDefault(state, action);
   }

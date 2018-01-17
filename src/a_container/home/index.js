@@ -35,16 +35,12 @@ class HomePageContainer extends React.Component {
     };
   }
 
-  onOk(obj, keys) {
-      console.log('选择返回：', obj, keys);
-   }
-
   render() {
     return (
       <div className={classNames(css.home, "all_nowarp")}>
           <div className={css.box}>
               <img src={ImgLogo} />
-              <div className={css.title}>React-Luo</div>
+              <div className={css.title} onClick={this.onOpen}>React-Luo</div>
               <div className={css.info}>react、redux、webpack3、eslint、babel6、antd</div>
           </div>
       </div>

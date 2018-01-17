@@ -50,11 +50,50 @@ export const fetchTest = (params = {}) => async(dispatch) => {
 export const onLogin = (params = {}) => async(dispatch) => {
     try {
         const res = await Fetchapi.newFetch('api/login', params);
-        dispatch({
-            type: 'APP.onLogin',
-            payload: res.data,
-        });
+        if (res.data.status === 200) { // 如果登录成功，把用户信息保存到store和sessionStorage
+            dispatch({
+                type: 'APP.onLogin',
+                payload: res.data.data,
+            });
+            console.log('返回的是什么；', res);
+            sessionStorage.setItem('userinfo', JSON.stringify(res.data.data));
+        }
         return res.data;
+    } catch(err) {
+        message.error('网络错误，请重试');
+    }
+};
+
+/**
+ * 退出登录
+ * @params: null
+ * **/
+export const onLogout = (params = {}) => async(dispatch) => {
+    console.log('触发？');
+    try {
+        await dispatch({
+            type: 'APP.onLogout',
+            payload: null,
+        });
+        sessionStorage.removeItem('userinfo');
+        return 'success';
+    } catch(err) {
+        message.error('网络错误，请重试');
+    }
+};
+
+/**
+ * 设置用户信息
+ * @params: userinfo
+ * **/
+export const setUserInfo = (params = {}) => async(dispatch) => {
+    console.log('触发？');
+    try {
+        await dispatch({
+            type: 'APP.setUserInfo',
+            payload: params,
+        });
+        return 'success';
     } catch(err) {
         message.error('网络错误，请重试');
     }

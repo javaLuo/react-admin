@@ -31,9 +31,15 @@ export default class Com extends React.PureComponent {
                         <div>React-Admin</div>
                     </Link>
                 </div>
-                <Menu theme="dark" mode="inline" defaultSelectedKeys={['1']}>
+                <Menu theme="dark" mode="inline" defaultSelectedKeys={['home']}>
+                    <Menu.Item key="home">
+                        <Link to={'/home'}>
+                            <Icon type="home" />
+                            <span>主页</span>
+                        </Link>
+                    </Menu.Item>
                     <SubMenu key="sub1" title={<span><Icon type="setting" /><span>系统管理</span></span>}>
-                        <Menu.Item key="5">用户管理</Menu.Item>
+                        <Menu.Item key="5"><Link to={'/consumer'}>用户管理</Link></Menu.Item>
                         <Menu.Item key="6">角色管理</Menu.Item>
                         <Menu.Item key="7">权限管理</Menu.Item>
                         <Menu.Item key="8">菜单管理</Menu.Item>

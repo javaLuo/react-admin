@@ -5,3 +5,40 @@
   color: #fff;
   padding: 2px;
 }
+
+/** flex布局相关 **/
+:global(.flex-row){
+  display: flex;
+  flex-direction: row;
+}
+:global(.flex-col){
+   display: flex;
+   flex-direction: column;
+ }
+:global(.flex-auto){
+  flex: auto;
+}
+:global(.flex-none){
+  flex: none;
+}
+:global(.flex-1){
+  flex: 1;
+}
+:global(.flex-jc){
+  justify-content: center;
+}
+:global(.flex-je){
+  justify-content: flex-end;
+}
+:global(.flex-jsb){
+  justify-content: space-between;
+}
+:global(.flex-jsa){
+  justify-content: space-around;
+}
+:global(.flex-ac){
+  align-items: center;
+}
+:global(.flex-ae){
+  align-items: flex-end;
+}

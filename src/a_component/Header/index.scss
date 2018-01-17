@@ -3,6 +3,8 @@
   padding: 0;
   box-shadow: 0 1px 4px rgba(0,21,41,.08);
   overflow: hidden;
+  display: flex;
+  align-items: center;
   .trigger{
     padding: 0 24px;
     font-size: 20px;
@@ -15,5 +17,37 @@
     &:hover{
       background-color: #D1E3FA;
     }
+  }
+  .rightBox{
+    line-height: 64px;
+    .userhead{
+      padding:0 20px;
+      margin-right: 4px;
+      cursor: pointer;
+      .username{
+        margin-left: 4px;
+      }
+      &:hover{
+        background-color: #D1E3FA;
+      }
+    }
+  }
+  .full{
+    padding: 0 24px;
+    font-size: 20px;
+    cursor: pointer;
+    line-height: 64px;
+    transition: all .3s;
+    &:hover{
+      background-color: #D1E3FA;
+    }
+  }
+}
+.menu {
+  :global(.anticon) {
+    margin-right: 8px;
+  }
+  :global(.ant-dropdown-menu-item) {
+    width: 160px;
   }
 }
