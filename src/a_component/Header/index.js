@@ -1,11 +1,13 @@
 /** 头部 **/
 import React from 'react';
 import P from 'prop-types';
-import { Layout, Icon, Tooltip, Avatar, Menu, Dropdown, message } from 'antd';
+import { Link } from 'react-router-dom';
+import { Layout, Icon, Tooltip, Avatar, Menu, Dropdown, Badge, Popover, Tabs, List, Tag, Spin } from 'antd';
 import c from 'classnames';
 import css from './index.scss';
-
+import Nothing from '../Nothing';
 const { Header } = Layout;
+const { TabPane } = Tabs;
 export default class Com extends React.PureComponent {
     constructor(props) {
         super(props);
@@ -75,8 +77,18 @@ export default class Com extends React.PureComponent {
         }
     };
 
+    /**
+     * 消息窗口显示与隐藏时触发
+     * **/
+    onPopVisible = (e) => {
+        if (e) {
+            this.props.getNews();
+        }
+    };
     render() {
         const userinfo = this.props.userinfo || {};
+        const { notice, message, work } = this.props.newsData;
+        console.log('notice:', this.props.newsData);
         return (
             <Header className={css.header}>
                 <Tooltip
@@ -89,17 +101,126 @@ export default class Com extends React.PureComponent {
                         onClick={this.toggle}
                     />
                 </Tooltip>
-                <div className={c(css.rightBox, 'flex-auto flex-row flex-je')}>
+                <div className={c(css.rightBox, 'flex-auto flex-row flex-je flex-ac')}>
                     <Tooltip
                         placement="bottom"
                         title={this.state.fullScreen ? '退出全屏' : '全屏'}
                     >
-                    <Icon
-                        className={c(css.full, 'flex-none')}
-                        type={this.state.fullScreen ? 'shrink' : 'arrows-alt'}
-                        onClick={this.state.fullScreen ? this.exitFullScreen : this.requestFullScreen}
-                    />
+                        <div className={css.full}>
+                            <Icon
+                                className={c(css.icon, 'flex-none')}
+                                type={this.state.fullScreen ? 'shrink' : 'arrows-alt'}
+                                onClick={this.state.fullScreen ? this.exitFullScreen : this.requestFullScreen}
+                            />
+                        </div>
                     </Tooltip>
+                    <Popover
+                        placement="bottomRight"
+                        popupClassName={css.headerPopover}
+                        onVisibleChange={this.onPopVisible}
+                        arrowPointAtCenter={true}
+                        content={
+                            <Spin spinning={this.props.popLoading} delay={0}>
+                                <Tabs
+                                    className={css.headerTabs}
+                                >
+                                    <TabPane tab={<span><Icon type="notification" />通知({notice.length})</span>} key="1">
+                                        {
+                                            notice.length ? (
+                                                [<List
+                                                    itemLayout="horizontal"
+                                                    key={0}
+                                                    dataSource={notice}
+                                                    renderItem={item => (
+                                                        <Link to={'/'} className={css.link}>
+                                                            <List.Item>
+                                                                <List.Item.Meta
+                                                                    avatar={<Avatar icon={item.icon} style={{ backgroundColor: item.color }}/>}
+                                                                    title={item.title}
+                                                                    description={item.time}
+                                                                />
+                                                            </List.Item>
+                                                        </Link>
+                                                    )}
+                                                />,
+                                                <div className={css.clear} key={1}>清空通知</div>]
+                                            ) : (<Nothing />)
+                                        }
+                                    </TabPane>
+                                    <TabPane tab={<span><Icon type="message" />消息({message.length})</span>} key="2">
+                                        {
+                                            message.length ? (
+                                                [<List
+                                                    itemLayout="horizontal"
+                                                    dataSource={message}
+                                                    key={0}
+                                                    renderItem={item => (
+                                                        <Link to={'/'} className={css.link}>
+                                                            <List.Item>
+                                                                <List.Item.Meta
+                                                                    avatar={<Avatar icon={item.icon} style={{ backgroundColor: item.color }}/>}
+                                                                    title={item.title}
+                                                                    description={
+                                                                        <div>
+                                                                            <div>{item.info}</div>
+                                                                            <div>{item.time}</div>
+                                                                        </div>
+                                                                    }
+                                                                />
+                                                            </List.Item>
+                                                        </Link>
+                                                    )}
+                                                />,<div className={css.clear} key={1}>清空消息</div>]
+                                            ) : (<Nothing />)
+                                        }
+
+                                    </TabPane>
+                                    <TabPane tab={<span><Icon type="coffee" />待办({work.length})</span>} key="3">
+                                        {
+                                            work.length ? (
+                                                [<List
+                                                    itemLayout="horizontal"
+                                                    key={0}
+                                                    dataSource={work}
+                                                    renderItem={item => (
+                                                        <Link to={'/'} className={css.link}>
+                                                            <List.Item>
+                                                                <List.Item.Meta
+                                                                    title={
+                                                                        <div className={'flex-row flex-jsb flex-ac'}>
+                                                                            <div>{item.title}</div>
+                                                                            <div><Tag color={item.color}>{item.type}</Tag></div>
+                                                                        </div>
+                                                                    }
+                                                                    description={item.info}
+                                                                />
+                                                            </List.Item>
+                                                        </Link>
+                                                    )}
+                                                />,<div className={css.clear} key={1}>清空待办</div>]
+                                            ) : (<Nothing />)
+                                        }
+
+                                    </TabPane>
+                                </Tabs>
+                            </Spin>
+                        }
+                        trigger="click"
+                    >
+                        <Tooltip
+                            placement="bottom"
+                            title={'5条新信息'}
+                        >
+                                <div className={css.full}>
+                                    <Badge count={5}>
+                                        <Icon
+                                            className={c(css.icon, 'flex-none')}
+                                            type='bell'
+                                        />
+                                    </Badge>
+                                </div>
+                        </Tooltip>
+                    </Popover>
                     <Dropdown
                         overlay={
                             <Menu className={css.menu} selectedKeys={[]} onClick={this.onMenuClick}>
@@ -127,4 +248,7 @@ Com.propTypes = {
     collapsed: P.bool,  // 菜单的状态
     onLogout: P.func,   // 退出登录
     userinfo: P.object, // 用户信息
+    getNews: P.func,    // 获取用户消息
+    newsData: P.object,  // 用户消息数据
+    popLoading: P.bool, // 消息弹窗是否正在加载数据
 };

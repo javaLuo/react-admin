@@ -34,7 +34,7 @@ import css from './BasicLayout.scss';
 // 本页面所需action
 // ==================
 
-import { onLogout, setUserInfo } from '../a_action/app-action';
+import { onLogout, setUserInfo, getNews } from '../a_action/app-action';
 
 // ==================
 // Class
@@ -45,7 +45,7 @@ const { Content } = Layout;
         userinfo: state.app.userinfo,
     }),
     (dispatch) => ({
-        actions: bindActionCreators({ onLogout, setUserInfo }, dispatch),
+        actions: bindActionCreators({ onLogout, setUserInfo, getNews }, dispatch),
     })
 )
 export default class AppContainer extends React.Component {
@@ -53,6 +53,11 @@ export default class AppContainer extends React.Component {
         super(props);
         this.state = {
             collapsed: false, // 侧边栏是否收起
+            newsData: { // 用户消息数据
+                notice: [],
+                message: [],
+                work: []
+            },
         };
     }
 
@@ -74,8 +79,31 @@ export default class AppContainer extends React.Component {
         });
     };
 
+    /**
+     * 获取用户消息数据
+     * **/
+    getNews = () => {
+        this.setState({
+            popLoading: true,
+        });
+        this.props.actions.getNews().then((res) => {
+            if (res.status === 200) {
+                console.log('AAAA:', res);
+                this.setState({
+                    newsData: res.data,
+                });
+            }
+            this.setState({
+                popLoading: false,
+            });
+        }).catch(() => {
+            this.setState({
+                popLoading: false,
+            });
+        });
+    };
+
     render() {
-        console.log('当前userinfo:', this.props.userinfo);
         return (
             <Layout className={css.page}>
                 <Menu collapsed={this.state.collapsed} />
@@ -85,6 +113,9 @@ export default class AppContainer extends React.Component {
                         userinfo={this.props.userinfo}
                         onToggle={this.onToggle}
                         onLogout={this.onLogout}
+                        getNews={this.getNews}
+                        newsData={this.state.newsData}
+                        popLoading={this.state.popLoading}
                     />
                     <Bread />
                     <Content className={css.content}>

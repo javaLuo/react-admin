@@ -42,7 +42,6 @@ export const fetchTest = (params = {}) => async(dispatch) => {
   }
 };
 
-
 /**
  * 登录
  * @params: { username, password }
@@ -51,7 +50,7 @@ export const onLogin = (params = {}) => async(dispatch) => {
     try {
         const res = await Fetchapi.newFetch('api/login', params);
         if (res.data.status === 200) { // 如果登录成功，把用户信息保存到store和sessionStorage
-            dispatch({
+            await dispatch({
                 type: 'APP.onLogin',
                 payload: res.data.data,
             });
@@ -87,13 +86,26 @@ export const onLogout = (params = {}) => async(dispatch) => {
  * @params: userinfo
  * **/
 export const setUserInfo = (params = {}) => async(dispatch) => {
-    console.log('触发？');
     try {
         await dispatch({
             type: 'APP.setUserInfo',
             payload: params,
         });
         return 'success';
+    } catch(err) {
+        message.error('网络错误，请重试');
+    }
+};
+
+/**
+ * 获取头部用户消息
+ * @params: { username, password }
+ * **/
+export const getNews = (params = {}) => async(dispatch) => {
+    try {
+        const res = await Fetchapi.newFetch('api/getnews', params);
+        console.log('得到了什么：', res.data);
+        return res.data;
     } catch(err) {
         message.error('网络错误，请重试');
     }
