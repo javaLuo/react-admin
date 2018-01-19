@@ -76,6 +76,10 @@ $backColor: #D1E3FA;
       margin-right: 0 !important;
     }
   }
+  :global(.ant-tabs-content){
+    min-height: 290px;
+  }
+
   .link{
     display: block;
     width: 100%;
@@ -91,14 +95,14 @@ $backColor: #D1E3FA;
   }
   .clear{
     width: 100%;
-    padding: 16px;
-    text-align: center;
     color: #888;
     transition: all .3s;
     cursor: pointer;
+    border:none;
     border-top: solid 1px #f0f0f0;
     &:hover{
       color: red;
+      background-color:$backColor;
     }
   }
 }

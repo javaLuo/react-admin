@@ -34,7 +34,7 @@ import css from './BasicLayout.scss';
 // 本页面所需action
 // ==================
 
-import { onLogout, setUserInfo, getNews } from '../a_action/app-action';
+import { onLogout, setUserInfo, getNews, clearNews, getNewsTotal } from '../a_action/app-action';
 
 // ==================
 // Class
@@ -45,7 +45,7 @@ const { Content } = Layout;
         userinfo: state.app.userinfo,
     }),
     (dispatch) => ({
-        actions: bindActionCreators({ onLogout, setUserInfo, getNews }, dispatch),
+        actions: bindActionCreators({ onLogout, setUserInfo, getNews, clearNews, getNewsTotal }, dispatch),
     })
 )
 export default class AppContainer extends React.Component {
@@ -58,9 +58,22 @@ export default class AppContainer extends React.Component {
                 message: [],
                 work: []
             },
+            newsTotal: 0,
+            popLoading: false,  // 用户消息是否正在加载
+            clearLoading: false,// 用户消息是否正在清楚
         };
     }
 
+    componentDidMount(){
+        // 获取当前共有多少条新消息
+        this.props.actions.getNewsTotal().then((res) => {
+            if (res.status === 200) {
+                this.setState({
+                    newsTotal: res.data,
+                });
+            }
+        });
+    }
     /** 点击切换菜单状态 **/
     onToggle = () => {
         this.setState({
@@ -88,9 +101,10 @@ export default class AppContainer extends React.Component {
         });
         this.props.actions.getNews().then((res) => {
             if (res.status === 200) {
-                console.log('AAAA:', res);
+                console.log('AAAA:', res, res.data.notice.length);
                 this.setState({
                     newsData: res.data,
+                    newsTotal: res.total,
                 });
             }
             this.setState({
@@ -99,6 +113,34 @@ export default class AppContainer extends React.Component {
         }).catch(() => {
             this.setState({
                 popLoading: false,
+            });
+        });
+    };
+
+    /**
+     * 删除用户消息数据
+     * **/
+    clearNews = (type) => {
+        this.setState({
+            clearLoading: true,
+        });
+        console.log('到这里了：', type);
+        this.props.actions.clearNews({type}).then((res) => {
+            if (res.status === 200) {
+                this.setState({
+                    newsData: res.data,
+                    newsTotal: res.total,
+                });
+                message.success('删除成功');
+            } else {
+                message.success('删除失败');
+            }
+            this.setState({
+                clearLoading: false,
+            });
+        }).catch(() => {
+            this.setState({
+                clearLoading: false,
             });
         });
     };
@@ -114,8 +156,11 @@ export default class AppContainer extends React.Component {
                         onToggle={this.onToggle}
                         onLogout={this.onLogout}
                         getNews={this.getNews}
+                        clearNews={this.clearNews}
                         newsData={this.state.newsData}
+                        newsTotal={this.state.newsTotal}
                         popLoading={this.state.popLoading}
+                        clearLoading={this.state.clearLoading}
                     />
                     <Bread />
                     <Content className={css.content}>

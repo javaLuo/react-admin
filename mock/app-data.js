@@ -47,6 +47,17 @@ const onLogin = (request) => {
     }
     return { status: 200, data: u, message: '登录成功' };
 };
+// 删除消息数据
+const clearNews = (request) => {
+    const p = JSON.parse(request.body);
+    switch(p.type){
+        case 'notice': msg.notice.length = 0;break;
+        case 'message': msg.message.length = 0;break;
+        case 'work': msg.work.length = 0;break;
+    }
+    return { status: 200, data: msg, total: msg.notice.length + msg.message.length + msg.work.length, message: '删除成功' };
+};
+
 
 /**
  * API拦截
@@ -54,4 +65,8 @@ const onLogin = (request) => {
 // 登录请求
 Mock.mock('api/login', (params) => onLogin(params));
 // 获取消息数据
-Mock.mock('api/getnews', {status: 200, data: msg, message: 'success'});
+Mock.mock('api/getnews', () => {return {status: 200, data: msg, total: msg.notice.length + msg.message.length + msg.work.length, message: 'success'};});
+// 删除消息数据
+Mock.mock('api/clearnews', (params) => clearNews(params));
+// 获取消息总数
+Mock.mock('api/getnewstotal', { status: 200, data: msg.notice.length + msg.message.length + msg.work.length, message: 'success' });

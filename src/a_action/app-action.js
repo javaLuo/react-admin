@@ -104,6 +104,32 @@ export const setUserInfo = (params = {}) => async(dispatch) => {
 export const getNews = (params = {}) => async(dispatch) => {
     try {
         const res = await Fetchapi.newFetch('api/getnews', params);
+        return res.data;
+    } catch(err) {
+        message.error('网络错误，请重试');
+    }
+};
+
+/**
+ * 删除头部用户消息
+ * @params: { type }
+ * **/
+export const clearNews = (params = {}) => async(dispatch) => {
+    try {
+        const res = await Fetchapi.newFetch('api/clearnews', params);
+        console.log('得到了什么：', res.data);
+        return res.data;
+    } catch(err) {
+        message.error('网络错误，请重试');
+    }
+};
+/**
+ * 获取用户消息的总数
+ * @params: { type }
+ * **/
+export const getNewsTotal = (params = {}) => async(dispatch) => {
+    try {
+        const res = await Fetchapi.newFetch('api/getnewstotal', params);
         console.log('得到了什么：', res.data);
         return res.data;
     } catch(err) {

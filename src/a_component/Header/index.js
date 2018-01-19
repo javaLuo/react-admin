@@ -2,7 +2,7 @@
 import React from 'react';
 import P from 'prop-types';
 import { Link } from 'react-router-dom';
-import { Layout, Icon, Tooltip, Avatar, Menu, Dropdown, Badge, Popover, Tabs, List, Tag, Spin } from 'antd';
+import { Layout, Icon, Tooltip, Avatar, Menu, Dropdown, Badge, Popover, Tabs, List, Tag, Spin, Button } from 'antd';
 import c from 'classnames';
 import css from './index.scss';
 import Nothing from '../Nothing';
@@ -85,6 +85,13 @@ export default class Com extends React.PureComponent {
             this.props.getNews();
         }
     };
+
+    /**
+     * 清空指定类型的消息
+     * **/
+    clearNews(type) {
+        this.props.clearNews(type);
+    }
     render() {
         const userinfo = this.props.userinfo || {};
         const { notice, message, work } = this.props.newsData;
@@ -143,8 +150,17 @@ export default class Com extends React.PureComponent {
                                                         </Link>
                                                     )}
                                                 />,
-                                                <div className={css.clear} key={1}>清空通知</div>]
-                                            ) : (<Nothing />)
+                                                <Button
+                                                    className={css.clear}
+                                                    size={"large"}
+                                                    key={1}
+                                                    loading={this.props.clearLoading}
+                                                    onClick={() => this.clearNews('notice')}
+                                                >
+                                                    清空通知
+                                                </Button>
+                                                ]
+                                            ) : (this.props.popLoading ? null : <Nothing />)
                                         }
                                     </TabPane>
                                     <TabPane tab={<span><Icon type="message" />消息({message.length})</span>} key="2">
@@ -170,8 +186,18 @@ export default class Com extends React.PureComponent {
                                                             </List.Item>
                                                         </Link>
                                                     )}
-                                                />,<div className={css.clear} key={1}>清空消息</div>]
-                                            ) : (<Nothing />)
+                                                />,
+                                                <Button
+                                                    className={css.clear}
+                                                    size={"large"}
+                                                    loading={this.props.clearLoading}
+                                                    key={1}
+                                                    onClick={() => this.clearNews('message')}
+                                                >
+                                                    清空消息
+                                                </Button>
+                                                ]
+                                            ) : (this.props.popLoading ? null : <Nothing />)
                                         }
 
                                     </TabPane>
@@ -197,8 +223,18 @@ export default class Com extends React.PureComponent {
                                                             </List.Item>
                                                         </Link>
                                                     )}
-                                                />,<div className={css.clear} key={1}>清空待办</div>]
-                                            ) : (<Nothing />)
+                                                />,
+                                                <Button
+                                                    className={css.clear}
+                                                    size={"large"}
+                                                    loading={this.props.clearLoading}
+                                                    key={1}
+                                                    onClick={() => this.clearNews('work')}
+                                                >
+                                                    清空待办
+                                                </Button>
+                                                ]
+                                            ) : (this.props.popLoading ? null : <Nothing />)
                                         }
 
                                     </TabPane>
@@ -209,10 +245,10 @@ export default class Com extends React.PureComponent {
                     >
                         <Tooltip
                             placement="bottom"
-                            title={'5条新信息'}
+                            title={`${this.props.newsTotal}条新信息`}
                         >
                                 <div className={css.full}>
-                                    <Badge count={5}>
+                                    <Badge count={this.props.newsTotal}>
                                         <Icon
                                             className={c(css.icon, 'flex-none')}
                                             type='bell'
@@ -251,4 +287,7 @@ Com.propTypes = {
     getNews: P.func,    // 获取用户消息
     newsData: P.object,  // 用户消息数据
     popLoading: P.bool, // 消息弹窗是否正在加载数据
+    clearNews: P.func,  // 清楚指定类型的消息
+    clearLoading: P.bool,   // 是否正在清楚消息
+    newsTotal: P.number,    // 消息总数
 };
