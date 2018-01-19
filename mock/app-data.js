@@ -69,4 +69,4 @@ Mock.mock('api/getnews', () => {return {status: 200, data: msg, total: msg.notic
 // 删除消息数据
 Mock.mock('api/clearnews', (params) => clearNews(params));
 // 获取消息总数
-Mock.mock('api/getnewstotal', { status: 200, data: msg.notice.length + msg.message.length + msg.work.length, message: 'success' });
+Mock.mock('api/getnewstotal', () => ({ status: 200, data: msg.notice.length + msg.message.length + msg.work.length, message: 'success' }));

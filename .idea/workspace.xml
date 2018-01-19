@@ -15,33 +15,10 @@
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file leaf-file-name="index.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/a_component/Header/index.js">
+        <entry file="file://$PROJECT_DIR$/src/router/index.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="4242">
-              <caret line="259" column="29" lean-forward="true" selection-start-line="259" selection-start-column="29" selection-end-line="259" selection-end-column="29" />
-              <folding>
-                <element signature="n#!!doc" expanded="true" />
-                <element signature="e#11#37#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="index.scss" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/a_component/Header/index.scss">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="525">
-              <caret line="79" column="22" lean-forward="false" selection-start-line="79" selection-start-column="22" selection-end-line="79" selection-end-column="22" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="app-action.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/a_action/app-action.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="635">
-              <caret line="112" column="3" lean-forward="true" selection-start-line="112" selection-start-column="3" selection-end-line="112" selection-end-column="3" />
+            <state relative-caret-position="461">
+              <caret line="47" column="47" lean-forward="false" selection-start-line="47" selection-start-column="47" selection-end-line="47" selection-end-column="47" />
               <folding />
             </state>
           </provider>
@@ -50,22 +27,9 @@
       <file leaf-file-name="app-data.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/mock/app-data.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="371">
-              <caret line="54" column="53" lean-forward="true" selection-start-line="54" selection-start-column="53" selection-end-line="54" selection-end-column="53" />
+            <state relative-caret-position="503">
+              <caret line="60" column="0" lean-forward="true" selection-start-line="60" selection-start-column="0" selection-end-line="60" selection-end-column="0" />
               <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="BasicLayout.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/layouts/BasicLayout.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-237">
-              <caret line="98" column="23" lean-forward="true" selection-start-line="98" selection-start-column="23" selection-end-line="98" selection-end-column="23" />
-              <folding>
-                <element signature="e#372#415#0" expanded="true" />
-                <element signature="e#830#869#0" expanded="true" />
-              </folding>
             </state>
           </provider>
         </entry>
@@ -113,10 +77,10 @@
         <option value="$PROJECT_DIR$/src/index.html" />
         <option value="$PROJECT_DIR$/src/a_component/Nothing/index.js" />
         <option value="$PROJECT_DIR$/src/a_component/Nothing/index.scss" />
-        <option value="$PROJECT_DIR$/src/a_component/Header/index.scss" />
         <option value="$PROJECT_DIR$/src/a_action/app-action.js" />
         <option value="$PROJECT_DIR$/src/a_component/Header/index.js" />
         <option value="$PROJECT_DIR$/src/layouts/BasicLayout.js" />
+        <option value="$PROJECT_DIR$/src/a_component/Header/index.scss" />
         <option value="$PROJECT_DIR$/mock/app-data.js" />
       </list>
     </option>
@@ -174,20 +138,13 @@
               <item name="react-admin" type="b2602c69:ProjectViewProjectNode" />
               <item name="react-admin" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="a_action" type="462c0819:PsiDirectoryNode" />
+              <item name="a_container" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="react-admin" type="b2602c69:ProjectViewProjectNode" />
               <item name="react-admin" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="a_component" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="react-admin" type="b2602c69:ProjectViewProjectNode" />
-              <item name="react-admin" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="a_component" type="462c0819:PsiDirectoryNode" />
-              <item name="Header" type="462c0819:PsiDirectoryNode" />
+              <item name="router" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -228,6 +185,13 @@
       </list>
     </option>
   </component>
+  <component name="RunManager">
+    <configuration default="true" type="cucumber.js" factoryName="Cucumber.js">
+      <option name="cucumberJsArguments" value="" />
+      <option name="executablePath" />
+      <option name="filePath" value="D:\work\react-admin\src\a_container\features" />
+    </configuration>
+  </component>
   <component name="ShelveChangesManager" show_recycled="false">
     <option name="remove_strategy" value="false" />
   </component>
@@ -241,12 +205,12 @@
       <workItem from="1516066282484" duration="14804000" />
       <workItem from="1516153167936" duration="19613000" />
       <workItem from="1516238101857" duration="17252000" />
-      <workItem from="1516324144109" duration="4020000" />
+      <workItem from="1516324144109" duration="4796000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="55689000" />
+    <option name="totallyTimeSpent" value="56465000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="8" y="0" width="1912" height="1040" extended-state="0" />
@@ -567,18 +531,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/router/index.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="858">
-          <caret line="47" column="47" lean-forward="false" selection-start-line="47" selection-start-column="47" selection-end-line="47" selection-end-column="47" />
-          <folding>
-            <element signature="e#12#38#0" expanded="false" />
-            <element signature="e#412#461#0" expanded="false" />
-            <element signature="e#524#555#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/webpack.dev.config.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="880">
@@ -651,14 +603,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/a_component/Header/index.scss">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="525">
-          <caret line="79" column="22" lean-forward="false" selection-start-line="79" selection-start-column="22" selection-end-line="79" selection-end-column="22" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/a_component/Header/index.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="4242">
@@ -670,10 +614,26 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/a_component/Header/index.scss">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="525">
+          <caret line="79" column="18" lean-forward="false" selection-start-line="79" selection-start-column="18" selection-end-line="79" selection-end-column="18" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/router/index.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="461">
+          <caret line="47" column="47" lean-forward="false" selection-start-line="47" selection-start-column="47" selection-end-line="47" selection-end-column="47" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/mock/app-data.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="371">
-          <caret line="54" column="53" lean-forward="true" selection-start-line="54" selection-start-column="53" selection-end-line="54" selection-end-column="53" />
+        <state relative-caret-position="503">
+          <caret line="60" column="0" lean-forward="true" selection-start-line="60" selection-start-column="0" selection-end-line="60" selection-end-column="0" />
           <folding />
         </state>
       </provider>
