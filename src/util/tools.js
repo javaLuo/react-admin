@@ -1,7 +1,7 @@
 /** 这个文件中封装了一些常用的工具函数 **/
 
 const tools = {
-  /*
+  /**
     保留N位小数
     最终返回的是字符串
     若转换失败，返回参数原值
@@ -18,7 +18,7 @@ const tools = {
     return temp ? temp.toFixed(x) : str;
   },
 
-  /*
+  /**
      去掉字符串两端空格
   */
   trim(str) {
@@ -26,7 +26,7 @@ const tools = {
     return str.replace(reg, '');
   },
 
-  /*
+  /**
     给字符串打马赛克
     如：将123456转换为1****6，最多将字符串中间6个字符变成*
     如果字符串长度小于等于2，将不会有效果
@@ -51,7 +51,19 @@ const tools = {
     });
     return ret.join('');
   },
-  /*
+    /**
+     * 验证字符串
+     * 只能为字母、数字、下划线
+     * 可以为空
+     * **/
+    checkStr(str) {
+        if (str === '') {
+            return true;
+        }
+        const rex = /^[_a-zA-Z0-9]+$/;
+        return rex.test(str);
+    },
+  /**
     字符串加密
     简单的加密方法
   */
@@ -63,7 +75,8 @@ const tools = {
     console.log('加谜：', code, c);
     return c;
   },
-  /*
+
+  /**
     字符串解谜
     对应上面的字符串加密方法
   */

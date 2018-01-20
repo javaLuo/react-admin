@@ -1,12 +1,15 @@
 import Mock from 'mockjs';
 
 Mock.setup({
-    timeout: '500-2000',
+    timeout: '200-2000',
 });
 
 /**
  * 模拟数据
  * **/
+// ID序列
+let id_sequence = 1000;
+
 // 用户数据
 const users = [
     { id: 1, username: 'admin', password: '123456' },
@@ -30,6 +33,16 @@ const msg = {
         {title: 'A版本代码合并', info: 'git上的分支需合并至master', type:'已完成', color: 'geekblue'},
     ]
 };
+
+// 所有的菜单数据
+const menus = [
+    { id: 1, title: '系统管理', icon: 'set', url: '/system', parent: null, desc: '系统管理目录分支', sorts: 0, conditions: 1  },
+    { id: 2, title: '用户管理', icon: 'user', url: '/consumer', parent: 1, desc: '系统管理/用户管理', sorts: 0, conditions: 1  },
+    { id: 3, title: '角色管理', icon: 'user', url: '/role', parent: 1, desc: '系统管理/角色管理', sorts: 1, conditions: 1  },
+    { id: 4, title: '权限管理', icon: 'user', url: '/power', parent: 1, desc: '系统管理/权限管理', sorts: 2, conditions: 1  },
+    { id: 5, title: '菜单管理', icon: 'menu', url: '/menuadmin', parent: 1, desc: '系统管理/菜单管理', sorts: 3, conditions: 1  },
+];
+
 /**
  * 方法
  * **/
@@ -57,7 +70,18 @@ const clearNews = (request) => {
     }
     return { status: 200, data: msg, total: msg.notice.length + msg.message.length + msg.work.length, message: '删除成功' };
 };
-
+// 添加新菜单
+const addMenu = (request) => {
+    const p = JSON.parse(request.body);
+    console.log('添加：', p);
+    p.id = ++id_sequence;
+    menus.push(p);
+    return { status: 200, data: menus, message: '添加成功' };
+};
+// 获取所有菜单
+const getMenus = (request) => {
+    return { status: 200, data: menus, message: 'success' };
+};
 
 /**
  * API拦截
@@ -70,3 +94,7 @@ Mock.mock('api/getnews', () => {return {status: 200, data: msg, total: msg.notic
 Mock.mock('api/clearnews', (params) => clearNews(params));
 // 获取消息总数
 Mock.mock('api/getnewstotal', () => ({ status: 200, data: msg.notice.length + msg.message.length + msg.work.length, message: 'success' }));
+// 添加菜单
+Mock.mock('api/addmenu', (params) => addMenu(params));
+// 获取所有菜单
+Mock.mock('api/getmenus', (params) => getMenus(params));

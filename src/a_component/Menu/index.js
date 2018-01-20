@@ -42,7 +42,7 @@ export default class Com extends React.PureComponent {
                         <Menu.Item key="5"><Link to={'/consumer'}>用户管理</Link></Menu.Item>
                         <Menu.Item key="6">角色管理</Menu.Item>
                         <Menu.Item key="7">权限管理</Menu.Item>
-                        <Menu.Item key="8">菜单管理</Menu.Item>
+                        <Menu.Item key="8"><Link to={'/system/menuadmin'}>菜单管理</Link></Menu.Item>
                     </SubMenu>
                     <Menu.Item key="2">
                         <Icon type="video-camera" />

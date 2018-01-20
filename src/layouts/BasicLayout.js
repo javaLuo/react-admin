@@ -16,8 +16,10 @@ import { Link, Route, Switch, Redirect} from 'react-router-dom';
 import Bundle from '../a_component/bundle';
 import lazeNotFound from 'bundle-loader?lazy&name=notfound!../a_container/notfound';
 import lazeHome from 'bundle-loader?lazy&name=home!../a_container/home';
+import lazeMenuAdmin from 'bundle-loader?lazy&name=menuadmin!../a_container/System/MenuAdmin';
 const NotFound = (props) => (<Bundle load={lazeNotFound}>{(NotFound) => <NotFound {...props} />}</Bundle>);
 const Home = (props) => (<Bundle load={lazeHome}>{(Home) => <Home {...props} />}</Bundle>);
+const MenuAdmin = (props) => (<Bundle load={lazeMenuAdmin}>{(MenuAdmin) => <MenuAdmin {...props} />}</Bundle>);
 
 // ==================
 // 所需的所有组件
@@ -167,6 +169,7 @@ export default class AppContainer extends React.Component {
                         <Switch>
                             <Redirect exact from="/" to="/home" />
                             <Route exact path="/home" component={Home} />
+                            <Route exact path="/system/menuadmin" component={MenuAdmin} />
                             <Route render={NotFound} />
                         </Switch>
                     </Content>

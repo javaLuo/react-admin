@@ -260,8 +260,8 @@ export default class Com extends React.PureComponent {
                     <Dropdown
                         overlay={
                             <Menu className={css.menu} selectedKeys={[]} onClick={this.onMenuClick}>
-                                <Menu.Item disabled><Icon type="user" />个人中心</Menu.Item>
-                                <Menu.Item disabled><Icon type="setting" />设置</Menu.Item>
+                                <Menu.Item><a href="http://isluo.com" target="_blank" rel="noopener noreferrer"><Icon type="user" />isluo.com</a></Menu.Item>
+                                <Menu.Item><a href="https://github.com/javaLuo/react-admin" target="_blank" rel="noopener noreferrer"><Icon type="setting" />GitHub</a></Menu.Item>
                                 <Menu.Divider />
                                 <Menu.Item key="logout" ><Icon type="logout" />退出登录</Menu.Item>
                             </Menu>
