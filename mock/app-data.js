@@ -36,7 +36,7 @@ const msg = {
 
 // 所有的菜单数据
 const menus = [
-    { id: 1, title: '系统管理', icon: 'set', url: '/system', parent: null, desc: '系统管理目录分支', sorts: 0, conditions: 1  },
+    { id: 1, title: '系统管理', icon: 'edit', url: '/system', parent: null, desc: '系统管理目录分支', sorts: 0, conditions: 1  },
     { id: 2, title: '用户管理', icon: 'user', url: '/consumer', parent: 1, desc: '系统管理/用户管理', sorts: 0, conditions: 1  },
     { id: 3, title: '角色管理', icon: 'user', url: '/role', parent: 1, desc: '系统管理/角色管理', sorts: 1, conditions: 1  },
     { id: 4, title: '权限管理', icon: 'user', url: '/power', parent: 1, desc: '系统管理/权限管理', sorts: 2, conditions: 1  },

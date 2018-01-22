@@ -125,10 +125,26 @@ export default class MenuAdminContainer extends React.Component {
     };
 
   /** 新增&修改 模态框出现 **/
-  onModalShow = () => {
+  onModalShow = (data, type) => {
+      const { form } = this.props;
+
+      if (type === 'add') { // 新增，需重置表单各控件的值
+          form.resetFields();
+      } else {  // 查看或修改，需设置表单各控件的值为当前所选中行的数据
+          // const v = form.getFieldsValue();
+          form.setFieldsValue({
+              formConditions: data.conditions,
+              formDesc: data.desc,
+              formIcon: data.icon,
+              formParent: data.parent,
+              formSorts: data.sorts,
+              formTitle: data.title,
+              formUrl: data.url,
+          });
+      }
     this.setState({
         modalShow: true,
-        operateType: 'add',
+        operateType: type,
     });
   };
 
@@ -249,14 +265,14 @@ export default class MenuAdminContainer extends React.Component {
                     let controls = [];
 
                     controls.push(
-                        <span key="0" className="control-btn green">
+                        <span key="0" className="control-btn green" onClick={() => this.onModalShow(record, 'see')}>
                             <Tooltip placement="top" title="查看">
                                 <Icon type="eye" />
                             </Tooltip>
                         </span>
                     );
                     controls.push(
-                        <span key="1" className="control-btn blue">
+                        <span key="1" className="control-btn blue" onClick={() => this.onModalShow(record, 'up')}>
                             <Tooltip placement="top" title="修改">
                                 <Icon type="edit" />
                             </Tooltip>
@@ -335,7 +351,7 @@ export default class MenuAdminContainer extends React.Component {
           <div className={c(css.r, 'flex-auto')}>
               <div className={css.searchBox}>
                   <ul className={'flex-row'}>
-                      <li><Button type="primary" icon="plus-circle-o" onClick={this.onModalShow}>添加新菜单</Button></li>
+                      <li><Button type="primary" icon="plus-circle-o" onClick={() => this.onModalShow('add')}>添加新菜单</Button></li>
                   </ul>
               </div>
               <Table
@@ -350,7 +366,7 @@ export default class MenuAdminContainer extends React.Component {
                   }}
               />
           </div>
-          {/* 新增&修改用户模态框 */}
+          {/* 查看&新增&修改用户模态框 */}
           <Modal
               title={{ add: '新增', up: '修改', see: '查看' }[this.state.operateType]}
               visible={this.state.modalShow}
@@ -370,7 +386,7 @@ export default class MenuAdminContainer extends React.Component {
                               { max: 12, message: '最多输入12位字符' }
                           ],
                       })(
-                          <Input placeholder="请输入菜单名" readonly/>
+                          <Input placeholder="请输入菜单名" disabled={this.state.operateType === 'see'}/>
                       )}
                   </FormItem>
                   <FormItem
@@ -393,7 +409,7 @@ export default class MenuAdminContainer extends React.Component {
                               }}
                           ],
                       })(
-                          <Input placeholder="请输入菜单链接"/>
+                          <Input placeholder="请输入菜单链接" disabled={this.state.operateType === 'see'} />
                       )}
                   </FormItem>
                   <FormItem
@@ -405,6 +421,7 @@ export default class MenuAdminContainer extends React.Component {
                       })(
                           <Select
                               dropdownClassName={css.iconSelect}
+                              disabled={this.state.operateType === 'see'}
                           >
                               {
                                   Icons.map((item, index) => {
@@ -422,7 +439,7 @@ export default class MenuAdminContainer extends React.Component {
                       {getFieldDecorator('formParent', {
                           initialValue: undefined,
                       })(
-                          <Input placeholder="请选择父级"  readOnly />
+                          <Input placeholder="请选择父级"  disabled={this.state.operateType === 'see'} />
                       )}
 
                   </FormItem>
@@ -434,7 +451,12 @@ export default class MenuAdminContainer extends React.Component {
                           rules: [{ max: 100, message: '最多输入100位字符' }],
                           initialValue: undefined,
                       })(
-                          <TextArea rows={4} placeholoder="请输入描述" autosize={{minRows: 2, maxRows: 6}} />
+                          <TextArea
+                              rows={4}
+                              disabled={this.state.operateType === 'see'}
+                              placeholoder="请输入描述"
+                              autosize={{minRows: 2, maxRows: 6}}
+                          />
                       )}
                   </FormItem>
                   <FormItem
@@ -445,7 +467,7 @@ export default class MenuAdminContainer extends React.Component {
                           initialValue: 0,
                           rules: [{required: true, message: '请输入排序号'}],
                       })(
-                          <InputNumber min={0} max={99999} style={{ width: '100%' }}/>
+                          <InputNumber min={0} max={99999} style={{ width: '100%' }} disabled={this.state.operateType === 'see'} />
                       )}
                   </FormItem>
                   <FormItem
@@ -456,7 +478,9 @@ export default class MenuAdminContainer extends React.Component {
                           initialValue: 1,
                           rules: [{required: true, message: '请选择状态'}],
                       })(
-                          <Select>
+                          <Select
+                              disabled={this.state.operateType === 'see'}
+                          >
                               <Option key={1} value={1}>启用</Option>
                               <Option key={-1} value={-1}>禁用</Option>
                           </Select>
