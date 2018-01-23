@@ -36,11 +36,11 @@ const msg = {
 
 // 所有的菜单数据
 const menus = [
-    { id: 1, title: '系统管理', icon: 'edit', url: '/system', parent: null, desc: '系统管理目录分支', sorts: 0, conditions: 1  },
-    { id: 2, title: '用户管理', icon: 'user', url: '/consumer', parent: 1, desc: '系统管理/用户管理', sorts: 0, conditions: 1  },
-    { id: 3, title: '角色管理', icon: 'user', url: '/role', parent: 1, desc: '系统管理/角色管理', sorts: 1, conditions: 1  },
-    { id: 4, title: '权限管理', icon: 'user', url: '/power', parent: 1, desc: '系统管理/权限管理', sorts: 2, conditions: 1  },
-    { id: 5, title: '菜单管理', icon: 'menu', url: '/menuadmin', parent: 1, desc: '系统管理/菜单管理', sorts: 3, conditions: 1  },
+    { id: 1, title: '系统管理', icon: 'edit', url: 'system', parent: null, desc: '系统管理目录分支', sorts: 0, conditions: 1  },
+    { id: 2, title: '用户管理', icon: 'user', url: 'consumer', parent: 1, desc: '系统管理/用户管理', sorts: 0, conditions: 1  },
+    { id: 3, title: '角色管理', icon: 'user', url: 'role', parent: 1, desc: '系统管理/角色管理', sorts: 1, conditions: 1  },
+    { id: 4, title: '权限管理', icon: 'user', url: 'power', parent: 1, desc: '系统管理/权限管理', sorts: 2, conditions: 1  },
+    { id: 5, title: '菜单管理', icon: 'menu', url: 'menuadmin', parent: 1, desc: '系统管理/菜单管理', sorts: 3, conditions: 1  },
 ];
 
 /**
@@ -70,6 +70,10 @@ const clearNews = (request) => {
     }
     return { status: 200, data: msg, total: msg.notice.length + msg.message.length + msg.work.length, message: '删除成功' };
 };
+// 获取所有菜单
+const getMenus = (request) => {
+    return { status: 200, data: menus, message: 'success' };
+};
 // 添加新菜单
 const addMenu = (request) => {
     const p = JSON.parse(request.body);
@@ -78,9 +82,37 @@ const addMenu = (request) => {
     menus.push(p);
     return { status: 200, data: menus, message: '添加成功' };
 };
-// 获取所有菜单
-const getMenus = (request) => {
-    return { status: 200, data: menus, message: 'success' };
+// 修改菜单
+const upMenu = (request) => {
+    const p = JSON.parse(request.body);
+    console.log('到这了吗：', p);
+    const oldIndex = menus.findIndex((item) => item.id === p.id);
+    if (oldIndex !== -1){
+        const news = Object.assign({}, menus[oldIndex], p);
+        menus.splice(oldIndex, 1, news);
+        return { status: 200, data: menus, message: 'success' };
+    } else {
+        return { status: 204, data: null, message: '未找到该条数据' };
+    }
+};
+// 删除菜单
+const delMenu = (request) => {
+    const p = JSON.parse(request.body);
+    console.log('到这了吗：', p);
+    const oldIndex = menus.findIndex((item) => item.id === p.id);
+
+    if(oldIndex !== -1) {
+        const haveChild = menus.findIndex((item) => item.parent === menus[oldIndex].id);
+        if (haveChild === -1) {
+            menus.splice(oldIndex, 1);
+            console.log('删除之后是什么：', menus);
+            return { status: 200, data: menus, message: 'success' };
+        } else {
+            return { status: 204, data: null, message: '该菜单下有子菜单，无法删除' };
+        }
+    } else {
+        return { status: 204, data: null, message: '未找到该条数据' };
+    }
 };
 
 /**
@@ -94,7 +126,11 @@ Mock.mock('api/getnews', () => {return {status: 200, data: msg, total: msg.notic
 Mock.mock('api/clearnews', (params) => clearNews(params));
 // 获取消息总数
 Mock.mock('api/getnewstotal', () => ({ status: 200, data: msg.notice.length + msg.message.length + msg.work.length, message: 'success' }));
-// 添加菜单
-Mock.mock('api/addmenu', (params) => addMenu(params));
 // 获取所有菜单
 Mock.mock('api/getmenus', (params) => getMenus(params));
+// 添加菜单
+Mock.mock('api/addmenu', (params) => addMenu(params));
+// 修改菜单
+Mock.mock('api/upmenu', (params) => upMenu(params));
+// 删除菜单
+Mock.mock('api/delmenu', (params) => delMenu(params));
