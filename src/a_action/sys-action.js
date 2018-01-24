@@ -11,6 +11,13 @@ import { message } from 'antd';
 export const getMenus = (params = {}) => async(dispatch) => {
     try {
         const res = await Fetchapi.newFetch('api/getmenus', params);
+        console.log('这res是什么：', res);
+        if(res.data.status === 200) {
+            await dispatch({
+                type: 'SYS.getMenus',
+                payload: res.data.data,
+            });
+        }
         return res.data;
     } catch(err) {
         message.error('网络错误，请重试');
@@ -56,6 +63,54 @@ export const upMenu = (params = {}) => async(dispatch) => {
 export const delMenu = (params = {}) => async(dispatch) => {
     try {
         const res = await Fetchapi.newFetch('api/delmenu', params);
+        return res.data;
+    } catch(err) {
+        message.error('网络错误，请重试');
+    }
+};
+
+/**
+ * 根据菜单ID查询其下的权限数据
+ * **/
+export const getRoleDataByMenuId = (params = {}) => async(dispatch) => {
+    try {
+        const res = await Fetchapi.newFetch('api/getrolebymenuid', params);
+        return res.data;
+    } catch(err) {
+        message.error('网络错误，请重试');
+    }
+};
+
+/**
+ * 添加权限
+ * **/
+export const addRole = (params = {}) => async(dispatch) => {
+    try {
+        const res = await Fetchapi.newFetch('api/addrole', params);
+        return res.data;
+    } catch(err) {
+        message.error('网络错误，请重试');
+    }
+};
+
+/**
+ * 修改权限
+ * **/
+export const upRole = (params = {}) => async(dispatch) => {
+    try {
+        const res = await Fetchapi.newFetch('api/uprole', params);
+        return res.data;
+    } catch(err) {
+        message.error('网络错误，请重试');
+    }
+};
+
+/**
+ * 删除权限
+ * **/
+export const delRole = (params = {}) => async(dispatch) => {
+    try {
+        const res = await Fetchapi.newFetch('api/delrole', params);
         return res.data;
     } catch(err) {
         message.error('网络错误，请重试');

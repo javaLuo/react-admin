@@ -41,7 +41,7 @@ export default class Com extends React.PureComponent {
                     <SubMenu key="sub1" title={<span><Icon type="setting" /><span>系统管理</span></span>}>
                         <Menu.Item key="5"><Link to={'/consumer'}>用户管理</Link></Menu.Item>
                         <Menu.Item key="6">角色管理</Menu.Item>
-                        <Menu.Item key="7">权限管理</Menu.Item>
+                        <Menu.Item key="7"><Link to={'/system/roleadmin'}>权限管理</Link></Menu.Item>
                         <Menu.Item key="8"><Link to={'/system/menuadmin'}>菜单管理</Link></Menu.Item>
                     </SubMenu>
                     <Menu.Item key="2">

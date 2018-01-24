@@ -27,11 +27,11 @@ module.exports = {
                 test: /\.js?$/,
                 enforce: 'pre',
                 loader: 'eslint-loader',
-                include: path.resolve(__dirname, "src")
+                include: [path.resolve(__dirname, "src"), path.resolve(__dirname, "mock")]
             },
             {   // .js .jsx用babel解析
                 test: /\.js?$/,
-                include: path.resolve(__dirname, "src"),
+                include: [path.resolve(__dirname, "src"), path.resolve(__dirname, "mock")],
                 loader: 'happypack/loader?id=happybabel',
             },
             {   // .css 解析
