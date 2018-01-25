@@ -8,3 +8,8 @@
   菜单管理
   
 我还没做完的
+
+# 预览地址：
+http://isluo.com/work/admin/index.html
+账号：admin
+密码：123456
