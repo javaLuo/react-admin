@@ -1,4 +1,4 @@
-/** 权限管理页 **/
+/** Role 系统管理/角色管理 **/
 
 // ==================
 // 所需的各种插件
@@ -6,41 +6,39 @@
 
 import React from 'react';
 import { connect } from 'react-redux';
-import c from 'classnames';
-import tools from '../../../util/tools';
 import { bindActionCreators } from 'redux';
 import P from 'prop-types';
-import _ from 'lodash';
-import { Link, hashHistory } from 'react-router';
+import { Form, Button, Icon, Input, Table, message, Popconfirm, Modal, Radio, Tooltip, Divider, Select, InputNumber } from 'antd';
 import css from './index.scss';
+import c from 'classnames';
+import tools from '../../../util/tools'; // 工具
+
 // ==================
 // 所需的所有组件
 // ==================
 
-import { Tree, Button, Table, Tooltip, Icon, Popconfirm, Modal, Form, Select, Input, InputNumber, message, Divider } from 'antd';
-import { Icons } from '../../../util/json';
-import MenuChose from '../../../a_component/TreeChose/menuChose';
+import TreeTable from '../../../a_component/TreeChose/RoleTreeTable';
+
 
 // ==================
 // 本页面所需action
 // ==================
 
-import { addRole, getMenus, upRole, delRole, getRoleDataByMenuId } from '../../../a_action/sys-action';
+import { findAllRole, getRoles, addRole, upRole, delRole, deleteAdminUserInfo, AssigningMenuToRoleId, updateAdminUserInfo, findAllMenu, findAllMenuByRoleId } from '../../../a_action/sys-action';
 
 // ==================
 // Definition
 // ==================
-const { TreeNode } = Tree;
 const FormItem = Form.Item;
-const { Option } = Select;
+const RadioGroup = Radio.Group;
 const { TextArea } = Input;
-
+const { Option } = Select;
 @connect(
     (state) => ({
-        menus: state.sys.menus,
+        allMenu: state.sys.allMenu,
     }),
     (dispatch) => ({
-        actions: bindActionCreators({ addRole, getMenus, upRole, delRole, getRoleDataByMenuId }, dispatch),
+        actions: bindActionCreators({ findAllRole, getRoles, addRole, upRole, delRole, deleteAdminUserInfo, AssigningMenuToRoleId, updateAdminUserInfo, findAllMenu, findAllMenuByRoleId }, dispatch),
     })
 )
 @Form.create()
@@ -49,236 +47,255 @@ export default class RoleAdminContainer extends React.Component {
         location: P.any,
         history: P.any,
         actions: P.any,
+        allMenu: P.any,
         form: P.any,
-        menus: P.array,
     };
 
-  constructor(props) {
-      super(props);
-      this.state = {
-          data: [],   // 当前所选菜单下的权限数据
-          sourceData: [], // 所有的菜单数据（分层级）
-          loading: false,   // 页面主要数据是否正在加载中
-          treeSelect: {},   // 当前Menu树被选中的节点数据
-          nowData: null,  // 当前选中的那条数据
-          operateType: 'add',  // 操作类型 add新增，up修改, see查看
-          modalShow: false,   // 新增&修改 模态框是否显示
-          modalLoading: false,// 新增&修改 模态框是否正在执行请求
-          menuChoseShow: false,// 菜单选择树是否出现
-          formParent: { label: undefined, value: undefined },  // 表单 - 当前所选菜单的值 { label, value }
-      };
-  }
+    constructor(props) {
+        super(props);
+        this.state = {
+            data: [], // 当前页面全部数据
+            operateType: 'add',  // 操作类型 add新增，up修改, see查看
+            loading: false, // 表格数据是否正在加载中
+            searchTitle: undefined, // 搜索 - 角色名
+            searchConditions: undefined,    // 搜索 - 状态
+            modalShow: false, // 添加/修改/查看 模态框是否显示
+            modalLoading: false, // 添加/修改/查看 是否正在请求中
+            nowData: null, // 当前选中用户的信息，用于查看详情、修改、分配菜单
+            queryModalShow: false, // 查看详情模态框是否显示
+            upLoading: false, // 是否正在修改用户中
+            menuTreeShow: false, // 菜单树是否显示
+            menuDefault: [], // 用于菜单树，默认需要选中的项
+            pageNum: 0, // 当前第几页
+            pageSize: 10, // 每页多少条
+            total: 0, // 数据库总共多少条数据
+            treeLoading: false, // 控制树的loading状态，因为要先加载当前role的菜单，才能显示树
+            treeOnOkLoading: false, // 是否正在分配菜单
+            roleTreeData: [], // 通过findMenuByRoleId查询的所有数据，包含了全部tree带btnList
+        };
+    }
 
     componentDidMount() {
-      if (this.props.menus.length === 0) {
-          this.getMenuData();
-      } else {
-          this.makeSourceData(this.props.menus);
-      }
-      this.getData();
+        this.onGetData(this.state.pageNum, this.state.pageSize);
     }
 
-    componentWillReceiveProps(nextP) {
-      if (nextP.menus !== this.props.menus) {
-          this.makeSourceData(nextP.menus);
-      }
-    }
-
-    /** 根据所选菜单id获取其下权限数据 **/
-    getData(menuId = null) {
-        this.setState({
-            loading: true,
-        });
-        this.props.actions.getRoleDataByMenuId({ menuId }).then((res) => {
-            console.log('返回的是什么啊：', res);
-            if (res.status === 200) {
+    // 查询当前页面所需列表数据
+    onGetData(pageNum, pageSize) {
+        const params = {
+            pageNum,
+            pageSize,
+            title: this.state.searchTitle,
+            conditions: this.state.searchConditions,
+        };
+        this.setState({ loading: true });
+        this.props.actions.getRoles(tools.clearNull(params)).then((res) => {
+            console.log('返回的什么：', res);
+            if(res.status === 200) {
                 this.setState({
-                    data: res.data,
+                    data: res.data.list,
+                    total: res.data.total,
+                    pageNum,
+                    pageSize,
                 });
-            }
-            this.setState({
-                loading: false,
-            });
-        }).catch(() => {
-            this.setState({
-                loading: false,
-            });
-        });
-    }
-
-  /** 获取所有菜单数据 **/
-  getMenuData() {
-      this.props.actions.getMenus();
-  };
-
-   /** 处理原始数据，将原始数据处理为层级关系 **/
-    makeSourceData(data) {
-        const d = _.cloneDeep(data);
-        console.log('d是什么：', d);
-        // 按照sort排序
-        d.sort((a, b) => {
-            return a.sorts - b.sorts;
-        });
-        const sourceData = this.dataToJson(null, d) || [];
-        console.log('得到了什么2：', sourceData);
-        this.setState({
-            sourceData,
-        });
-    }
-
-    /** 工具 - 递归将扁平数据转换为层级数据 **/
-    dataToJson(one, data) {
-        let kids;
-        if (!one) { // 第1次递归
-            kids = data.filter((item) => !item.parent);
-        } else {
-            kids = data.filter((item) => item.parent === one.id);
-        }
-        kids.forEach((item) => item.children = this.dataToJson(item, data));
-        return kids.length ? kids : null;
-    }
-
-    /** 递归构建树结构 **/
-    makeTreeDom(data, key = '') {
-        return data.map((item, index) => {
-            const k = key ? `${key}-${item.id}` : `${item.id}`;
-            if (item.children) {
-                return (
-                    <TreeNode title={item.title} key={k} id={item.id} p={item.parent}>
-                        { this.makeTreeDom(item.children, k) }
-                    </TreeNode>
-                );
             } else {
-                return <TreeNode title={item.title} key={k} id={item.id} p={item.parent}/>;
+                message.error(res.message);
             }
+            this.setState({ loading: false });
+        }).catch(() => {
+            this.setState({ loading: false });
         });
     }
 
-    /** 点击树目录时触发 **/
-    onTreeSelect = (keys, e) => {
-        console.log('选择的什么：', e);
-        if (e.selected) {   // 选中时才触发
-            const p = e.node.props;
-            this.getData(p.id);
+    // 删除某一条数据
+    onDel(id) {
+        this.setState({ loading: true });
+        this.props.actions.delRole({id}).then((res) => {
+            if(res.status === 200) {
+                message.success('删除成功');
+                this.onGetData(this.state.pageNum, this.state.pageSize);
+            } else {
+                message.error(res.message);
+                this.setState({ loading: false });
+            }
+        }).catch(() => {
+            this.setState({ loading: false });
+        });
+    }
+
+    // 搜索 - 名称输入框值改变时触发
+    searchTitleChange(e) {
+        if (e.target.value.length < 20) {
             this.setState({
-                treeSelect: { title: p.title, id: p.id },
-            });
-        } else {
-            this.setState({
-                treeSelect: {},
+                searchTitle: e.target.value,
             });
         }
-    };
+    }
 
-    /** 工具 - 根据parentID返回parentName **/
-    getNameByParentId = (id) => {
-
-        const p = this.state.data.find((item) => item.id === id);
-        console.log('传来的是什么：', id, p);
-        return p ? p.title : undefined;
-    };
-
-  /** 新增&修改 模态框出现 **/
-  onModalShow = (data, type) => {
-      const { form } = this.props;
-
-      if (type === 'add') { // 新增，需重置表单各控件的值
-          form.resetFields();
-      } else {  // 查看或修改，需设置表单各控件的值为当前所选中行的数据
-          // const v = form.getFieldsValue();
-          form.setFieldsValue({
-              formConditions: data.conditions,
-              formDesc: data.desc,
-              formCode: data.code,
-              formSorts: data.sorts,
-              formTitle: data.title,
-          });
-      }
-    this.setState({
-        modalShow: true,
-        nowData: data,
-        operateType: type,
-        formParent: type === 'add' ? { label: undefined, value: undefined } : { label: this.getNameByParentId(data.parent), value: data.parent }
-    });
-  };
-
-    /** 新增&修改 模态框关闭 **/
-    onClose = () => {
+    // 搜索 - 状态下拉框选择时触发
+    searchConditionsChange(v) {
         this.setState({
-            modalShow: false,
+            searchConditions: v,
         });
-    };
+    }
 
-    /** 新增&修改 提交 **/
-    onOk = () => {
+    // 搜索
+    onSearch() {
+        this.onGetData(this.state.pageNum, this.state.pageSize);
+    }
+
+    /**
+     * 添加/修改/查看 模态框出现
+     * @item: 当前选中的那条数据
+     * @type: add添加/up修改/see查看
+     * **/
+    onModalShow(data, type) {
         const { form } = this.props;
+
+        if (type === 'add') { // 新增，需重置表单各控件的值
+            form.resetFields();
+        } else {  // 查看或修改，需设置表单各控件的值为当前所选中行的数据
+            form.setFieldsValue({
+                formConditions: data.conditions,
+                formDesc: data.desc,
+                formSorts: data.sorts,
+                formTitle: data.title,
+            });
+        }
+        this.setState({
+            modalShow: true,
+            nowData: data,
+            operateType: type,
+        });
+    }
+
+    /** 模态框确定 **/
+    onOk() {
+        const me = this;
+        const { form } = me.props;
         form.validateFields([
             'formTitle',
-            'formCode',
             'formDesc',
             'formSorts',
             'formConditions',
         ], (err, values) => {
-            if (err) { return; }
-            console.log('检查parent:', this.state.formParent);
+            if (err) { return false; }
+            me.setState({ modalLoading: true });
             const params = {
                 title: values.formTitle,
-                code: values.formCode,
-                menu: this.state.treeSelect.id,
-                sorts: values.formSorts,
                 desc: values.formDesc,
+                sorts: values.formSorts,
                 conditions: values.formConditions,
             };
             if (this.state.operateType === 'add') { // 新增
-                this.props.actions.addRole(params).then((res) => {
-                    console.log('返回了什么', res);
-                    if(res.status === 200) {
+                me.props.actions.addRole(params).then((res) => {
+                    console.log('添加用户返回数据：', res);
+                    if (res.status === 200) {
                         message.success('添加成功');
-                        this.getData(this.state.treeSelect.id);
+                        this.onGetData(this.state.pageNum, this.state.pageSize);
                         this.onClose();
                     } else {
-                        message.error('添加失败');
+                        message.error(res.message);
                     }
-                    this.setState({modalLoading: false});
+                    me.setState({ modalLoading: false });
                 }).catch(() => {
-                    this.setState({modalLoading: false});
+                    me.setState({ modalLoading: false });
                 });
             } else {    // 修改
                 params.id = this.state.nowData.id;
-                this.props.actions.upRole(params).then((res) => {
-                    if(res.status === 200) {
+                me.props.actions.upRole(params).then((res) => {
+                    if (res.status === 200) {
                         message.success('修改成功');
-                        this.getData(this.state.treeSelect.id);
+                        this.onGetData(this.state.pageNum, this.state.pageSize);
                         this.onClose();
                     } else {
-                        message.error('修改失败');
+                        message.error(res.message);
                     }
-                    this.setState({modalLoading: false});
+                    me.setState({ modalLoading: false });
                 }).catch(() => {
-                    this.setState({modalLoading: false});
+                    me.setState({ modalLoading: false });
                 });
             }
-
-            this.setState({modalLoading: true});
         });
-    };
+    }
 
-    /** 删除一条数据 **/
-    onDel = (record) => {
-        const params = { id: record.id };
-        this.setState({loading: true});
-        this.props.actions.delRole(params).then((res) => {
-            if (res.status === 200) {
-                this.getData();
-                message.success('删除成功');
-            } else {
-                message.error(res.message);
+    /** 模态框关闭 **/
+    onClose() {
+        this.setState({
+            modalShow: false,
+        });
+    }
+
+    // 分配菜单按钮点击，菜单出现
+    onMenuClick(record) {
+        this.setState({
+            nowData: record,
+            menuTreeShow: true,
+            treeLoading: true,
+        });
+
+        // 获取当前角色所拥有的菜单，然后默认选中
+        this.props.actions.findAllMenuByRoleId({roleId: record.roleId}).then((res) => {
+            if (res.returnCode === "0") {
+                console.log('当前角色所拥有的菜单：', res, record);
+                const menuDefault = res.messsageBody.result.filter((item) => item.menuAfiliation === 'Y').map((item) => ({key: `${item.id}`, id: item.id, title: item.menuName, p: item.parentId}));
+                this.setState({
+                    roleTreeData: res.messsageBody.result,
+                    menuDefault,
+                });
             }
+            this.setState({
+                treeLoading: false,
+            });
+        }).catch(() => {
+            this.setState({
+                treeLoading: false,
+            });
         });
-    };
+    }
 
-    /** 构建表格字段 **/
-    makeColumns = () => {
+    // 关闭菜单树
+    onMenuTreeClose() {
+        this.setState({
+            menuTreeShow: false,
+        });
+    }
+
+    // 菜单树确定 给角色分配菜单
+    onMenuTreeOk(arr) {
+        console.log('所选择的：', arr);
+        const params = {
+            roleId: this.state.nowData.roleId,
+            menus: arr.menus.join(','),
+            btnIds: arr.btns.join(','),
+        };
+        this.setState({
+            treeOnOkLoading: true,
+        });
+        this.props.actions.AssigningMenuToRoleId(params).then((res) => {
+            if (res.returnCode === "0") {
+                message.success('菜单分配成功');
+                this.onMenuTreeClose();
+            } else {
+                message.error(res.returnMessaage || '菜单分配失败');
+            }
+            this.setState({
+                treeOnOkLoading: false,
+            });
+        }).catch(() => {
+            this.setState({
+                treeOnOkLoading: false,
+            });
+        });
+    }
+
+    // 表单页码改变
+    onTablePageChange(page, pageSize) {
+        console.log('页码改变：', page, pageSize);
+        this.onGetData(page, pageSize);
+    }
+
+    // 构建字段
+    makeColumns(){
         const columns = [
             {
                 title: '序号',
@@ -286,19 +303,19 @@ export default class RoleAdminContainer extends React.Component {
                 key: 'serial',
             },
             {
-                title: '权限名称',
+                title: '角色名',
                 dataIndex: 'title',
                 key: 'title',
-            },
-            {
-                title: 'Code',
-                dataIndex: 'code',
-                key: 'code',
             },
             {
                 title: '描述',
                 dataIndex: 'desc',
                 key: 'desc',
+            },
+            {
+                title: '排序',
+                dataIndex: 'sorts',
+                key: 'sorts',
             },
             {
                 title: '状态',
@@ -309,9 +326,9 @@ export default class RoleAdminContainer extends React.Component {
             {
                 title: '操作',
                 key: 'control',
-                width: 120,
+                width: 200,
                 render: (text, record) => {
-                    let controls = [];
+                    const controls = [];
 
                     controls.push(
                         <span key="0" className="control-btn green" onClick={() => this.onModalShow(record, 'see')}>
@@ -328,7 +345,14 @@ export default class RoleAdminContainer extends React.Component {
                         </span>
                     );
                     controls.push(
-                        <Popconfirm key="2" title="确定删除吗?" okText="确定" cancelText="取消" onConfirm={() => this.onDel(record)}>
+                        <span key="2" className="control-btn blue" >
+                            <Tooltip placement="top" title="分配权限">
+                                <Icon type="tool" />
+                            </Tooltip>
+                        </span>
+                    );
+                    controls.push(
+                        <Popconfirm key="3" title="确定删除吗?" onConfirm={() => this.onDel(record.id)} okText="确定" cancelText="取消">
                             <span className="control-btn red">
                                 <Tooltip placement="top" title="删除">
                                     <Icon type="delete" />
@@ -336,10 +360,11 @@ export default class RoleAdminContainer extends React.Component {
                             </span>
                         </Popconfirm>
                     );
+
                     const result = [];
                     controls.forEach((item, index) => {
                         if (index) {
-                            result.push(<Divider key={`line${index}`} type="vertical" />,);
+                            result.push(<span key={`line${index}`} className="ant-divider" />,);
                         }
                         result.push(item);
                     });
@@ -348,165 +373,172 @@ export default class RoleAdminContainer extends React.Component {
             }
         ];
         return columns;
-    };
+    }
 
-    /** 构建表格数据 **/
+    // 构建table所需数据
     makeData(data) {
-        console.log('DATA:', data);
-        if (!data){return [];}
+        console.log('data是个啥：', data);
         return data.map((item, index) => {
             return {
                 key: index,
                 id: item.id,
-                menu: item.menu,
+                serial:(index + 1) + this.state.pageNum  * this.state.pageSize,
                 title: item.title,
-                code: item.code,
                 desc: item.desc,
                 sorts: item.sorts,
                 conditions: item.conditions,
-                serial: (index + 1),
+                control: item.id,
             };
         });
     }
 
-  render() {
-      const { form } = this.props;
-      const { getFieldDecorator } = form;
-      const formItemLayout = {  // 表单布局
-          labelCol: {
-              xs: { span: 24 },
-              sm: { span: 4 },
-          },
-          wrapperCol: {
-              xs: { span: 24 },
-              sm: { span: 19 },
-          },
-      };
-    return (
-      <div className={c(css.page, 'flex-row')}>
-          <div className={c(css.l)}>
-              <div className={css.title}>目录结构</div>
-              <div>
-                  <Tree
-                      defaultExpandedKeys={['0']}
-                      onSelect={this.onTreeSelect}
-                  >
-                      <TreeNode title="根" key="0" id={null} selectable={false}>
-                          { this.makeTreeDom(this.state.sourceData) }
-                      </TreeNode>
-                  </Tree>
-              </div>
-          </div>
-          <div className={c(css.r, 'flex-auto')}>
-              <div className={css.searchBox}>
-                  <ul className={'flex-row'}>
+    render() {
+        const me = this;
+        const { form } = me.props;
+        const { getFieldDecorator } = form;
+        const formItemLayout = {
+            labelCol: {
+                xs: { span: 24 },
+                sm: { span: 4 },
+            },
+            wrapperCol: {
+                xs: { span: 24 },
+                sm: { span: 19 },
+            },
+        };
+
+        return (
+            <div>
+              <div className="g-search">
+                  <ul className="search-func">
+                      <li><Button type="primary" onClick={() => this.onModalShow(null, 'add')}><Icon type="plus-circle-o" />添加角色</Button></li>
+                  </ul>
+                  <Divider type="vertical" />
+                  <ul className="search-ul">
+                      <li><Input placeholder="请输入角色名" onChange={(e) => this.searchTitleChange(e)} value={this.state.searchTitle}/></li>
                       <li>
-                          <Button
-                              type="primary"
-                              icon="plus-circle-o"
-                              onClick={() => this.onModalShow(null, 'add')}
-                              disabled={!this.state.treeSelect.id}
-                          >
-                              {`添加${this.state.treeSelect.title || ''}权限`}
-                          </Button>
+                          <Select placeholder="请选择状态" allowClear style={{ width: '200px' }} onChange={(e) => this.searchConditionsChange(e)} value={this.state.searchConditions}>
+                              <Option value={1}>启用</Option>
+                              <Option value={-1}>禁用</Option>
+                          </Select>
                       </li>
+                      <li><Button icon="search" type="primary" onClick={() => this.onSearch()}>搜索</Button></li>
                   </ul>
               </div>
-              <Table
-                  className={'diy-table'}
-                  columns={this.makeColumns()}
-                  loading={this.state.loading}
-                  dataSource={this.makeData(this.state.data)}
-                  pagination={{
-                      pageSize: this.state.pageSize,
-                      showQuickJumper: true,
-                      showTotal: (total, range) => `共 ${total} 条数据`,
-                  }}
-              />
-          </div>
-          {/** 查看&新增&修改用户模态框 **/}
-          <Modal
-              title={{ add: '新增', up: '修改', see: '查看' }[this.state.operateType]}
-              visible={this.state.modalShow}
-              onOk={this.onOk}
-              onCancel={this.onClose}
-              confirmLoading={this.state.modalLoading}
-          >
-              <Form>
+              <div className="diy-table">
+                <Table
+                    columns={this.makeColumns()}
+                    loading={this.state.loading}
+                    dataSource={this.makeData(this.state.data)}
+                    pagination={{
+                        total: this.state.total,
+                        current: this.state.pageNum,
+                        pageSize: this.state.pageSize,
+                        showQuickJumper: true,
+                        showTotal: (total, range) => `共 ${total} 条数据`,
+                        onChange: (page, pageSize) => this.onTablePageChange(page, pageSize)
+                    }}
+                />
+              </div>
+                {/* 新增&修改&查看 模态框 */}
+              <Modal
+                  title={{ add: '新增', up: '修改', see: '查看' }[this.state.operateType]}
+                  visible={this.state.modalShow}
+                  onOk={() => this.onOk()}
+                  onCancel={() => this.onClose()}
+                  confirmLoading={this.state.modalLoading}
+              >
+                <Form>
                   <FormItem
-                      label="权限名"
+                      label="角色名"
                       {...formItemLayout}
                   >
                       {getFieldDecorator('formTitle', {
                           initialValue: undefined,
                           rules: [
-                              { required: true, whitespace: true, message: '必填' },
-                              { max: 12, message: '最多输入12位字符' }
+                              {required: true, whitespace: true, message: '请输入角色名'},
+                              { validator: (rule, value, callback) => {
+                                  const v = tools.trim(value);
+                                  if (v) {
+                                      if (v.length > 12) {
+                                          callback('最多输入12位字符');
+                                      }
+                                  }
+                                  callback();
+                              }}
                           ],
                       })(
-                          <Input placeholder="请输入权限名" disabled={this.state.operateType === 'see'}/>
+                          <Input placeholder="请输入角色名" />
                       )}
                   </FormItem>
-                  <FormItem
-                      label="Code"
-                      {...formItemLayout}
-                  >
-                      {getFieldDecorator('formCode', {
-                          initialValue: undefined,
-                          rules: [
-                              { required: true, whitespace: true, message: '必填' },
-                              { max: 12, message: '最多输入12位字符' }
-                              ],
-                      })(
-                          <Input placeholder="请输入菜单链接" disabled={this.state.operateType === 'see'} />
-                      )}
-                  </FormItem>
-                  <FormItem
-                      label="描述"
-                      {...formItemLayout}
-                  >
-                      {getFieldDecorator('formDesc', {
-                          rules: [{ max: 100, message: '最多输入100位字符' }],
-                          initialValue: undefined,
-                      })(
-                          <TextArea
-                              rows={4}
-                              disabled={this.state.operateType === 'see'}
-                              placeholoder="请输入描述"
-                              autosize={{minRows: 2, maxRows: 6}}
-                          />
-                      )}
-                  </FormItem>
-                  <FormItem
-                      label="排序"
-                      {...formItemLayout}
-                  >
-                      {getFieldDecorator('formSorts', {
-                          initialValue: 0,
-                          rules: [{required: true, message: '请输入排序号'}],
-                      })(
-                          <InputNumber min={0} max={99999} style={{ width: '100%' }} disabled={this.state.operateType === 'see'} />
-                      )}
-                  </FormItem>
-                  <FormItem
-                      label="状态"
-                      {...formItemLayout}
-                  >
-                      {getFieldDecorator('formConditions', {
-                          initialValue: 1,
-                          rules: [{required: true, message: '请选择状态'}],
-                      })(
-                          <Select
-                              disabled={this.state.operateType === 'see'}
-                          >
-                              <Option key={1} value={1}>启用</Option>
-                              <Option key={-1} value={-1}>禁用</Option>
-                          </Select>
-                      )}
-                  </FormItem>
-              </Form>
-          </Modal>
-      </div>
-    );
-  }
+                    {
+                        this.state.operateType === 'see' ? (
+                            <FormItem
+                                label="权限"
+                                {...formItemLayout}
+                            >
+                                <span>123</span>
+                            </FormItem>
+                        ) : null
+                    }
+                    <FormItem
+                        label="描述"
+                        {...formItemLayout}
+                    >
+                        {getFieldDecorator('formDesc', {
+                            initialValue: undefined,
+                            rules: [
+                                {max: 100, message: '最多输入100个字符'}
+                            ],
+                        })(
+                            <TextArea
+                                rows={4}
+                                disabled={this.state.operateType === 'see'}
+                                placeholoder="请输入描述"
+                                autosize={{minRows: 2, maxRows: 6}}
+                            />
+                        )}
+                    </FormItem>
+                    <FormItem
+                        label="排序"
+                        {...formItemLayout}
+                    >
+                        {getFieldDecorator('formSorts', {
+                            initialValue: 0,
+                            rules: [{required: true, message: '请输入排序号'}],
+                        })(
+                            <InputNumber min={0} max={99999} style={{ width: '100%' }} disabled={this.state.operateType === 'see'} />
+                        )}
+                    </FormItem>
+                    <FormItem
+                        label="状态"
+                        {...formItemLayout}
+                    >
+                        {getFieldDecorator('formConditions', {
+                            initialValue: 1,
+                            rules: [{required: true, message: '请选择状态'}],
+                        })(
+                            <Select
+                                disabled={this.state.operateType === 'see'}
+                            >
+                                <Option key={1} value={1}>启用</Option>
+                                <Option key={-1} value={-1}>禁用</Option>
+                            </Select>
+                        )}
+                    </FormItem>
+                </Form>
+              </Modal>
+                <TreeTable
+                    title={this.state.nowData ? `分配菜单：${this.state.nowData.roleName}` : '分配菜单'}
+                    menuData={this.state.roleTreeData}
+                    defaultChecked={this.state.menuDefault}
+                    initloading={this.state.treeLoading}
+                    loading={this.state.treeOnOkLoading}
+                    modalShow={this.state.menuTreeShow}
+                    onOk={(arr) => this.onMenuTreeOk(arr)}
+                    onClose={() => this.onMenuTreeClose()}
+                />
+            </div>
+        );
+    }
 }

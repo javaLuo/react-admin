@@ -44,10 +44,16 @@ const menus = [
 ];
 
 // 所有的权限数据
-const roles = [
+const powers = [
     { id: 1, menu: 2, title: '新增', code: 'add', desc: '用户管理 - 添加权限', sorts: 1, conditions: 1 },
     { id: 2, menu: 2, title: '修改', code: 'up', desc: '用户管理 - 修改权限', sorts: 2, conditions: 1 },
     { id: 3, menu: 2, title: '查看', code: 'see', desc: '用户管理 - 查看权限', sorts: 3, conditions: -1 },
+];
+// 所有的角色数据
+const roles = [
+    { id: 1, title: '超级管理员', desc: '超级管理员拥有所有权限', sorts: 1, conditions: 1 },
+    { id: 2, title: '管理员', desc: '普通管理员', sorts: 2, conditions: 1 },
+    { id: 3, title: '运维人员', desc: '运维人员不能删除对象', sorts: 3, conditions: 1 },
 ];
 /**
  * 方法
@@ -121,28 +127,77 @@ const delMenu = (request) => {
     }
 };
 // 根据菜单ID查询其下权限
-const getRoleByMenuId  = (request) => {
+const getPowerByMenuId  = (request) => {
     const p = JSON.parse(request.body);
     const menuId = p.menuId;
 
     if (menuId) {
-        console.log('排序后：', roles.filter((item) => item.menu === menuId).sort((a, b) => a.sorts - b.sorts));
-        return { status: 200, data: roles.filter((item) => item.menu === menuId).sort((a, b) => a.sorts - b.sorts), message: 'success'};
+        console.log('排序后：', powers.filter((item) => item.menu === menuId).sort((a, b) => a.sorts - b.sorts));
+        return { status: 200, data: powers.filter((item) => item.menu === menuId).sort((a, b) => a.sorts - b.sorts), message: 'success'};
     } else {
-        return { status: 200, data: roles, message: 'success' };
+        return { status: 200, data: powers, message: 'success' };
     }
 };
 // 添加权限
+const addPower = (request) => {
+    const p = JSON.parse(request.body);
+    p.id = ++id_sequence;
+    powers.push(p);
+    return { status: 200, data: null, message: 'success' };
+};
+// 修改权限
+const upPower = (request) => {
+    const p = JSON.parse(request.body);
+    console.log('到这了吗：', p);
+    const oldIndex = powers.findIndex((item) => item.id === p.id);
+    if (oldIndex !== -1){
+        const news = Object.assign({}, powers[oldIndex], p);
+        powers.splice(oldIndex, 1, news);
+        return { status: 200, data: null, message: 'success' };
+    } else {
+        return { status: 204, data: null, message: '未找到该条数据' };
+    }
+};
+// 删除权限
+const delPower = (request) => {
+    const p = JSON.parse(request.body);
+    console.log('到这了吗：', p);
+    const oldIndex = powers.findIndex((item) => item.id === p.id);
+
+    if(oldIndex !== -1) {
+        powers.splice(oldIndex, 1);
+        return { status: 200, data: null, message: 'success' };
+    } else {
+        return { status: 204, data: null, message: '未找到该条数据' };
+    }
+};
+// 查询角色（分页,条件筛选）
+const getRoles = (request) => {
+    const p = JSON.parse(request.body);
+    const map = roles.filter((item) => {
+        let yeah = true;
+        if (p.title && !item.title.includes(p.title)) {
+            yeah = false;
+        }
+        if (p.conditions && item.conditions !== p.conditions) {
+            yeah = false;
+        }
+        return yeah;
+    });
+    const r = map.sort((a, b) => a.sorts - b.sorts);
+    const res = r.slice(p.pageNum * p.pageSize, (p.pageNum+1) * p.pageSize);
+    return { status: 200, data: { list: res, total: roles.length }, message: 'success' };
+};
+// 添加角色
 const addRole = (request) => {
     const p = JSON.parse(request.body);
     p.id = ++id_sequence;
     roles.push(p);
     return { status: 200, data: null, message: 'success' };
 };
-// 修改权限
+// 修改角色
 const upRole = (request) => {
     const p = JSON.parse(request.body);
-    console.log('到这了吗：', p);
     const oldIndex = roles.findIndex((item) => item.id === p.id);
     if (oldIndex !== -1){
         const news = Object.assign({}, roles[oldIndex], p);
@@ -152,12 +207,11 @@ const upRole = (request) => {
         return { status: 204, data: null, message: '未找到该条数据' };
     }
 };
-// 删除权限
+// 删除角色
 const delRole = (request) => {
     const p = JSON.parse(request.body);
-    console.log('到这了吗：', p);
     const oldIndex = roles.findIndex((item) => item.id === p.id);
-
+    console.log('开始删除：', oldIndex);
     if(oldIndex !== -1) {
         roles.splice(oldIndex, 1);
         return { status: 200, data: null, message: 'success' };
@@ -165,6 +219,7 @@ const delRole = (request) => {
         return { status: 204, data: null, message: '未找到该条数据' };
     }
 };
+
 /**
  * API拦截
  * **/
@@ -185,10 +240,18 @@ Mock.mock('api/upmenu', (params) => upMenu(params));
 // 删除菜单
 Mock.mock('api/delmenu', (params) => delMenu(params));
 // 根据菜单ID查询其下权限
-Mock.mock('api/getrolebymenuid', (params) => getRoleByMenuId(params));
+Mock.mock('api/getpowerbymenuid', (params) => getPowerByMenuId(params));
 // 添加权限
-Mock.mock('api/addrole', (params) => addRole(params));
+Mock.mock('api/addpower', (params) => addPower(params));
 // 修改权限
-Mock.mock('api/uprole', (params) => upRole(params));
+Mock.mock('api/uppower', (params) => upPower(params));
 // 删除权限
+Mock.mock('api/delpower', (params) => delPower(params));
+// 查询角色（分页）
+Mock.mock('api/getroles', (params) => getRoles(params));
+// 添加角色
+Mock.mock('api/addrole', (params) => addRole(params));
+// 修改角色
+Mock.mock('api/uprole', (params) => upRole(params));
+// 删除角色
 Mock.mock('api/delrole', (params) => delRole(params));

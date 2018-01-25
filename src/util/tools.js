@@ -88,6 +88,20 @@ const tools = {
     console.log('解谜：', code, c);
     return c;
   },
+
+  /**
+   * 清除一个对象中那些属性为空值的属性
+   * 0 算有效值
+   * **/
+  clearNull(obj) {
+      const temp = {};
+      Object.keys(obj).forEach((item) => {
+          if (obj[item] === 0 || !!obj[item]) {
+              temp[item] = obj[item];
+          }
+      });
+      return temp;
+  },
 };
 
 export default tools;

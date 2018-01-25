@@ -17,11 +17,13 @@ import Bundle from '../a_component/bundle';
 import lazeNotFound from 'bundle-loader?lazy&name=notfound!../a_container/notfound';
 import lazeHome from 'bundle-loader?lazy&name=home!../a_container/home';
 import lazeMenuAdmin from 'bundle-loader?lazy&name=menuadmin!../a_container/System/MenuAdmin';
+import lazePowerAdmin from 'bundle-loader?lazy&name=poweradmin!../a_container/System/PowerAdmin';
 import lazeRoleAdmin from 'bundle-loader?lazy&name=roleadmin!../a_container/System/RoleAdmin';
-const NotFound = (props) => (<Bundle load={lazeNotFound}>{(NotFound) => <NotFound {...props} />}</Bundle>);
-const Home = (props) => (<Bundle load={lazeHome}>{(Home) => <Home {...props} />}</Bundle>);
-const MenuAdmin = (props) => (<Bundle load={lazeMenuAdmin}>{(MenuAdmin) => <MenuAdmin {...props} />}</Bundle>);
-const RoleAdmin = (props) => (<Bundle load={lazeRoleAdmin}>{(RoleAdmin) => <RoleAdmin {...props} />}</Bundle>);
+const NotFound = (props) => (<Bundle load={lazeNotFound}>{(Com) => <Com {...props} />}</Bundle>);
+const Home = (props) => (<Bundle load={lazeHome}>{(Com) => <Com {...props} />}</Bundle>);
+const MenuAdmin = (props) => (<Bundle load={lazeMenuAdmin}>{(Com) => <Com {...props} />}</Bundle>);
+const PowerAdmin = (props) => (<Bundle load={lazePowerAdmin}>{(Com) => <Com {...props} />}</Bundle>);
+const RoleAdmin = (props) => (<Bundle load={lazeRoleAdmin}>{(Com) => <Com {...props} />}</Bundle>);
 
 // ==================
 // 所需的所有组件
@@ -173,6 +175,7 @@ export default class AppContainer extends React.Component {
                             <Redirect exact from="/system" to="/system/menuadmin" />
                             <Route exact path="/home" component={Home} />
                             <Route exact path="/system/menuadmin" component={MenuAdmin} />
+                            <Route exact path="/system/poweradmin" component={PowerAdmin} />
                             <Route exact path="/system/roleadmin" component={RoleAdmin} />
                             <Route render={NotFound} />
                         </Switch>

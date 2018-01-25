@@ -72,9 +72,9 @@ export const delMenu = (params = {}) => async(dispatch) => {
 /**
  * 根据菜单ID查询其下的权限数据
  * **/
-export const getRoleDataByMenuId = (params = {}) => async(dispatch) => {
+export const getPowerDataByMenuId = (params = {}) => async(dispatch) => {
     try {
-        const res = await Fetchapi.newFetch('api/getrolebymenuid', params);
+        const res = await Fetchapi.newFetch('api/getpowerbymenuid', params);
         return res.data;
     } catch(err) {
         message.error('网络错误，请重试');
@@ -83,6 +83,54 @@ export const getRoleDataByMenuId = (params = {}) => async(dispatch) => {
 
 /**
  * 添加权限
+ * **/
+export const addPower = (params = {}) => async(dispatch) => {
+    try {
+        const res = await Fetchapi.newFetch('api/addpower', params);
+        return res.data;
+    } catch(err) {
+        message.error('网络错误，请重试');
+    }
+};
+
+/**
+ * 修改权限
+ * **/
+export const upPower = (params = {}) => async(dispatch) => {
+    try {
+        const res = await Fetchapi.newFetch('api/uppower', params);
+        return res.data;
+    } catch(err) {
+        message.error('网络错误，请重试');
+    }
+};
+
+/**
+ * 删除权限
+ * **/
+export const delPower = (params = {}) => async(dispatch) => {
+    try {
+        const res = await Fetchapi.newFetch('api/delpower', params);
+        return res.data;
+    } catch(err) {
+        message.error('网络错误，请重试');
+    }
+};
+
+/**
+ * 分页查询角色数据
+ * **/
+export const getRoles = (params = {}) => async(dispatch) => {
+    try {
+        const res = await Fetchapi.newFetch('api/getroles', params);
+        return res.data;
+    } catch(err) {
+        message.error('网络错误，请重试');
+    }
+};
+
+/**
+ * 添加角色
  * **/
 export const addRole = (params = {}) => async(dispatch) => {
     try {
@@ -94,7 +142,7 @@ export const addRole = (params = {}) => async(dispatch) => {
 };
 
 /**
- * 修改权限
+ * 修改角色
  * **/
 export const upRole = (params = {}) => async(dispatch) => {
     try {
@@ -106,7 +154,7 @@ export const upRole = (params = {}) => async(dispatch) => {
 };
 
 /**
- * 删除权限
+ * 删除角色
  * **/
 export const delRole = (params = {}) => async(dispatch) => {
     try {
