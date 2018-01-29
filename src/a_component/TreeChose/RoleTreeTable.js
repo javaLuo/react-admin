@@ -8,7 +8,7 @@ import _ from 'lodash';
 export default class TreeTable extends React.PureComponent {
     static propTypes = {
         title: P.string,            // 指定模态框标题
-        data: P.any,            // 所有的菜单&权限原始数据
+        data: P.any,                // 所有的菜单&权限原始数据
         defaultChecked: P.array,    // 需要默认选中的项
         modalShow: P.any,           // 是否显示
         initloading: P.bool,        // 初始化时，树是否处于加载中状态
@@ -62,22 +62,13 @@ export default class TreeTable extends React.PureComponent {
             return a.sorts - b.sorts;
         });
 
-        const sourceData = [];
-        d.forEach((item) => {
-            if (!item.parent) {
-                const temp = this.dataToJson(d, item);
-                sourceData.push(temp);
-            }
-        });
+        const sourceData = this.dataToJson(null, d) || [];
+
         console.log('jsonMenu是什么：', sourceData);
         // 再来看看哪些需要被默认选中
-        const treeChecked = data.map((item) => item.id);
-        const btnDtoChecked = [];
-        data.forEach((item) => {
-            if (item.powers && item.powers.length > 0) {
-                item.powers.forEach((item3) => btnDtoChecked.push(item3.id));
-            }
-        });
+        const treeChecked = this.props.defaultChecked.menus;
+        const btnDtoChecked = this.props.defaultChecked.powers;
+        console.log('需要被默认直接选中：', data, btnDtoChecked);
         this.setState({
             sourceData0: data,
             sourceData,
@@ -86,22 +77,16 @@ export default class TreeTable extends React.PureComponent {
         });
     }
 
-    // 递归将扁平数据转换为层级数据
-    dataToJson(data, one) {
-        const child = _.cloneDeep(one);
-        child.children = [];
-        child.key = child.id;
-        let sonChild = null;
-        data.forEach((item) => {
-            if (item.parent === one.id) {
-                sonChild = this.dataToJson(data, item);
-                child.children.push(sonChild);
-            }
-        });
-        if (child.children.length <=0) {
-            child.children = null;
+    /** 工具 - 递归将扁平数据转换为层级数据 **/
+    dataToJson(one, data) {
+        let kids;
+        if (!one) { // 第1次递归
+            kids = data.filter((item) => !item.parent);
+        } else {
+            kids = data.filter((item) => item.parent === one.id);
         }
-        return child;
+        kids.forEach((item) => {item.children = this.dataToJson(item, data);item.key = item.id;});
+        return kids.length ? kids : null;
     }
 
     // Dto受控
@@ -117,13 +102,13 @@ export default class TreeTable extends React.PureComponent {
             width: '30%',
         }, {
             title: '权限',
-            dataIndex: 'btnDtoList',
-            key: 'btnDtoList',
+            dataIndex: 'powers',
+            key: 'powers',
             width: '70%',
             render: (value, record) => {
                 if (value) {
                     return value.map((item, index) => {
-                        return <Checkbox key={index} checked={this.dtoIsChecked(item.id)} onChange={(e) => this.onBtnDtoChange(e, item.id, record)}>{item.title}</Checkbox>
+                        return <Checkbox key={index} checked={this.dtoIsChecked(item.id)} onChange={(e) => this.onBtnDtoChange(e, item.id, record)}>{item.title}</Checkbox>;
                     });
                 }
             }
@@ -144,15 +129,15 @@ export default class TreeTable extends React.PureComponent {
                 console.log('单个选中或取消触发:', record, selected, selectedRows);
                 const t = this.state.sourceData0.find((item) => item.id === record.id);
                 if (selected) { // 选中，连带其权限全部勾选
-                    if (t && Array.isArray(t.btnDtoList)) {
-                        const temp = Array.from(new Set([...t.btnDtoList.map((item) => item.id), ...this.state.btnDtoChecked]));
+                    if (t && Array.isArray(t.powers)) {
+                        const temp = Array.from(new Set([...t.powers.map((item) => item.id), ...this.state.btnDtoChecked]));
                         this.setState({
                             btnDtoChecked: temp,
                         });
                     }
                 } else { // 取消选中，连带其权限全部取消勾选
-                    if (t && Array.isArray(t.btnDtoList)) {
-                        const mapTemp = t.btnDtoList.map((item) => item.id);
+                    if (t && Array.isArray(t.powers)) {
+                        const mapTemp = t.powers.map((item) => item.id);
                         const temp = this.state.btnDtoChecked.filter((item) => mapTemp.indexOf(item) < 0);
                         this.setState({
                             btnDtoChecked: temp,
@@ -166,7 +151,7 @@ export default class TreeTable extends React.PureComponent {
                        // treeChecked: this.state.sourceData0.map((item) => item.id),
                        btnDtoChecked: this.state.sourceData0.reduce((v1, v2) => {
                            console.log('处理中：', v1, v2);
-                           return [...v1, ...v2.btnDtoList.map((k) => k.id)];
+                           return [...v1, ...v2.powers.map((k) => k.id)];
                        }, []),
                    });
                } else {
@@ -177,7 +162,7 @@ export default class TreeTable extends React.PureComponent {
                }
             },
             selectedRowKeys: this.state.treeChecked,
-        }
+        };
     }
 
     // TABLE btn权限选中和取消选中，需要记录哪些被选中
@@ -191,7 +176,7 @@ export default class TreeTable extends React.PureComponent {
         } else { // 取消选中
             old.splice(old.indexOf(id), 1);
             // 判断当前这一行的权限中是否还有被选中的，如果全都没有选中，那当前菜单也要取消选中
-            const tempMap = record.btnDtoList.map((item) => item.id);
+            const tempMap = record.powers.map((item) => item.id);
             if (!(this.state.btnDtoChecked.some((item) => item !== id && tempMap.indexOf(item) >= 0))){
                 treeChecked.splice(treeChecked.indexOf(record.id), 1);
             }

@@ -229,7 +229,8 @@ const findAllPowerByRoleId = (request) => {
             const _powers = item.powers.map((v) => {
                 return powers.find((p) => p.id === v);
             });
-            return { menu: _menu, powers: _powers.filter((item) => item.conditions === 1)};
+            _menu.powers = _powers.filter((item) => item.conditions === 1);
+            return _menu;
         });
         return { status: 200, data: res, message: 'success' };
     } else {
@@ -241,7 +242,8 @@ const getAllPowers = (request) => {
     const res = menus.map((item) => {
         const _menu = item;
         const _powers = powers.filter((v) => v.menu === item.id && v.conditions === 1);
-        return { menu: _menu, powers: _powers };
+        _menu.powers = _powers;
+        return _menu;
     });
     return { status: 200, data: res, message: 'success' };
 };

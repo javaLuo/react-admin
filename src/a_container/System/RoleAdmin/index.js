@@ -234,28 +234,16 @@ export default class RoleAdminContainer extends React.Component {
 
     /** 分配权限按钮点击，权限控件出现 **/
     onAllotPowerClick(record) {
+        console.log('record是什么：', record);
+        const menus = record.powers.map((item) => item.menuId); // 需默认选中的菜单项ID
+        console.log('record是什么2：', menus );
+        const powers = record.powers.reduce((v1, v2) => [...v1, ...v2.powers],[]);   // 需默认选中的权限ID
+        console.log('record是什么2：', menus,powers );
         this.setState({
             nowData: record,
             powerTreeShow: true,
+            powerTreeDefault: { menus, powers },
             treeLoading: true,
-        });
-
-        // 获取当前角色所拥有的权限，然后默认选中
-        this.props.actions.findAllPowerByRoleId({id: record.id}).then((res) => {
-            if (res.status === 200) {
-                console.log('当前角色所拥有的菜单：', res, record);
-                const powerTreeDefault = res.data.map((item) => ({key: `${item.id}`, id: item.id, title: item.title, p: item.parent}));
-                this.setState({
-                    powerTreeDefault,
-                });
-            }
-            this.setState({
-                treeLoading: false,
-            });
-        }).catch(() => {
-            this.setState({
-                treeLoading: false,
-            });
         });
     }
 
@@ -394,6 +382,7 @@ export default class RoleAdminContainer extends React.Component {
                 sorts: item.sorts,
                 conditions: item.conditions,
                 control: item.id,
+                powers: item.powers,
             };
         });
     }
