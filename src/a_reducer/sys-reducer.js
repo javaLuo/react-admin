@@ -2,6 +2,7 @@
 
 const initState = {
     menus: [], // 用户信息
+    powerTreeData: [],  // 分配权限treeTable组件所需原始数据
 };
 
 
@@ -13,11 +14,19 @@ const getMenus = (state, { payload }) => {
     });
 };
 
+const getAllPowers = (state, { payload }) => {
+    return Object.assign({}, state, {
+        powerTreeData: payload,
+    });
+};
+
 
 const reducerFn = (state = initState, action) => {
     switch (action.type) {
         case 'SYS.getMenus':   // 登录成功时触发，保存用户信息
             return getMenus(state, action);
+        case 'SYS.getAllPowers': // 获取所有菜单权限数据 - 用于构建分配权限tree数据
+            return getAllPowers(state, action);
         default:
             return actDefault(state, action);
     }

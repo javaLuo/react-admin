@@ -24,7 +24,7 @@ import TreeTable from '../../../a_component/TreeChose/RoleTreeTable';
 // 本页面所需action
 // ==================
 
-import { findAllRole, getRoles, addRole, upRole, delRole, deleteAdminUserInfo, AssigningMenuToRoleId, updateAdminUserInfo, findAllMenu, findAllMenuByRoleId } from '../../../a_action/sys-action';
+import { getAllPowers, getRoles, addRole, upRole, delRole, deleteAdminUserInfo, AssigningMenuToRoleId, updateAdminUserInfo, findAllMenu, findAllPowerByRoleId } from '../../../a_action/sys-action';
 
 // ==================
 // Definition
@@ -36,9 +36,10 @@ const { Option } = Select;
 @connect(
     (state) => ({
         allMenu: state.sys.allMenu,
+        powerTreeData: state.sys.powerTreeData,
     }),
     (dispatch) => ({
-        actions: bindActionCreators({ findAllRole, getRoles, addRole, upRole, delRole, deleteAdminUserInfo, AssigningMenuToRoleId, updateAdminUserInfo, findAllMenu, findAllMenuByRoleId }, dispatch),
+        actions: bindActionCreators({ getAllPowers, getRoles, addRole, upRole, delRole, deleteAdminUserInfo, AssigningMenuToRoleId, updateAdminUserInfo, findAllMenu, findAllPowerByRoleId }, dispatch),
     })
 )
 @Form.create()
@@ -49,6 +50,7 @@ export default class RoleAdminContainer extends React.Component {
         actions: P.any,
         allMenu: P.any,
         form: P.any,
+        powerTreeData: P.array,
     };
 
     constructor(props) {
@@ -62,21 +64,26 @@ export default class RoleAdminContainer extends React.Component {
             modalShow: false, // 添加/修改/查看 模态框是否显示
             modalLoading: false, // 添加/修改/查看 是否正在请求中
             nowData: null, // 当前选中用户的信息，用于查看详情、修改、分配菜单
-            queryModalShow: false, // 查看详情模态框是否显示
-            upLoading: false, // 是否正在修改用户中
-            menuTreeShow: false, // 菜单树是否显示
-            menuDefault: [], // 用于菜单树，默认需要选中的项
+            powerTreeShow: false, // 菜单树是否显示
+            powerTreeDefault: [], // 用于菜单树，默认需要选中的项
             pageNum: 0, // 当前第几页
             pageSize: 10, // 每页多少条
             total: 0, // 数据库总共多少条数据
             treeLoading: false, // 控制树的loading状态，因为要先加载当前role的菜单，才能显示树
             treeOnOkLoading: false, // 是否正在分配菜单
-            roleTreeData: [], // 通过findMenuByRoleId查询的所有数据，包含了全部tree带btnList
         };
     }
 
     componentDidMount() {
         this.onGetData(this.state.pageNum, this.state.pageSize);
+        if(!this.props.powerTreeData.length){
+            this.onGetPowerTreeData();
+        }
+    }
+
+    // 获取所有的菜单权限数据 - 用于分配权限控件的原始数据
+    onGetPowerTreeData() {
+        this.props.actions.getAllPowers();
     }
 
     // 查询当前页面所需列表数据
@@ -225,22 +232,21 @@ export default class RoleAdminContainer extends React.Component {
         });
     }
 
-    // 分配菜单按钮点击，菜单出现
-    onMenuClick(record) {
+    /** 分配权限按钮点击，权限控件出现 **/
+    onAllotPowerClick(record) {
         this.setState({
             nowData: record,
-            menuTreeShow: true,
+            powerTreeShow: true,
             treeLoading: true,
         });
 
-        // 获取当前角色所拥有的菜单，然后默认选中
-        this.props.actions.findAllMenuByRoleId({roleId: record.roleId}).then((res) => {
-            if (res.returnCode === "0") {
+        // 获取当前角色所拥有的权限，然后默认选中
+        this.props.actions.findAllPowerByRoleId({id: record.id}).then((res) => {
+            if (res.status === 200) {
                 console.log('当前角色所拥有的菜单：', res, record);
-                const menuDefault = res.messsageBody.result.filter((item) => item.menuAfiliation === 'Y').map((item) => ({key: `${item.id}`, id: item.id, title: item.menuName, p: item.parentId}));
+                const powerTreeDefault = res.data.map((item) => ({key: `${item.id}`, id: item.id, title: item.title, p: item.parent}));
                 this.setState({
-                    roleTreeData: res.messsageBody.result,
-                    menuDefault,
+                    powerTreeDefault,
                 });
             }
             this.setState({
@@ -256,7 +262,7 @@ export default class RoleAdminContainer extends React.Component {
     // 关闭菜单树
     onMenuTreeClose() {
         this.setState({
-            menuTreeShow: false,
+            powerTreeShow: false,
         });
     }
 
@@ -345,7 +351,7 @@ export default class RoleAdminContainer extends React.Component {
                         </span>
                     );
                     controls.push(
-                        <span key="2" className="control-btn blue" >
+                        <span key="2" className="control-btn blue" onClick={() => this.onAllotPowerClick(record)}>
                             <Tooltip placement="top" title="分配权限">
                                 <Icon type="tool" />
                             </Tooltip>
@@ -390,6 +396,11 @@ export default class RoleAdminContainer extends React.Component {
                 control: item.id,
             };
         });
+    }
+
+    // 工具 - 处理菜单权限原始数据，使其符合TreeTable所需
+    makeTreeTableData(data) {
+
     }
 
     render() {
@@ -456,16 +467,8 @@ export default class RoleAdminContainer extends React.Component {
                       {getFieldDecorator('formTitle', {
                           initialValue: undefined,
                           rules: [
-                              {required: true, whitespace: true, message: '请输入角色名'},
-                              { validator: (rule, value, callback) => {
-                                  const v = tools.trim(value);
-                                  if (v) {
-                                      if (v.length > 12) {
-                                          callback('最多输入12位字符');
-                                      }
-                                  }
-                                  callback();
-                              }}
+                              {required: true, whitespace: true, message: '必填'},
+                              {max: 12, message: '最多输入12位字符'}
                           ],
                       })(
                           <Input placeholder="请输入角色名" />
@@ -529,12 +532,12 @@ export default class RoleAdminContainer extends React.Component {
                 </Form>
               </Modal>
                 <TreeTable
-                    title={this.state.nowData ? `分配菜单：${this.state.nowData.roleName}` : '分配菜单'}
-                    menuData={this.state.roleTreeData}
-                    defaultChecked={this.state.menuDefault}
+                    title={this.state.nowData ? `分配权限：${this.state.nowData.title}` : '分配权限'}
+                    data={this.props.powerTreeData}
+                    defaultChecked={this.state.powerTreeDefault}
                     initloading={this.state.treeLoading}
                     loading={this.state.treeOnOkLoading}
-                    modalShow={this.state.menuTreeShow}
+                    modalShow={this.state.powerTreeShow}
                     onOk={(arr) => this.onMenuTreeOk(arr)}
                     onClose={() => this.onMenuTreeClose()}
                 />

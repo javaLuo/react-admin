@@ -8,7 +8,7 @@ import _ from 'lodash';
 export default class TreeTable extends React.PureComponent {
     static propTypes = {
         title: P.string,            // 指定模态框标题
-        menuData: P.any,            // 所有的菜单原始后台数据
+        data: P.any,            // 所有的菜单&权限原始数据
         defaultChecked: P.array,    // 需要默认选中的项
         modalShow: P.any,           // 是否显示
         initloading: P.bool,        // 初始化时，树是否处于加载中状态
@@ -28,13 +28,13 @@ export default class TreeTable extends React.PureComponent {
     }
 
     componentDidMount() {
-        this.makeSourceData(this.props.menuData);
+        this.makeSourceData(this.props.data || []);
     }
 
     componentWillReceiveProps(nextProps) {
         // allMenu变化后，重新处理原始数据; 所选择的项变化，需要隐藏所选择的项
-        if (nextProps.menuData !== this.props.menuData) {
-            this.makeSourceData(nextProps.menuData);
+        if (nextProps.data !== this.props.data) {
+            this.makeSourceData(nextProps.data);
         }
     }
 
@@ -53,7 +53,7 @@ export default class TreeTable extends React.PureComponent {
 
     }
 
-    // 处理原始数据，将原始数据处理为层级关系
+    // 处理原始数据，将原始数据处理为层级关系(菜单的层级关系)
     makeSourceData(data) {
         console.log('原始数据是什么：', data);
         let d = _.cloneDeep(data);
@@ -64,18 +64,18 @@ export default class TreeTable extends React.PureComponent {
 
         const sourceData = [];
         d.forEach((item) => {
-            if (item.parentId === 0) {
+            if (!item.parent) {
                 const temp = this.dataToJson(d, item);
                 sourceData.push(temp);
             }
         });
         console.log('jsonMenu是什么：', sourceData);
         // 再来看看哪些需要被默认选中
-        const treeChecked = data.filter((item) => item.menuAfiliation === 'Y').map((item) => item.id);
+        const treeChecked = data.map((item) => item.id);
         const btnDtoChecked = [];
         data.forEach((item) => {
-            if (item.btnDtoList && item.btnDtoList.length > 0) {
-                item.btnDtoList.filter((item2) => item2.menuAfiliation === 'Y').forEach((item3) => btnDtoChecked.push(item3.id));
+            if (item.powers && item.powers.length > 0) {
+                item.powers.forEach((item3) => btnDtoChecked.push(item3.id));
             }
         });
         this.setState({
@@ -93,7 +93,7 @@ export default class TreeTable extends React.PureComponent {
         child.key = child.id;
         let sonChild = null;
         data.forEach((item) => {
-            if (item.parentId === one.id) {
+            if (item.parent === one.id) {
                 sonChild = this.dataToJson(data, item);
                 child.children.push(sonChild);
             }
@@ -112,8 +112,8 @@ export default class TreeTable extends React.PureComponent {
     makeColumns() {
         const columns = [{
             title: '菜单',
-            dataIndex: 'menuName',
-            key: 'menuName',
+            dataIndex: 'title',
+            key: 'title',
             width: '30%',
         }, {
             title: '权限',
@@ -123,7 +123,7 @@ export default class TreeTable extends React.PureComponent {
             render: (value, record) => {
                 if (value) {
                     return value.map((item, index) => {
-                        return <Checkbox key={index} checked={this.dtoIsChecked(item.id)} onChange={(e) => this.onBtnDtoChange(e, item.id, record)}>{item.btnName}</Checkbox>
+                        return <Checkbox key={index} checked={this.dtoIsChecked(item.id)} onChange={(e) => this.onBtnDtoChange(e, item.id, record)}>{item.title}</Checkbox>
                     });
                 }
             }

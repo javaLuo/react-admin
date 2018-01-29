@@ -164,3 +164,34 @@ export const delRole = (params = {}) => async(dispatch) => {
         message.error('网络错误，请重试');
     }
 };
+
+/**
+ * 通过角色ID查询该角色拥有的所有菜单和权限详细信息
+ * **/
+export const findAllPowerByRoleId = (params = {}) => async(dispatch) => {
+    try {
+        const res = await Fetchapi.newFetch('api/findAllPowerByRoleId', params);
+        return res.data;
+    } catch(err) {
+        message.error('网络错误，请重试');
+    }
+};
+
+
+/**
+ * 获取所有的菜单及权限详细信息
+ * **/
+export const getAllPowers = (params = {}) => async(dispatch) => {
+    try {
+        const res = await Fetchapi.newFetch('api/getAllPowers', params);
+        if(res.data.status === 200) {
+            await dispatch({
+                type: 'SYS.getAllPowers',
+                payload: res.data.data,
+            });
+        }
+        return res.data;
+    } catch(err) {
+        message.error('网络错误，请重试');
+    }
+};

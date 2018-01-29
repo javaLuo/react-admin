@@ -51,9 +51,9 @@ const powers = [
 ];
 // 所有的角色数据
 const roles = [
-    { id: 1, title: '超级管理员', desc: '超级管理员拥有所有权限', sorts: 1, conditions: 1 },
-    { id: 2, title: '管理员', desc: '普通管理员', sorts: 2, conditions: 1 },
-    { id: 3, title: '运维人员', desc: '运维人员不能删除对象', sorts: 3, conditions: 1 },
+    { id: 1, title: '超级管理员', desc: '超级管理员拥有所有权限', sorts: 1, conditions: 1, powers: [{ menuId: 1, powers: [] }, { menuId:2, powers:[1,2,3] }] },
+    { id: 2, title: '管理员', desc: '普通管理员', sorts: 2, conditions: 1,  menus: [1,3,4,5], powers: [] },
+    { id: 3, title: '运维人员', desc: '运维人员不能删除对象', sorts: 3, conditions: 1,  menus: [1,5], powers: [] },
 ];
 /**
  * 方法
@@ -219,6 +219,32 @@ const delRole = (request) => {
         return { status: 204, data: null, message: '未找到该条数据' };
     }
 };
+// 根据角色ID查询该角色所拥有的菜单和权限详细信息
+const findAllPowerByRoleId = (request) => {
+    const p = JSON.parse(request.body);
+    const t = roles.find((item) => item.id === p.id);
+    if (t) {
+        const res = t.powers.map((item, index) => {
+            const _menu = menus.find((v) => v.id === item.menuId);
+            const _powers = item.powers.map((v) => {
+                return powers.find((p) => p.id === v);
+            });
+            return { menu: _menu, powers: _powers.filter((item) => item.conditions === 1)};
+        });
+        return { status: 200, data: res, message: 'success' };
+    } else {
+        return { status: 204, data: null, message: '未找到该角色' };
+    }
+};
+// 获取所有的菜单及权限数据 - 为了构建PowerTree组件
+const getAllPowers = (request) => {
+    const res = menus.map((item) => {
+        const _menu = item;
+        const _powers = powers.filter((v) => v.menu === item.id && v.conditions === 1);
+        return { menu: _menu, powers: _powers };
+    });
+    return { status: 200, data: res, message: 'success' };
+};
 
 /**
  * API拦截
@@ -255,3 +281,7 @@ Mock.mock('api/addrole', (params) => addRole(params));
 Mock.mock('api/uprole', (params) => upRole(params));
 // 删除角色
 Mock.mock('api/delrole', (params) => delRole(params));
+// 根据角色ID查询该角色所拥有的菜单和权限详细信息
+Mock.mock('api/findAllPowerByRoleId', (params) => findAllPowerByRoleId(params));
+// 获取所有的菜单及权限数据 - 为了构建PowerTree组件
+Mock.mock('api/getAllPowers', (params) => getAllPowers(params));
