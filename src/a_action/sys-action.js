@@ -177,7 +177,6 @@ export const findAllPowerByRoleId = (params = {}) => async(dispatch) => {
     }
 };
 
-
 /**
  * 获取所有的菜单及权限详细信息
  * **/
@@ -190,6 +189,18 @@ export const getAllPowers = (params = {}) => async(dispatch) => {
                 payload: res.data.data,
             });
         }
+        return res.data;
+    } catch(err) {
+        message.error('网络错误，请重试');
+    }
+};
+
+/**
+ * 通过角色ID给指定角色设置菜单及权限
+ * **/
+export const setPowersByRoleId = (params = {}) => async(dispatch) => {
+    try {
+        const res = await Fetchapi.newFetch('api/setPowersByRoleId', params);
         return res.data;
     } catch(err) {
         message.error('网络错误，请重试');

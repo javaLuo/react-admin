@@ -247,7 +247,26 @@ const getAllPowers = (request) => {
     });
     return { status: 200, data: res, message: 'success' };
 };
-
+// 给指定角色分配菜单和权限
+const setPowersByRoleId = (request) => {
+    const p = JSON.parse(request.body);
+    const oldIndex = roles.findIndex((item) => item.id === p.id);
+    if (oldIndex !== -1){
+        let pow = p.menus.map((item) => ({ menuId: item, powers: [] }));
+        console.log('此时的POW', pow);
+        pow.filter((item) => {
+            const parr = p.powers.filter((v) => {
+                return powers.findIndex((pv) => pv.menu === item.menuId) > -1;
+            });
+            item.powers = parr;
+        });
+        console.log('最终的POW：', pow);
+        roles[oldIndex].powers = pow;
+        return { status: 200, data: null, message: 'success' };
+    } else {
+        return { status: 204, data: null, message: '未找到该条数据' };
+    }
+};
 /**
  * API拦截
  * **/
@@ -287,3 +306,5 @@ Mock.mock('api/delrole', (params) => delRole(params));
 Mock.mock('api/findAllPowerByRoleId', (params) => findAllPowerByRoleId(params));
 // 获取所有的菜单及权限数据 - 为了构建PowerTree组件
 Mock.mock('api/getAllPowers', (params) => getAllPowers(params));
+// 给指定角色分配菜单和权限
+Mock.mock('api/setPowersByRoleId', (params) => setPowersByRoleId(params));

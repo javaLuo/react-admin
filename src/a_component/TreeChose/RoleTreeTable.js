@@ -9,7 +9,7 @@ export default class TreeTable extends React.PureComponent {
     static propTypes = {
         title: P.string,            // 指定模态框标题
         data: P.any,                // 所有的菜单&权限原始数据
-        defaultChecked: P.array,    // 需要默认选中的项
+        defaultChecked: P.object,    // 需要默认选中的项
         modalShow: P.any,           // 是否显示
         initloading: P.bool,        // 初始化时，树是否处于加载中状态
         loading: P.bool,            // 提交表单时，树的确定按钮是否处于等待状态
@@ -28,19 +28,19 @@ export default class TreeTable extends React.PureComponent {
     }
 
     componentDidMount() {
-        this.makeSourceData(this.props.data || []);
+        this.makeSourceData(this.props.data || [], {});
     }
 
     componentWillReceiveProps(nextProps) {
         // allMenu变化后，重新处理原始数据; 所选择的项变化，需要隐藏所选择的项
-        if (nextProps.data !== this.props.data) {
-            this.makeSourceData(nextProps.data);
+        if (nextProps.data !== this.props.data || nextProps.defaultChecked !== this.props.defaultChecked) {
+            this.makeSourceData(nextProps.data, nextProps.defaultChecked);
         }
     }
 
     // 提交
     onOk() {
-        this.props.onOk && this.props.onOk({menus: this.state.treeChecked, btns: this.state.btnDtoChecked});
+        this.props.onOk && this.props.onOk({menus: this.state.treeChecked, powers: this.state.btnDtoChecked});
     }
 
     // 关闭模态框
@@ -54,7 +54,7 @@ export default class TreeTable extends React.PureComponent {
     }
 
     // 处理原始数据，将原始数据处理为层级关系(菜单的层级关系)
-    makeSourceData(data) {
+    makeSourceData(data, defaultChecked) {
         console.log('原始数据是什么：', data);
         let d = _.cloneDeep(data);
         // 按照sort排序
@@ -66,8 +66,8 @@ export default class TreeTable extends React.PureComponent {
 
         console.log('jsonMenu是什么：', sourceData);
         // 再来看看哪些需要被默认选中
-        const treeChecked = this.props.defaultChecked.menus;
-        const btnDtoChecked = this.props.defaultChecked.powers;
+        const treeChecked = defaultChecked.menus || [];
+        const btnDtoChecked = defaultChecked.powers || [];
         console.log('需要被默认直接选中：', data, btnDtoChecked);
         this.setState({
             sourceData0: data,

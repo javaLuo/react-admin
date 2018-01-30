@@ -24,7 +24,7 @@ import TreeTable from '../../../a_component/TreeChose/RoleTreeTable';
 // 本页面所需action
 // ==================
 
-import { getAllPowers, getRoles, addRole, upRole, delRole, deleteAdminUserInfo, AssigningMenuToRoleId, updateAdminUserInfo, findAllMenu, findAllPowerByRoleId } from '../../../a_action/sys-action';
+import { getAllPowers, getRoles, addRole, upRole, delRole, deleteAdminUserInfo, setPowersByRoleId, updateAdminUserInfo, findAllPowerByRoleId } from '../../../a_action/sys-action';
 
 // ==================
 // Definition
@@ -39,7 +39,7 @@ const { Option } = Select;
         powerTreeData: state.sys.powerTreeData,
     }),
     (dispatch) => ({
-        actions: bindActionCreators({ getAllPowers, getRoles, addRole, upRole, delRole, deleteAdminUserInfo, AssigningMenuToRoleId, updateAdminUserInfo, findAllMenu, findAllPowerByRoleId }, dispatch),
+        actions: bindActionCreators({ getAllPowers, getRoles, addRole, upRole, delRole, deleteAdminUserInfo, setPowersByRoleId, updateAdminUserInfo, findAllPowerByRoleId }, dispatch),
     })
 )
 @Form.create()
@@ -65,7 +65,7 @@ export default class RoleAdminContainer extends React.Component {
             modalLoading: false, // 添加/修改/查看 是否正在请求中
             nowData: null, // 当前选中用户的信息，用于查看详情、修改、分配菜单
             powerTreeShow: false, // 菜单树是否显示
-            powerTreeDefault: [], // 用于菜单树，默认需要选中的项
+            powerTreeDefault: { menus: [], powers: []}, // 用于菜单树，默认需要选中的项
             pageNum: 0, // 当前第几页
             pageSize: 10, // 每页多少条
             total: 0, // 数据库总共多少条数据
@@ -76,9 +76,7 @@ export default class RoleAdminContainer extends React.Component {
 
     componentDidMount() {
         this.onGetData(this.state.pageNum, this.state.pageSize);
-        if(!this.props.powerTreeData.length){
-            this.onGetPowerTreeData();
-        }
+        this.onGetPowerTreeData();
     }
 
     // 获取所有的菜单权限数据 - 用于分配权限控件的原始数据
@@ -243,7 +241,6 @@ export default class RoleAdminContainer extends React.Component {
             nowData: record,
             powerTreeShow: true,
             powerTreeDefault: { menus, powers },
-            treeLoading: true,
         });
     }
 
@@ -258,19 +255,21 @@ export default class RoleAdminContainer extends React.Component {
     onMenuTreeOk(arr) {
         console.log('所选择的：', arr);
         const params = {
-            roleId: this.state.nowData.roleId,
-            menus: arr.menus.join(','),
-            btnIds: arr.btns.join(','),
+            id: this.state.nowData.id,
+            menus: arr.menus,
+            powers: arr.powers,
         };
         this.setState({
             treeOnOkLoading: true,
         });
-        this.props.actions.AssigningMenuToRoleId(params).then((res) => {
-            if (res.returnCode === "0") {
-                message.success('菜单分配成功');
+        this.props.actions.setPowersByRoleId(params).then((res) => {
+            console.log('权限到这了吗：', res);
+            if (res.status === 200) {
+                message.success('权限分配成功');
+                this.onGetData(this.state.pageNum, this.state.pageSize);
                 this.onMenuTreeClose();
             } else {
-                message.error(res.returnMessaage || '菜单分配失败');
+                message.error(res.message || '权限分配失败');
             }
             this.setState({
                 treeOnOkLoading: false,
@@ -387,11 +386,6 @@ export default class RoleAdminContainer extends React.Component {
         });
     }
 
-    // 工具 - 处理菜单权限原始数据，使其符合TreeTable所需
-    makeTreeTableData(data) {
-
-    }
-
     render() {
         const me = this;
         const { form } = me.props;
@@ -463,16 +457,6 @@ export default class RoleAdminContainer extends React.Component {
                           <Input placeholder="请输入角色名" />
                       )}
                   </FormItem>
-                    {
-                        this.state.operateType === 'see' ? (
-                            <FormItem
-                                label="权限"
-                                {...formItemLayout}
-                            >
-                                <span>123</span>
-                            </FormItem>
-                        ) : null
-                    }
                     <FormItem
                         label="描述"
                         {...formItemLayout}
