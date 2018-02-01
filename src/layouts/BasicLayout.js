@@ -19,11 +19,13 @@ import lazeHome from 'bundle-loader?lazy&name=home!../a_container/home';
 import lazeMenuAdmin from 'bundle-loader?lazy&name=menuadmin!../a_container/System/MenuAdmin';
 import lazePowerAdmin from 'bundle-loader?lazy&name=poweradmin!../a_container/System/PowerAdmin';
 import lazeRoleAdmin from 'bundle-loader?lazy&name=roleadmin!../a_container/System/RoleAdmin';
+import lazeUserAdmin from 'bundle-loader?lazy&name=useradmin!../a_container/System/UserAdmin';
 const NotFound = (props) => (<Bundle load={lazeNotFound}>{(Com) => <Com {...props} />}</Bundle>);
 const Home = (props) => (<Bundle load={lazeHome}>{(Com) => <Com {...props} />}</Bundle>);
 const MenuAdmin = (props) => (<Bundle load={lazeMenuAdmin}>{(Com) => <Com {...props} />}</Bundle>);
 const PowerAdmin = (props) => (<Bundle load={lazePowerAdmin}>{(Com) => <Com {...props} />}</Bundle>);
 const RoleAdmin = (props) => (<Bundle load={lazeRoleAdmin}>{(Com) => <Com {...props} />}</Bundle>);
+const UserAdmin = (props) => (<Bundle load={lazeUserAdmin}>{(Com) => <Com {...props} />}</Bundle>);
 
 // ==================
 // 所需的所有组件
@@ -177,6 +179,7 @@ export default class AppContainer extends React.Component {
                             <Route exact path="/system/menuadmin" component={MenuAdmin} />
                             <Route exact path="/system/poweradmin" component={PowerAdmin} />
                             <Route exact path="/system/roleadmin" component={RoleAdmin} />
+                            <Route exact path="/system/useradmin" component={UserAdmin} />
                             <Route render={NotFound} />
                         </Switch>
                     </Content>

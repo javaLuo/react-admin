@@ -63,6 +63,29 @@ const tools = {
         const rex = /^[_a-zA-Z0-9]+$/;
         return rex.test(str);
     },
+    /**
+     * 验证字符串
+     * 只能为数字
+     * 可以为空
+     * **/
+    checkNumber(str) {
+        if (!str) {
+            return true;
+        }
+        const rex = /^\d*$/;
+        return rex.test(str);
+    },
+    /** 正则 手机号验证 **/
+    checkPhone(str) {
+        const rex = /^1[34578]\d{9}$/;
+        return rex.test(str);
+    },
+
+    /** 正则 邮箱验证 **/
+    checkEmail(str) {
+        const rex = /^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/;
+        return rex.test(str);
+    },
   /**
     字符串加密
     简单的加密方法

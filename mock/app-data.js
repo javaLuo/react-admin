@@ -10,10 +10,10 @@ Mock.setup({
 // ID序列
 let id_sequence = 1000;
 
-// 用户数据
+// 所有的用户数据
 const users = [
-    { id: 1, username: 'admin', password: '123456' },
-    { id: 2, username: 'user', password: '123456'}
+    { id: 1, username: 'admin', password: '123456', phone: '13600000000', email: 'admin@react.com', desc: '超级管理员，不可被删除', conditions: 1, roles: [1] },
+    { id: 2, username: 'user', password: '123456', phone: '13600000001', email: 'user@react.com', desc: '普通管理员', conditions: 1, roles: [] },
 ];
 
 // 头部消息数据
@@ -55,6 +55,7 @@ const roles = [
     { id: 2, title: '管理员', desc: '普通管理员', sorts: 2, conditions: 1,  menus: [1,3,4,5], powers: [] },
     { id: 3, title: '运维人员', desc: '运维人员不能删除对象', sorts: 3, conditions: 1,  menus: [1,5], powers: [] },
 ];
+
 /**
  * 方法
  * **/
@@ -188,6 +189,11 @@ const getRoles = (request) => {
     const res = r.slice(p.pageNum * p.pageSize, (p.pageNum+1) * p.pageSize);
     return { status: 200, data: { list: res, total: roles.length }, message: 'success' };
 };
+// 查询角色（所有）
+const getAllRoles = (request) => {
+    return { status: 200, data: roles, message: 'success' };
+};
+
 // 添加角色
 const addRole = (request) => {
     const p = JSON.parse(request.body);
@@ -267,6 +273,53 @@ const setPowersByRoleId = (request) => {
         return { status: 204, data: null, message: '未找到该条数据' };
     }
 };
+// 条件分页查询用户列表
+const getUserList = (request) => {
+    const p = JSON.parse(request.body);
+    const map = users.filter((item) => {
+        let yeah = true;
+        if (p.username && !item.username.includes(p.username)) {
+            yeah = false;
+        }
+        if (p.conditions && item.conditions !== p.conditions) {
+            yeah = false;
+        }
+        return yeah;
+    });
+    const res = map.slice(p.pageNum * p.pageSize, (p.pageNum+1) * p.pageSize);
+    return { status: 200, data: { list: res, total: roles.length }, message: 'success' };
+};
+// 添加用户
+const addUser = (request) => {
+    const p = JSON.parse(request.body);
+    p.id = ++id_sequence;
+    users.push(p);
+    return { status: 200, data: null, message: 'success' };
+};
+// 修改用户
+const upUser = (request) => {
+    const p = JSON.parse(request.body);
+    const oldIndex = users.findIndex((item) => item.id === p.id);
+    if (oldIndex !== -1){
+        const news = Object.assign({}, users[oldIndex], p);
+        users.splice(oldIndex, 1, news);
+        return { status: 200, data: null, message: 'success' };
+    } else {
+        return { status: 204, data: null, message: '未找到该条数据' };
+    }
+};
+// 删除用户
+const delUser = (request) => {
+    const p = JSON.parse(request.body);
+    const oldIndex = users.findIndex((item) => item.id === p.id);
+    if(oldIndex !== -1) {
+        users.splice(oldIndex, 1);
+        return { status: 200, data: null, message: 'success' };
+    } else {
+        return { status: 204, data: null, message: '未找到该条数据' };
+    }
+};
+
 /**
  * API拦截
  * **/
@@ -296,6 +349,8 @@ Mock.mock('api/uppower', (params) => upPower(params));
 Mock.mock('api/delpower', (params) => delPower(params));
 // 查询角色（分页）
 Mock.mock('api/getroles', (params) => getRoles(params));
+// 查询角色（所有）
+Mock.mock('api/getAllRoles', (params) => getAllRoles(params));
 // 添加角色
 Mock.mock('api/addrole', (params) => addRole(params));
 // 修改角色
@@ -308,3 +363,11 @@ Mock.mock('api/findAllPowerByRoleId', (params) => findAllPowerByRoleId(params));
 Mock.mock('api/getAllPowers', (params) => getAllPowers(params));
 // 给指定角色分配菜单和权限
 Mock.mock('api/setPowersByRoleId', (params) => setPowersByRoleId(params));
+// 条件分页查询用户列表
+Mock.mock('api/getUserList', (params) => getUserList(params));
+// 添加用户
+Mock.mock('api/addUser', (params) => addUser(params));
+// 修改用户
+Mock.mock('api/upUser', (params) => upUser(params));
+// 删除用户
+Mock.mock('api/delUser', (params) => delUser(params));

@@ -1,8 +1,8 @@
-/** RoleTreeTable 用于角色授权的树形表格 **/
+/** PowerTreeTable 用于角色授权的树形表格 **/
 import React from 'react';
 import P from 'prop-types';
 import { Modal, Table, Checkbox, Spin } from 'antd';
-import './RoleTreeTable.scss';
+import './PowerTreeTable.scss';
 import _ from 'lodash';
 
 export default class TreeTable extends React.PureComponent {

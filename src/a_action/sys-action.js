@@ -130,6 +130,18 @@ export const getRoles = (params = {}) => async(dispatch) => {
 };
 
 /**
+ * 查询所有角色数据
+ * **/
+export const getAllRoles = (params = {}) => async(dispatch) => {
+    try {
+        const res = await Fetchapi.newFetch('api/getAllRoles', params);
+        return res.data;
+    } catch(err) {
+        message.error('网络错误，请重试');
+    }
+};
+
+/**
  * 添加角色
  * **/
 export const addRole = (params = {}) => async(dispatch) => {
@@ -201,6 +213,54 @@ export const getAllPowers = (params = {}) => async(dispatch) => {
 export const setPowersByRoleId = (params = {}) => async(dispatch) => {
     try {
         const res = await Fetchapi.newFetch('api/setPowersByRoleId', params);
+        return res.data;
+    } catch(err) {
+        message.error('网络错误，请重试');
+    }
+};
+
+/**
+ * 条件分页查询用户列表
+ * **/
+export const getUserList = (params = {}) => async(dispatch) => {
+    try {
+        const res = await Fetchapi.newFetch('api/getUserList', params);
+        return res.data;
+    } catch(err) {
+        message.error('网络错误，请重试');
+    }
+};
+
+/**
+ * 添加用户
+ * **/
+export const addUser = (params = {}) => async(dispatch) => {
+    try {
+        const res = await Fetchapi.newFetch('api/addUser', params);
+        return res.data;
+    } catch(err) {
+        message.error('网络错误，请重试');
+    }
+};
+
+/**
+ * 修改用户
+ * **/
+export const upUser = (params = {}) => async(dispatch) => {
+    try {
+        const res = await Fetchapi.newFetch('api/upUser', params);
+        return res.data;
+    } catch(err) {
+        message.error('网络错误，请重试');
+    }
+};
+
+/**
+ * 删除用户
+ * **/
+export const delUser = (params = {}) => async(dispatch) => {
+    try {
+        const res = await Fetchapi.newFetch('api/delUser', params);
         return res.data;
     } catch(err) {
         message.error('网络错误，请重试');
