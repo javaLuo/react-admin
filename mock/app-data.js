@@ -319,6 +319,17 @@ const delUser = (request) => {
         return { status: 204, data: null, message: '未找到该条数据' };
     }
 };
+// 给用户分配角色
+const setUserRoles = (request) => {
+    const p = JSON.parse(request.body);
+    const oldIndex = users.findIndex((item) => item.id === p.id);
+    if(oldIndex !== -1) {
+        users.splice(oldIndex, 1);
+        return { status: 200, data: null, message: 'success' };
+    } else {
+        return { status: 204, data: null, message: '未找到该条数据' };
+    }
+};
 
 /**
  * API拦截
@@ -371,3 +382,5 @@ Mock.mock('api/addUser', (params) => addUser(params));
 Mock.mock('api/upUser', (params) => upUser(params));
 // 删除用户
 Mock.mock('api/delUser', (params) => delUser(params));
+// 给用户分配角色
+Mock.mock('api/setUserRoles', (params) => setUserRoles(params));

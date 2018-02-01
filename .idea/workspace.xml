@@ -14,35 +14,25 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file leaf-file-name="PowerTreeTable.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/a_component/TreeChose/PowerTreeTable.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-132">
+              <caret line="0" column="9" lean-forward="false" selection-start-line="0" selection-start-column="9" selection-end-line="0" selection-end-column="9" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
       <file leaf-file-name="index.js" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/a_container/System/PowerAdmin/index.js">
+        <entry file="file://$PROJECT_DIR$/src/a_container/System/UserAdmin/index.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="528">
-              <caret line="72" column="25" lean-forward="false" selection-start-line="72" selection-start-column="25" selection-end-line="72" selection-end-column="25" />
+            <state relative-caret-position="363">
+              <caret line="385" column="35" lean-forward="false" selection-start-line="385" selection-start-column="35" selection-end-line="385" selection-end-column="35" />
               <folding>
-                <element signature="e#71#97#0" expanded="true" />
-                <element signature="e#440#569#0" expanded="true" />
+                <element signature="n#!!doc" expanded="true" />
+                <element signature="e#80#106#0" expanded="true" />
               </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="RoleTree.scss" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/a_component/TreeChose/RoleTree.scss">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="0">
-              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="app-data.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/mock/app-data.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="448">
-              <caret line="183" column="25" lean-forward="true" selection-start-line="183" selection-start-column="25" selection-end-line="183" selection-end-column="25" />
-              <folding />
             </state>
           </provider>
         </entry>
@@ -50,12 +40,23 @@
       <file leaf-file-name="RoleTree.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/a_component/TreeChose/RoleTree.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="242">
-              <caret line="11" column="12" lean-forward="false" selection-start-line="11" selection-start-column="8" selection-end-line="11" selection-end-column="12" />
+            <state relative-caret-position="843">
+              <caret line="123" column="50" lean-forward="false" selection-start-line="123" selection-start-column="43" selection-end-line="123" selection-end-column="50" />
               <folding>
-                <element signature="n#!!doc" expanded="true" />
                 <element signature="e#25#51#0" expanded="true" />
+                <marker date="1517470455247" expanded="true" signature="3204:3246" ph="..." />
+                <marker date="1517470455247" expanded="true" signature="3510:3628" ph="..." />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="app-data.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/mock/app-data.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="500">
+              <caret line="299" column="12" lean-forward="false" selection-start-line="299" selection-start-column="6" selection-end-line="299" selection-end-column="12" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -63,33 +64,10 @@
       <file leaf-file-name="sys-action.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/a_action/sys-action.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="316">
-              <caret line="126" column="18" lean-forward="true" selection-start-line="126" selection-start-column="18" selection-end-line="126" selection-end-column="18" />
+            <state relative-caret-position="1149">
+              <caret line="268" column="0" lean-forward="true" selection-start-line="268" selection-start-column="0" selection-end-line="268" selection-end-column="0" />
               <folding>
                 <element signature="n#!!doc" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="menuChose.scss" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/a_component/TreeChose/menuChose.scss">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="44">
-              <caret line="2" column="1" lean-forward="true" selection-start-line="2" selection-start-column="1" selection-end-line="2" selection-end-column="1" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="menuChose.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/a_component/TreeChose/menuChose.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="616">
-              <caret line="28" column="26" lean-forward="true" selection-start-line="28" selection-start-column="26" selection-end-line="28" selection-end-column="26" />
-              <folding>
-                <element signature="n#!!doc" expanded="true" />
-                <element signature="e#25#51#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -99,14 +77,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>role</find>
-      <find>onDel</find>
-      <find>menuTreeShow</find>
-      <find>onMenuClick</find>
-      <find>onAllotPowerClick</find>
-      <find>queryModalShow</find>
-      <find>findAllPowerByRoleId</find>
-      <find>getAllPowers</find>
       <find>sort</find>
       <find>menuData</find>
       <find>powerTreeData</find>
@@ -129,9 +99,18 @@
       <find>RoleTreeTable</find>
       <find>delUser</find>
       <find>RoleTree</find>
+      <find>nowDataKey</find>
+      <find>onTreeShowClick</find>
+      <find>roleTreeDefault</find>
+      <find>defaultKeys</find>
+      <find>onRoleOk</find>
+      <find>onGetData</find>
+      <find>setUserRoles</find>
+      <find>onOk</find>
     </findStrings>
     <replaceStrings>
       <replace>setPowersByRoleId</replace>
+      <replace>defaultKeys</replace>
     </replaceStrings>
   </component>
   <component name="Git.Settings">
@@ -175,12 +154,12 @@
         <option value="$PROJECT_DIR$/src/a_component/Menu/index.js" />
         <option value="$PROJECT_DIR$/src/util/tools.js" />
         <option value="$PROJECT_DIR$/src/a_container/System/RoleAdmin/index.js" />
-        <option value="$PROJECT_DIR$/src/a_container/System/UserAdmin/index.js" />
         <option value="$PROJECT_DIR$/src/a_component/TreeChose/PowerTreeTable.js" />
+        <option value="$PROJECT_DIR$/src/a_container/System/PowerAdmin/index.js" />
         <option value="$PROJECT_DIR$/src/a_component/TreeChose/RoleTree.js" />
         <option value="$PROJECT_DIR$/src/a_action/sys-action.js" />
         <option value="$PROJECT_DIR$/mock/app-data.js" />
-        <option value="$PROJECT_DIR$/src/a_container/System/PowerAdmin/index.js" />
+        <option value="$PROJECT_DIR$/src/a_container/System/UserAdmin/index.js" />
       </list>
     </option>
   </component>
@@ -196,9 +175,9 @@
     <handled-path value="$PROJECT_DIR$/node_modules" />
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="246" />
-    <option name="y" value="20" />
-    <option name="width" value="1662" />
+    <option name="x" value="243" />
+    <option name="y" value="9" />
+    <option name="width" value="1486" />
     <option name="height" value="1007" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
@@ -265,6 +244,14 @@
               <item name="src" type="462c0819:PsiDirectoryNode" />
               <item name="a_container" type="462c0819:PsiDirectoryNode" />
               <item name="System" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="react-admin" type="b2602c69:ProjectViewProjectNode" />
+              <item name="react-admin" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="a_container" type="462c0819:PsiDirectoryNode" />
+              <item name="System" type="462c0819:PsiDirectoryNode" />
+              <item name="UserAdmin" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -339,18 +326,18 @@
       <workItem from="1517204736267" duration="13108000" />
       <workItem from="1517275201848" duration="6965000" />
       <workItem from="1517389553306" duration="1170000" />
-      <workItem from="1517447148708" duration="8243000" />
+      <workItem from="1517447148708" duration="18642000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="171604000" />
+    <option name="totallyTimeSpent" value="182003000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="246" y="20" width="1662" height="1007" extended-state="0" />
+    <frame x="243" y="9" width="1486" height="1007" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.15127581" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.16938776" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32979852" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -661,24 +648,13 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/a_container/System/UserAdmin/index.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="359">
-          <caret line="28" column="21" lean-forward="true" selection-start-line="28" selection-start-column="21" selection-end-line="28" selection-end-column="21" />
-          <folding>
-            <element signature="n#!!doc" expanded="true" />
-            <element signature="e#80#106#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/a_container/System/RoleAdmin/index.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="271">
           <caret line="26" column="80" lean-forward="false" selection-start-line="26" selection-start-column="80" selection-end-line="26" selection-end-column="80" />
           <folding>
-            <element signature="n#!!doc" expanded="true" />
-            <element signature="e#80#106#0" expanded="true" />
+            <element signature="n#!!doc" expanded="false" />
+            <element signature="e#80#106#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -704,58 +680,68 @@
         <state relative-caret-position="616">
           <caret line="28" column="26" lean-forward="true" selection-start-line="28" selection-start-column="26" selection-end-line="28" selection-end-column="26" />
           <folding>
-            <element signature="n#!!doc" expanded="true" />
-            <element signature="e#25#51#0" expanded="true" />
+            <element signature="n#!!doc" expanded="false" />
+            <element signature="e#25#51#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/a_container/System/PowerAdmin/index.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-9760">
+          <caret line="35" column="27" lean-forward="true" selection-start-line="35" selection-start-column="27" selection-end-line="35" selection-end-column="27" />
+          <folding>
+            <element signature="e#71#97#0" expanded="false" />
+            <element signature="e#440#569#0" expanded="false" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/a_component/TreeChose/PowerTreeTable.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-4076">
+        <state relative-caret-position="-132">
           <caret line="0" column="9" lean-forward="false" selection-start-line="0" selection-start-column="9" selection-end-line="0" selection-end-column="9" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/mock/app-data.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="500">
+          <caret line="299" column="12" lean-forward="false" selection-start-line="299" selection-start-column="6" selection-end-line="299" selection-end-column="12" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/a_action/sys-action.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1149">
+          <caret line="268" column="0" lean-forward="true" selection-start-line="268" selection-start-column="0" selection-end-line="268" selection-end-column="0" />
           <folding>
-            <element signature="e#35#61#0" expanded="true" />
+            <element signature="n#!!doc" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/a_component/TreeChose/RoleTree.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="242">
-          <caret line="11" column="12" lean-forward="false" selection-start-line="11" selection-start-column="8" selection-end-line="11" selection-end-column="12" />
+        <state relative-caret-position="843">
+          <caret line="123" column="50" lean-forward="false" selection-start-line="123" selection-start-column="43" selection-end-line="123" selection-end-column="50" />
           <folding>
-            <element signature="n#!!doc" expanded="true" />
             <element signature="e#25#51#0" expanded="true" />
+            <marker date="1517470455247" expanded="true" signature="3204:3246" ph="..." />
+            <marker date="1517470455247" expanded="true" signature="3510:3628" ph="..." />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/a_action/sys-action.js">
+    <entry file="file://$PROJECT_DIR$/src/a_container/System/UserAdmin/index.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="316">
-          <caret line="126" column="18" lean-forward="true" selection-start-line="126" selection-start-column="18" selection-end-line="126" selection-end-column="18" />
+        <state relative-caret-position="363">
+          <caret line="385" column="35" lean-forward="false" selection-start-line="385" selection-start-column="35" selection-end-line="385" selection-end-column="35" />
           <folding>
             <element signature="n#!!doc" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/mock/app-data.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="448">
-          <caret line="183" column="25" lean-forward="true" selection-start-line="183" selection-start-column="25" selection-end-line="183" selection-end-column="25" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/a_container/System/PowerAdmin/index.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="528">
-          <caret line="72" column="25" lean-forward="false" selection-start-line="72" selection-start-column="25" selection-end-line="72" selection-end-column="25" />
-          <folding>
-            <element signature="e#71#97#0" expanded="true" />
-            <element signature="e#440#569#0" expanded="true" />
+            <element signature="e#80#106#0" expanded="true" />
           </folding>
         </state>
       </provider>

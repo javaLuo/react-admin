@@ -12,7 +12,8 @@ export default class RoleTreeComponent extends React.PureComponent {
         data: P.array,      // 原始数据
         title: P.string,    // 标题
         visible: P.bool,    // 是否显示
-        nowDataKey: P.array,     // 当前默认选中的key们
+        defaultKeys: P.array,     // 当前默认选中的key们
+        loading: false, // 确定按钮是否在等待中状态
         onOk: P.func,       // 确定
         onClose: P.func,    // 关闭
     };
@@ -21,7 +22,7 @@ export default class RoleTreeComponent extends React.PureComponent {
         super(props);
         this.state = {
             sourceData: [], // 原始数据，有层级关系
-            nowData: [],  // 当前选中的节点信息
+            nowKeys: [],  // 当前选中的keys
         };
     }
 
@@ -33,15 +34,18 @@ export default class RoleTreeComponent extends React.PureComponent {
         if (this.props.data !== nextP.data) {
             this.makeSourceData(nextP.data);
         }
+        if (this.props.defaultKeys !== nextP.defaultKeys) {
+            console.log('是什么：', nextP.defaultKeys);
+            this.setState({
+                nowKeys: nextP.defaultKeys.map((item) => `${item}`)
+            });
+        }
     }
 
     /** 处理原始数据，将原始数据处理为层级关系 **/
     makeSourceData(data) {
         const d = _.cloneDeep(data);
         // 按照sort排序
-        d.sort((a, b) => {
-            return a.sorts - b.sorts;
-        });
         const sourceData = this.dataToJson(null, d) || [];
         this.setState({
             sourceData,
@@ -65,12 +69,12 @@ export default class RoleTreeComponent extends React.PureComponent {
         return data.map((item, index) => {
             if (item.children) {
                 return (
-                    <TreeNode title={item.title} key={item.id} data={item}>
+                    <TreeNode title={item.title} key={item.id} data={item} selectable={false}>
                         { this.makeTreeDom(item.children) }
                     </TreeNode>
                 );
             } else {
-                return <TreeNode title={item.title} key={item.id} data={item}/>;
+                return <TreeNode title={item.title} key={item.id} data={item} selectable={false}/>;
             }
         });
     }
@@ -91,12 +95,24 @@ export default class RoleTreeComponent extends React.PureComponent {
 
     /** 点击确定时触发 **/
     onOk = () => {
-        this.props.onOk(this.state.nowData);
+        // 通过key返回指定的数据
+        const res = this.props.data.filter((item) => {
+            return this.state.nowKeys.includes(`${item.id}`);
+        });
+        // 返回选中的keys和选中的具体数据
+        this.props.onOk && this.props.onOk(this.state.nowKeys, res);
     };
 
     /** 点击关闭时触发 **/
     onClose = () => {
         this.props.onClose();
+    };
+
+    /** 选中或取消选中时触发 **/
+    onCheck = (keys) => {
+        this.setState({
+            nowKeys: keys,
+        });
     };
 
     render() {
@@ -105,18 +121,17 @@ export default class RoleTreeComponent extends React.PureComponent {
                 title={this.props.title || '请选择'}
                 visible={this.props.visible}
                 wrapClassName={css.menuTreeModal}
+                confirmLoading={this.props.loading}
                 onOk={this.onOk}
                 onCancel={this.onClose}
             >
                 <Tree
-                    defaultExpandedKeys={['0']}
                     checkable
-                    defaultSelectedKeys={this.props.nowDataKey ? [this.props.nowDataKey] : []}
+                    checkedKeys={this.state.nowKeys}
+                    onCheck={(keys) => this.onCheck(keys)}
                     onSelect={this.onTreeSelect}
                 >
-                    <TreeNode title="根" key="0" data={{ title: '根', id: null }}>
-                        { this.makeTreeDom(this.state.sourceData) }
-                    </TreeNode>
+                    { this.makeTreeDom(this.state.sourceData) }
                 </Tree>
             </Modal>
         );

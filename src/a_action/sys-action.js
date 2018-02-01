@@ -266,3 +266,15 @@ export const delUser = (params = {}) => async(dispatch) => {
         message.error('网络错误，请重试');
     }
 };
+
+/**
+ * 给用户分配角色
+ * **/
+export const setUserRoles = (params = {}) => async(dispatch) => {
+    try {
+        const res = await Fetchapi.newFetch('api/setUserRoles', params);
+        return res.data;
+    } catch(err) {
+        message.error('网络错误，请重试');
+    }
+};

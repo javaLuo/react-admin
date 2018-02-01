@@ -17,12 +17,13 @@ import tools from '../../../util/tools'; // 工具
 // 所需的所有组件
 // ==================
 
+import RoleTree from '../../../a_component/TreeChose/RoleTree';
 
 // ==================
 // 本页面所需action
 // ==================
 
-import { getAllPowers, getRoles, addUser, upUser, delUser, setPowersByRoleId, findAllPowerByRoleId, getUserList } from '../../../a_action/sys-action';
+import { getAllRoles, getRoles, addUser, upUser, delUser, setPowersByRoleId, findAllPowerByRoleId, getUserList, setUserRoles } from '../../../a_action/sys-action';
 
 // ==================
 // Definition
@@ -37,7 +38,7 @@ const { Option } = Select;
         powerTreeData: state.sys.powerTreeData,
     }),
     (dispatch) => ({
-        actions: bindActionCreators({ getAllPowers, getRoles, addUser, upUser, delUser, setPowersByRoleId, findAllPowerByRoleId, getUserList }, dispatch),
+        actions: bindActionCreators({ getAllRoles, getRoles, addUser, upUser, delUser, setPowersByRoleId, findAllPowerByRoleId, getUserList, setUserRoles }, dispatch),
     })
 )
 @Form.create()
@@ -48,13 +49,13 @@ export default class RoleAdminContainer extends React.Component {
         actions: P.any,
         allMenu: P.any,
         form: P.any,
-        powerTreeData: P.array,
     };
 
     constructor(props) {
         super(props);
         this.state = {
             data: [], // 当前页面全部数据
+            roleData: [],   // 所有的角色数据
             operateType: 'add',  // 操作类型 add新增，up修改, see查看
             loading: false, // 表格数据是否正在加载中
             searchUsername: undefined, // 搜索 - 角色名
@@ -62,8 +63,8 @@ export default class RoleAdminContainer extends React.Component {
             modalShow: false, // 添加/修改/查看 模态框是否显示
             modalLoading: false, // 添加/修改/查看 是否正在请求中
             nowData: null, // 当前选中用户的信息，用于查看详情、修改、分配菜单
-            powerTreeShow: false, // 菜单树是否显示
-            powerTreeDefault: { menus: [], powers: []}, // 用于菜单树，默认需要选中的项
+            roleTreeShow: false, // 角色树是否显示
+            roleTreeDefault: [], // 用于菜单树，默认需要选中的项
             pageNum: 0, // 当前第几页
             pageSize: 10, // 每页多少条
             total: 0, // 数据库总共多少条数据
@@ -74,12 +75,18 @@ export default class RoleAdminContainer extends React.Component {
 
     componentDidMount() {
         this.onGetData(this.state.pageNum, this.state.pageSize);
-        this.onGetPowerTreeData();
+        this.onGetRoleTreeData();
     }
 
-    // 获取所有的菜单权限数据 - 用于分配权限控件的原始数据
-    onGetPowerTreeData() {
-        this.props.actions.getAllPowers();
+    // 获取所有的角色数据 - 用于分配角色控件的原始数据
+    onGetRoleTreeData() {
+        this.props.actions.getAllRoles().then((res) => {
+            if (res.status === 200) {
+                this.setState({
+                    roleData: res.data,
+                });
+            }
+        });
     }
 
     // 查询当前页面所需列表数据
@@ -240,17 +247,14 @@ export default class RoleAdminContainer extends React.Component {
         });
     }
 
-    /** 分配权限按钮点击，权限控件出现 **/
-    onAllotPowerClick(record) {
+    /** 分配角色按钮点击，权限控件出现 **/
+    onTreeShowClick(record) {
         console.log('record是什么：', record);
-        const menus = record.powers.map((item) => item.menuId); // 需默认选中的菜单项ID
-        console.log('record是什么2：', menus );
-        const powers = record.powers.reduce((v1, v2) => [...v1, ...v2.powers],[]);   // 需默认选中的权限ID
-        console.log('record是什么2：', menus,powers );
+
         this.setState({
             nowData: record,
-            powerTreeShow: true,
-            powerTreeDefault: { menus, powers },
+            roleTreeShow: true,
+            roleTreeDefault: record.roles,
         });
     }
 
@@ -316,7 +320,7 @@ export default class RoleAdminContainer extends React.Component {
                         </span>
                     );
                     controls.push(
-                        <span key="2" className="control-btn blue" onClick={() => this.onAllotPowerClick(record)}>
+                        <span key="2" className="control-btn blue" onClick={() => this.onTreeShowClick(record)}>
                             <Tooltip placement="top" title="分配角色">
                                 <Icon type="tool" />
                             </Tooltip>
@@ -361,11 +365,43 @@ export default class RoleAdminContainer extends React.Component {
                 desc: item.desc,
                 conditions: item.conditions,
                 control: item.id,
-                powers: item.powers,
+                roles: item.roles,
             };
         });
     }
 
+    // 分配角色确定
+    onRoleOk(keys, objs) {
+        const params = {
+            id: this.state.nowData.id,
+            roles: keys.map((item) => Number(item))
+        };
+        this.setState({
+            roleTreeLoading: true,
+        });
+        this.props.actions.upUser(params).then((res) => {
+            if (res.status === 200) {
+                message.success('分配成功');
+                this.onGetData(this.state.pageNum, this.state.pageSize);
+                this.onRoleClose();
+            } else {
+                message.error(res.message);
+            }
+            this.setState({
+                roleTreeLoading: false,
+            });
+        }).catch(() => {
+            this.setState({
+                roleTreeLoading: false,
+            });
+        });
+    }
+    // 分配角色树关闭
+    onRoleClose(){
+        this.setState({
+            roleTreeShow: false,
+        });
+    }
     render() {
         const me = this;
         const { form } = me.props;
@@ -530,6 +566,15 @@ export default class RoleAdminContainer extends React.Component {
                     </FormItem>
                 </Form>
               </Modal>
+                <RoleTree
+                    title={'分配角色'}
+                    data={this.state.roleData}
+                    visible={this.state.roleTreeShow}
+                    defaultKeys={this.state.roleTreeDefault}
+                    loading={this.state.roleTreeLoading}
+                    onOk={(v) => this.onRoleOk(v)}
+                    onClose={() => this.onRoleClose()}
+                />
             </div>
         );
     }
