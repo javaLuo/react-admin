@@ -13,7 +13,7 @@ export default class RoleTreeComponent extends React.PureComponent {
         title: P.string,    // 标题
         visible: P.bool,    // 是否显示
         defaultKeys: P.array,     // 当前默认选中的key们
-        loading: false, // 确定按钮是否在等待中状态
+        loading: P.bool, // 确定按钮是否在等待中状态
         onOk: P.func,       // 确定
         onClose: P.func,    // 关闭
     };

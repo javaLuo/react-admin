@@ -95,7 +95,6 @@ const tools = {
     for (let i = 1; i < code.length; i++) {
       c += String.fromCharCode(code.charCodeAt(i) + code.charCodeAt(i - 1));
     }
-    console.log('加谜：', code, c);
     return c;
   },
 
@@ -108,7 +107,6 @@ const tools = {
     for (let i = 1; i < code.length; i++) {
       c += String.fromCharCode(code.charCodeAt(i) - c.charCodeAt(i - 1));
     }
-    console.log('解谜：', code, c);
     return c;
   },
 

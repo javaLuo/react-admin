@@ -57,6 +57,13 @@ const { Content } = Layout;
     })
 )
 export default class AppContainer extends React.Component {
+    static propTypes = {
+        location: P.any,
+        history: P.any,
+        actions: P.any,
+        userinfo: P.any,
+    };
+
     constructor(props) {
         super(props);
         this.state = {
@@ -154,9 +161,14 @@ export default class AppContainer extends React.Component {
     };
 
     render() {
+        const u = this.props.userinfo;
+
         return (
             <Layout className={css.page}>
-                <Menu collapsed={this.state.collapsed} />
+                <Menu
+                    data={u && u.menus ? u.menus : []}
+                    collapsed={this.state.collapsed}
+                />
                 <Layout>
                     <Header
                         collapsed={this.state.collapsed}
@@ -189,14 +201,3 @@ export default class AppContainer extends React.Component {
         );
     }
 }
-
-// ==================
-// PropTypes
-// ==================
-
-AppContainer.propTypes = {
-    location: P.any,
-    history: P.any,
-    actions: P.any,
-    userinfo: P.any,
-};

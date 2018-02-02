@@ -352,7 +352,6 @@ export default class RoleAdminContainer extends React.Component {
 
     // 构建table所需数据
     makeData(data) {
-        console.log('data是个啥：', data);
         return data.map((item, index) => {
             return {
                 key: index,

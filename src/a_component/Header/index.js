@@ -93,7 +93,7 @@ export default class Com extends React.PureComponent {
         this.props.clearNews(type);
     }
     render() {
-        const userinfo = this.props.userinfo || {};
+        const u = this.props.userinfo;
         const { notice, message, work } = this.props.newsData;
         console.log('notice:', this.props.newsData);
         return (
@@ -270,7 +270,7 @@ export default class Com extends React.PureComponent {
                     >
                         <div className={c(css.userhead, 'flex-row flex-ac')}>
                             <Avatar size="small" icon={'user'} />
-                            <span className={css.username}>{userinfo.username}</span>
+                            <span className={css.username}>{u && u.userInfo ? u.userInfo.username : null}</span>
                         </div>
                     </Dropdown>
                 </div>

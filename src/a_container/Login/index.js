@@ -23,14 +23,29 @@ import LogoImg from '../../assets/logo.png';
 // 本页面所需action
 // ==================
 
-import { onLogin } from '../../a_action/app-action';
-
+import { onLogin, setUserInfo } from '../../a_action/app-action';
+import { getRoleById, getPowerById, getMenusById } from '../../a_action/sys-action';
 // ==================
 // Definition
 // ==================
 const FormItem = Form.Item;
+@connect(
+    (state) => ({
+    }),
+    (dispatch) => ({
+        actions: bindActionCreators({ onLogin, getRoleById, getPowerById, setUserInfo, getMenusById }, dispatch),
+    })
+)
+@Form.create()
+export default class LoginContainer extends React.Component {
 
-class LoginContainer extends React.Component {
+    static propTypes = {
+        location: P.any,
+        history: P.any,
+        form: P.any,
+        actions: P.any,
+    };
+
   constructor(props) {
     super(props);
     this.state = {
@@ -72,7 +87,6 @@ class LoginContainer extends React.Component {
 
   // 用户提交登录
   onSubmit() {
-    const me = this;
     const form = this.props.form;
     form.validateFields((error, values) => {
       if(error){
@@ -81,28 +95,64 @@ class LoginContainer extends React.Component {
       this.setState({
           loading: true,
       });
-      
-      this.props.actions.onLogin({username: values.username, password: values.password}).then((res) => {
-          console.log('返回了什么：', res);
-          if (res.status === 200) { // 登录成功，用户信息已由action保存到store，sessionStorage中也保存了必要信息
-              message.success(res.message);
-              if (me.state.rememberPassword) {
+      this.loginIn(values.username, values.password).then((res) =>{
+          if (res) {
+              message.success('登录成功');
+              if (this.state.rememberPassword) {
                   localStorage.setItem('userLoginInfo', JSON.stringify({username: values.username, password: tools.compile(values.password)})); // 保存用户名和密码
               } else {
                   localStorage.removeItem('userLoginInfo');
               }
-              setTimeout(() => this.props.history.replace('/'));  // 跳转到主页
-          } else {  // 登录失败
-              message.error(res.message);
+              /** 将这些信息加密后存入sessionStorage,并存入store **/
+              sessionStorage.setItem('userinfo', tools.compile(JSON.stringify(res)));
+              setTimeout(() => {
+                  this.props.actions.setUserInfo(res);
+                  this.props.history.replace('/');
+              });  // 跳转到主页
           }
       }).catch((err) => {
-          me.setState({
+          this.setState({
               loading: false
           });
       });
     });
   }
 
+  /**
+   * 执行登录
+   * 这里模拟：
+   * 1.登录，得到用户信息
+   * 2.通过用户信息获取其拥有的所有角色信息
+   * 3.通过角色信息获取其拥有的所有权限信息
+   * **/
+  async loginIn(username, password) {
+      let userInfo = null;
+      let roles = [];
+      let menus = [];
+      let powers = [];
+      /** 1.登录 **/
+      const res1 = await this.props.actions.onLogin({ username, password });    // 登录接口
+      if (!res1 || res1.status !== 200){ return false; }                        // 登录失败
+      userInfo = res1.data;
+
+      /** 2.获取角色信息 **/
+      const res2 = await this.props.actions.getRoleById({id: userInfo.roles});    // 查询所有角色信息
+      if (!res2 || res2.status !== 200){ return false; }                          // 角色查询失败
+      roles = res2.data;
+
+      /** 3.获取菜单信息 **/
+      const powersTemp = roles.reduce((a, b) => [...a, ...b.powers], []);
+      const res3 = await this.props.actions.getMenusById({id: powersTemp.map((item) => item.menuId)}); // 查询所有菜单信息
+      if (!res3 || res3.status !== 200){ return false; }
+      menus = res3.data;
+
+      /** 4.获取权限信息 **/
+     const res4 = await this.props.actions.getPowerById({id: powersTemp.map((item) => item.powers)});
+     if (!res4 || res4.status !== 200){ return false; }    // 权限查询失败
+     powers = res4.data;
+
+     return { userInfo, roles, menus, powers };
+  }
 
   // 记住密码按钮点击
    onRemember(e) {
@@ -219,27 +269,3 @@ class LoginContainer extends React.Component {
     );
   }
 }
-
-// ==================
-// PropTypes
-// ==================
-
-LoginContainer.propTypes = {
-  location: P.any,
-  history: P.any,
-  form: P.any,
-  actions: P.any,
-};
-
-// ==================
-// Export
-// ==================
-const WrappedHorizontalLoginForm = Form.create()(LoginContainer);
-
-export default connect(
-  (state) => ({
-  }), 
-  (dispatch) => ({
-    actions: bindActionCreators({ onLogin }, dispatch),
-  })
-)(WrappedHorizontalLoginForm);

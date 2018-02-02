@@ -23,6 +23,18 @@ export const getMenus = (params = {}) => async(dispatch) => {
         message.error('网络错误，请重试');
     }
 };
+/**
+ * 根据菜单ID获取对应的菜单信息
+ * @id:可以是一个数字也可以是一个数组
+ * **/
+export const getMenusById = (params = []) => async(dispatch) => {
+    try {
+        const res = await Fetchapi.newFetch('api/getMenusById', params);
+        return res.data;
+    } catch(err) {
+        message.error('网络错误，请重试');
+    }
+};
 
 /**
  * 添加菜单
@@ -75,6 +87,19 @@ export const delMenu = (params = {}) => async(dispatch) => {
 export const getPowerDataByMenuId = (params = {}) => async(dispatch) => {
     try {
         const res = await Fetchapi.newFetch('api/getpowerbymenuid', params);
+        return res.data;
+    } catch(err) {
+        message.error('网络错误，请重试');
+    }
+};
+
+/**
+ * 根据权限ID查询对应的权限数据
+ * @id: 可以是一个数字也可以是一个数组
+ * **/
+export const getPowerById = (params = {}) => async(dispatch) => {
+    try {
+        const res = await Fetchapi.newFetch('api/getPowerById', params);
         return res.data;
     } catch(err) {
         message.error('网络错误，请重试');
@@ -135,6 +160,21 @@ export const getRoles = (params = {}) => async(dispatch) => {
 export const getAllRoles = (params = {}) => async(dispatch) => {
     try {
         const res = await Fetchapi.newFetch('api/getAllRoles', params);
+        return res.data;
+    } catch(err) {
+        message.error('网络错误，请重试');
+    }
+};
+
+
+/**
+ * 通过角色ID查询对应的角色数据
+ * @id: 可以是一个数字，也可以是一个数组
+ * 返回值是数组
+ * **/
+export const getRoleById = (params = {}) => async(dispatch) => {
+    try {
+        const res = await Fetchapi.newFetch('api/getRoleById', params);
         return res.data;
     } catch(err) {
         message.error('网络错误，请重试');

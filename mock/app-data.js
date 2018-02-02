@@ -12,8 +12,8 @@ let id_sequence = 1000;
 
 // 所有的用户数据
 const users = [
-    { id: 1, username: 'admin', password: '123456', phone: '13600000000', email: 'admin@react.com', desc: '超级管理员，不可被删除', conditions: 1, roles: [1] },
-    { id: 2, username: 'user', password: '123456', phone: '13600000001', email: 'user@react.com', desc: '普通管理员', conditions: 1, roles: [] },
+    { id: 1, username: 'admin', password: '123456', phone: '13600000000', email: 'admin@react.com', desc: '超级管理员，不可被删除', conditions: 1, roles: [1,2,3] },
+    { id: 2, username: 'user', password: '123456', phone: '13600000001', email: 'user@react.com', desc: '普通管理员', conditions: 1, roles: [2] },
 ];
 
 // 头部消息数据
@@ -37,9 +37,9 @@ const msg = {
 // 所有的菜单数据
 const menus = [
     { id: 1, title: '系统管理', icon: 'edit', url: 'system', parent: null, desc: '系统管理目录分支', sorts: 0, conditions: 1  },
-    { id: 2, title: '用户管理', icon: 'user', url: 'consumer', parent: 1, desc: '系统管理/用户管理', sorts: 0, conditions: 1  },
-    { id: 3, title: '角色管理', icon: 'user', url: 'role', parent: 1, desc: '系统管理/角色管理', sorts: 1, conditions: 1  },
-    { id: 4, title: '权限管理', icon: 'user', url: 'power', parent: 1, desc: '系统管理/权限管理', sorts: 2, conditions: 1  },
+    { id: 2, title: '用户管理', icon: 'user', url: 'useradmin', parent: 1, desc: '系统管理/用户管理', sorts: 0, conditions: 1  },
+    { id: 3, title: '角色管理', icon: 'user', url: 'roleadmin', parent: 1, desc: '系统管理/角色管理', sorts: 1, conditions: 1  },
+    { id: 4, title: '权限管理', icon: 'user', url: 'poweradmin', parent: 1, desc: '系统管理/权限管理', sorts: 2, conditions: 1  },
     { id: 5, title: '菜单管理', icon: 'menu', url: 'menuadmin', parent: 1, desc: '系统管理/菜单管理', sorts: 3, conditions: 1  },
 ];
 
@@ -48,12 +48,13 @@ const powers = [
     { id: 1, menu: 2, title: '新增', code: 'add', desc: '用户管理 - 添加权限', sorts: 1, conditions: 1 },
     { id: 2, menu: 2, title: '修改', code: 'up', desc: '用户管理 - 修改权限', sorts: 2, conditions: 1 },
     { id: 3, menu: 2, title: '查看', code: 'see', desc: '用户管理 - 查看权限', sorts: 3, conditions: -1 },
+    { id: 4, menu: 3, title: '新增', code: 'add', desc: '用户管理 - 添加权限', sorts: 1, conditions: 1 },
 ];
 // 所有的角色数据
 const roles = [
-    { id: 1, title: '超级管理员', desc: '超级管理员拥有所有权限', sorts: 1, conditions: 1, powers: [{ menuId: 1, powers: [] }, { menuId:2, powers:[1,2,3] }] },
-    { id: 2, title: '管理员', desc: '普通管理员', sorts: 2, conditions: 1,  menus: [1,3,4,5], powers: [] },
-    { id: 3, title: '运维人员', desc: '运维人员不能删除对象', sorts: 3, conditions: 1,  menus: [1,5], powers: [] },
+    { id: 1, title: '超级管理员', desc: '超级管理员拥有所有权限', sorts: 1, conditions: 1, powers: [{ menuId: 1, powers: [] }, { menuId:2, powers:[1,2,3] },{ menuId: 3, powers: [4] },{ menuId: 4, powers: [] },{ menuId: 5, powers: [] }] },
+    { id: 2, title: '管理员', desc: '普通管理员', sorts: 2, conditions: 1, powers: [] },
+    { id: 3, title: '运维人员', desc: '运维人员不能删除对象', sorts: 3, conditions: 1, powers: [] },
 ];
 
 /**
@@ -87,6 +88,19 @@ const clearNews = (request) => {
 const getMenus = (request) => {
     return { status: 200, data: menus, message: 'success' };
 };
+// 获取菜单（根据ID）
+const getMenusById = (request) => {
+    const p = JSON.parse(request.body);
+    let res = [];
+    if (p.id instanceof Array) {
+        res = menus.filter((item) => p.id.includes(item.id));
+    } else {
+        const t = menus.find((item) => item.id === p.id);
+        res.push(t);
+    }
+    return {status: 200, data: res, message: 'success'};
+};
+
 // 添加新菜单
 const addMenu = (request) => {
     const p = JSON.parse(request.body);
@@ -138,6 +152,18 @@ const getPowerByMenuId  = (request) => {
     } else {
         return { status: 200, data: powers, message: 'success' };
     }
+};
+// 根据权限ID查询对应的权限
+const getPowerById = (request) => {
+    const p = JSON.parse(request.body);
+    let res = [];
+    if (p.id instanceof Array) {
+        res = powers.filter((item) => p.id.includes(item.id));
+    } else {
+        const t = powers.find((item) => item.id === p.id);
+        res.push(t);
+    }
+    return {status: 200, data: res, message: 'success'};
 };
 // 添加权限
 const addPower = (request) => {
@@ -193,7 +219,18 @@ const getRoles = (request) => {
 const getAllRoles = (request) => {
     return { status: 200, data: roles, message: 'success' };
 };
-
+// 查询角色（通过角色ID）
+const getRoleById = (request) => {
+    const p = JSON.parse(request.body);
+    let res = [];
+    if (p.id instanceof Array) {
+        res = roles.filter((item) => p.id.includes(item.id));
+    } else {
+        const t = roles.find((item) => item.id === p.id);
+        res.push(t);
+    }
+    return {status: 200, data: res, message: 'success'};
+};
 // 添加角色
 const addRole = (request) => {
     const p = JSON.parse(request.body);
@@ -344,6 +381,8 @@ Mock.mock('api/clearnews', (params) => clearNews(params));
 Mock.mock('api/getnewstotal', () => ({ status: 200, data: msg.notice.length + msg.message.length + msg.work.length, message: 'success' }));
 // 获取所有菜单
 Mock.mock('api/getmenus', (params) => getMenus(params));
+// 获取菜单（根据ID）
+Mock.mock('api/getMenusById', (params) => getMenusById(params));
 // 添加菜单
 Mock.mock('api/addmenu', (params) => addMenu(params));
 // 修改菜单
@@ -352,6 +391,8 @@ Mock.mock('api/upmenu', (params) => upMenu(params));
 Mock.mock('api/delmenu', (params) => delMenu(params));
 // 根据菜单ID查询其下权限
 Mock.mock('api/getpowerbymenuid', (params) => getPowerByMenuId(params));
+// 根据权限ID查询对应的权限
+Mock.mock('api/getPowerById', (params) => getPowerById(params));
 // 添加权限
 Mock.mock('api/addpower', (params) => addPower(params));
 // 修改权限
@@ -362,6 +403,8 @@ Mock.mock('api/delpower', (params) => delPower(params));
 Mock.mock('api/getroles', (params) => getRoles(params));
 // 查询角色（所有）
 Mock.mock('api/getAllRoles', (params) => getAllRoles(params));
+// 查询角色（通过角色ID）
+Mock.mock('api/getRoleById', (params) => getRoleById(params));
 // 添加角色
 Mock.mock('api/addrole', (params) => addRole(params));
 // 修改角色

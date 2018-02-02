@@ -21,14 +21,6 @@ export const onTestAdd = (num) => async(dispatch) => {
 export const onLogin = (params = {}) => async(dispatch) => {
     try {
         const res = await Fetchapi.newFetch('api/login', params);
-        if (res.data.status === 200) { // 如果登录成功，把用户信息保存到store和sessionStorage
-            await dispatch({
-                type: 'APP.onLogin',
-                payload: res.data.data,
-            });
-            console.log('返回的是什么；', res);
-            sessionStorage.setItem('userinfo', JSON.stringify(res.data.data));
-        }
         return res.data;
     } catch(err) {
         message.error('网络错误，请重试');
@@ -40,7 +32,6 @@ export const onLogin = (params = {}) => async(dispatch) => {
  * @params: null
  * **/
 export const onLogout = (params = {}) => async(dispatch) => {
-    console.log('触发？');
     try {
         await dispatch({
             type: 'APP.onLogout',
