@@ -51,13 +51,11 @@ export default class MenuAdminContainer extends React.Component {
           sourceData: [], // 所有的菜单数据（分层级）
           loading: false,   // 页面主要数据是否正在加载中
           tableData: [],   // 表格所需数据 （所选tree节点的直接子级）
-          treeSelect: undefined,   // 当前Menu树被选中的节点id值
+          treeSelect: { title: '根', id: '0'},   // 当前Menu树被选中的节点id值
           nowData: null,  // 当前选中的那条数据
           operateType: 'add',  // 操作类型 add新增，up修改, see查看
           modalShow: false,   // 新增&修改 模态框是否显示
           modalLoading: false,// 新增&修改 模态框是否正在执行请求
-          menuChoseShow: false,// 菜单选择树是否出现
-          formParent: { label: undefined, value: undefined },  // 表单 - 当前父级的值 { label, value }
       };
   }
 
@@ -75,7 +73,7 @@ export default class MenuAdminContainer extends React.Component {
           if(res.status === 200) {
               this.setState({
                   data: res.data,
-                  tableData: res.data.filter((item) => this.state.treeSelect ? item.parent === this.state.treeSelect : !item.parent)
+                  tableData: res.data.filter((item) => item.parent === (Number(this.state.treeSelect.id) || null))
               });
               this.makeSourceData(res.data);
           }
@@ -116,29 +114,33 @@ export default class MenuAdminContainer extends React.Component {
     }
 
     /** 递归构建树结构 **/
-    makeTreeDom(data, key = '') {
-        return data.map((item, index) => {
-            const k = key ? `${key}-${item.id}` : `${item.id}`;
+    makeTreeDom(data) {
+        console.log('所有的key:', data);
+        return data.map((item) => {
             if (item.children) {
                 return (
-                    <TreeNode title={item.title} key={k} id={item.id} p={item.parent}>
-                        { this.makeTreeDom(item.children, k) }
+                    <TreeNode title={item.title} key={`${item.id}`}>
+                        { this.makeTreeDom(item.children) }
                     </TreeNode>
                 );
             } else {
-                return <TreeNode title={item.title} key={k} id={item.id} p={item.parent}/>;
+                return <TreeNode title={item.title} key={`${item.id}`}/>;
             }
         });
     }
 
     /** 点击树目录时触发 **/
     onTreeSelect = (keys, e) => {
-        const id = e.node.props.id;
+        console.log('选中：', keys, e);
+        let treeSelect = { title: '根', id: '0' };
+        if (e.selected) {   // 选中
+            const p = e.node.props;
+            treeSelect = { title: p.title, id: p.eventKey };
+        }
         this.setState({
-            treeSelect: id,
-            tableData: this.state.data.filter((item) => item.parent === id)
+            treeSelect,
+            tableData: this.state.data.filter((item) => item.parent === (Number(treeSelect.id) || null))
         });
-        console.log('选择：', keys, e);
     };
 
     /** 工具 - 根据parentID返回parentName **/
@@ -193,18 +195,17 @@ export default class MenuAdminContainer extends React.Component {
             'formConditions',
         ], (err, values) => {
             if (err) { return; }
-            console.log('检查parent:', this.state.formParent);
             const params = {
                 title: values.formTitle,
                 url: values.formUrl,
                 icon: values.formIcon,
-                parent: this.state.formParent.value,
+                parent: Number(this.state.treeSelect.id) || null,
                 sorts: values.formSorts,
                 desc: values.formDesc,
                 conditions: values.formConditions,
             };
             if (this.state.operateType === 'add') { // 新增
-                this.props.actions.addMenu(params).then((res) => {
+                this.props.actions.addMenu(tools.clearNull(params)).then((res) => {
                     console.log('返回了什么', res);
                     if(res.status === 200) {
                         message.success('添加成功');
@@ -360,21 +361,6 @@ export default class MenuAdminContainer extends React.Component {
         });
     }
 
-    /** 父级选择确定 **/
-    onMenuChoseOk = (obj) => {
-        let temp = { label: obj ? obj.title : undefined, value: obj ? obj.id : undefined };
-        this.setState({
-            formParent: temp
-        });
-        this.onMenuChoseClose();
-    };
-
-    /** 父级选择关闭 **/
-    onMenuChoseClose = () => {
-        this.setState({
-            menuChoseShow: false,
-        });
-    };
   render() {
       const { form } = this.props;
       const { getFieldDecorator } = form;
@@ -396,8 +382,9 @@ export default class MenuAdminContainer extends React.Component {
                   <Tree
                       defaultExpandedKeys={['0']}
                       onSelect={this.onTreeSelect}
+                      selectedKeys={[String(this.state.treeSelect.id)]}
                   >
-                      <TreeNode title="根" key="0" id={null}>
+                      <TreeNode title="根" key="0">
                           { this.makeTreeDom(this.state.sourceData) }
                       </TreeNode>
                   </Tree>
@@ -406,7 +393,16 @@ export default class MenuAdminContainer extends React.Component {
           <div className={c(css.r, 'flex-auto')}>
               <div className={css.searchBox}>
                   <ul className={'flex-row'}>
-                      <li><Button type="primary" icon="plus-circle-o" onClick={() => this.onModalShow(null, 'add')}>添加新菜单</Button></li>
+                      <li>
+                          <Button
+                              type="primary"
+                              icon="plus-circle-o"
+                              onClick={() => this.onModalShow(null, 'add')}
+                              disabled={!this.state.treeSelect.title}
+                          >
+                              {`添加${this.state.treeSelect.title || ''}子菜单`}
+                          </Button>
+                      </li>
                   </ul>
               </div>
               <Table
@@ -421,15 +417,6 @@ export default class MenuAdminContainer extends React.Component {
                   }}
               />
           </div>
-          {/** 菜单选择Tree模态框 **/}
-          <MenuChose
-            title="父级选择"
-            data={this.state.data}
-            nowDataKey={this.state.nowData ? this.state.nowData.parent : undefined}
-            visible={this.state.menuChoseShow}
-            onOk={this.onMenuChoseOk}
-            onClose={this.onMenuChoseClose}
-          />
           {/** 查看&新增&修改用户模态框 **/}
           <Modal
               title={{ add: '新增', up: '修改', see: '查看' }[this.state.operateType]}
@@ -460,17 +447,7 @@ export default class MenuAdminContainer extends React.Component {
                       {getFieldDecorator('formUrl', {
                           initialValue: undefined,
                           rules: [
-                              { validator: (rule, value, callback) => {
-                                  const v = value;
-                                  if (v) {
-                                      if (v.length > 12) {
-                                          callback('最多输入12位字符');
-                                      }else if (!tools.checkStr(v)){
-                                          callback('只能输入字母、数字及下划线');
-                                      }
-                                  }
-                                  callback();
-                              }}
+                              { required: true, whitespace: true, message: '必填' },
                           ],
                       })(
                           <Input placeholder="请输入菜单链接" disabled={this.state.operateType === 'see'} />
@@ -495,17 +472,6 @@ export default class MenuAdminContainer extends React.Component {
                           </Select>
                       )}
 
-                  </FormItem>
-                  <FormItem
-                      label="父级"
-                      {...formItemLayout}
-                  >
-                    <Input
-                        placeholder="请选择父级"
-                        disabled={this.state.operateType === 'see'}
-                        value={this.state.formParent.label}
-                        onClick={() => this.setState({ menuChoseShow: true })}
-                    />
                   </FormItem>
                   <FormItem
                       label="描述"

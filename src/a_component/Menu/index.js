@@ -14,6 +14,7 @@ export default class Com extends React.PureComponent {
     static propTypes = {
         data: P.array,      // 所有的菜单数据
         collapsed: P.bool,  // 菜单咱开还是收起
+        location: P.any,
     };
 
     constructor(props) {
@@ -21,11 +22,14 @@ export default class Com extends React.PureComponent {
         this.state = {
             sourceData: [], // 菜单数据（层级）
             treeDom: [],    // 生成的菜单结构
+            chosedKey: [],  // 当前选中
+            openKeys: [],   // 当前需要被展开的项
         };
     }
 
     componentDidMount() {
         this.makeSourceData(this.props.data);
+        this.nowChosed(this.props.location);
     }
 
     componentWillReceiveProps(nextP) {
@@ -33,6 +37,26 @@ export default class Com extends React.PureComponent {
         if (this.props.data !== nextP.data) {
             this.makeSourceData(nextP.data);
         }
+        if (this.props.location !== nextP.location) {
+            this.nowChosed(nextP.location);
+        }
+    }
+
+    /** 处理当前选中 **/
+    nowChosed(location) {
+        const paths = location.pathname.split('/').filter((item) => !!item);
+        console.log('选中啊？', location);
+        this.setState({
+            chosedKey: [location.pathname],
+            openKeys: paths.map((item) => `/${item}`)
+        });
+    }
+
+    /** 菜单展开和关闭时触发 **/
+    onOpenChange(keys) {
+        this.setState({
+            openKeys: keys,
+        });
     }
 
     /** 处理原始数据，将原始数据处理为层级关系 **/
@@ -67,14 +91,15 @@ export default class Com extends React.PureComponent {
     makeTreeDom(data, key) {
         return data.map((item, index) => {
             const newKey = `${key}/${item.url.replace(/\//,'')}`;
+            console.log('都是些什么啊：', newKey);
             if (item.children) {
                 return (
-                    <SubMenu key={newKey} title={item.parent ? item.title : <span><Icon type="setting" /><span>{item.title}</span></span>}>
+                    <SubMenu key={newKey} title={!item.parent && item.icon ? <span><Icon type={item.icon} /><span>{item.title}</span></span> : item.title}>
                         { this.makeTreeDom(item.children, newKey) }
                     </SubMenu>
                 );
             } else {
-                return <Item key={newKey}><Link to={newKey}>{item.title}</Link></Item>;
+                return <Item key={newKey}><Link to={newKey}>{!item.parent && item.icon ? <Icon type={item.icon} /> : null}<span>{item.title}</span></Link></Item>;
             }
         });
     }
@@ -94,7 +119,13 @@ export default class Com extends React.PureComponent {
                         <div>React-Admin</div>
                     </Link>
                 </div>
-                <Menu theme="dark" mode="inline" defaultSelectedKeys={['home']}>
+                <Menu
+                    theme="dark"
+                    mode="inline"
+                    selectedKeys={this.state.chosedKey}
+                    openKeys={this.state.openKeys}
+                    onOpenChange={(e) => this.onOpenChange(e)}
+                >
                     {this.state.treeDom}
                 </Menu>
             </Sider>

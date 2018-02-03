@@ -168,6 +168,7 @@ export default class AppContainer extends React.Component {
                 <Menu
                     data={u && u.menus ? u.menus : []}
                     collapsed={this.state.collapsed}
+                    location={this.props.location}
                 />
                 <Layout>
                     <Header
@@ -182,7 +183,10 @@ export default class AppContainer extends React.Component {
                         popLoading={this.state.popLoading}
                         clearLoading={this.state.clearLoading}
                     />
-                    <Bread />
+                    <Bread
+                        menus={u && u.menus ? u.menus : []}
+                        location={this.props.location}
+                    />
                     <Content className={css.content}>
                         <Switch>
                             <Redirect exact from="/" to="/home" />

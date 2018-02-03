@@ -6,9 +6,29 @@ import c from 'classnames';
 import css from './index.scss';
 
 export default class Com extends React.PureComponent {
+
+    static propTypes = {
+        location: P.any,
+        menus: P.array,
+    };
+
+    /** 根据当前location动态生成对应的面包屑 **/
+    makeBread(location, menus) {
+        const paths = location.pathname.split('/').filter((item) => !!item);
+        const breads = [];
+        paths.forEach((item, index) => {
+            const temp = menus.find((v) => v.url.replace(/^\//,'') === item);
+            if (temp) {
+                breads.push(<Breadcrumb.Item key={index}>{temp.title}</Breadcrumb.Item>);
+            }
+        });
+        return breads;
+    }
+
     constructor(props) {
         super(props);
         this.state = {
+
         };
     }
 
@@ -17,17 +37,9 @@ export default class Com extends React.PureComponent {
             <div className={css.bread}>
                 <Icon className={css.icon} type="environment-o" />
                 <Breadcrumb>
-                    <Breadcrumb.Item>Home</Breadcrumb.Item>
-                    <Breadcrumb.Item><a href="">Application Center</a></Breadcrumb.Item>
-                    <Breadcrumb.Item><a href="">Application List</a></Breadcrumb.Item>
-                    <Breadcrumb.Item>An Application</Breadcrumb.Item>
+                    {this.makeBread(this.props.location, this.props.menus)}
                 </Breadcrumb>
             </div>
         );
     }
 }
-
-Com.propTypes = {
-    onToggle: P.func,
-    collapsed: P.bool,
-};

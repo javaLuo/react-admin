@@ -1,7 +1,7 @@
 import Mock from 'mockjs';
 
 Mock.setup({
-    timeout: '200-1000',
+    timeout: '0-500',
 });
 
 /**
@@ -36,24 +36,25 @@ const msg = {
 
 // 所有的菜单数据
 const menus = [
-    { id: 1, title: '系统管理', icon: 'edit', url: 'system', parent: null, desc: '系统管理目录分支', sorts: 0, conditions: 1  },
-    { id: 2, title: '用户管理', icon: 'user', url: 'useradmin', parent: 1, desc: '系统管理/用户管理', sorts: 0, conditions: 1  },
-    { id: 3, title: '角色管理', icon: 'user', url: 'roleadmin', parent: 1, desc: '系统管理/角色管理', sorts: 1, conditions: 1  },
-    { id: 4, title: '权限管理', icon: 'user', url: 'poweradmin', parent: 1, desc: '系统管理/权限管理', sorts: 2, conditions: 1  },
-    { id: 5, title: '菜单管理', icon: 'menu', url: 'menuadmin', parent: 1, desc: '系统管理/菜单管理', sorts: 3, conditions: 1  },
+    { id: 1, title: '首页', icon: 'home', url: '/home', parent: null, desc: '首页', sorts: 0, conditions: 1  },
+    { id: 2, title: '系统管理', icon: 'setting', url: '/system', parent: null, desc: '系统管理目录分支', sorts: 1, conditions: 1  },
+    { id: 3, title: '用户管理', icon: 'user', url: '/useradmin', parent: 2, desc: '系统管理/用户管理', sorts: 0, conditions: 1  },
+    { id: 4, title: '角色管理', icon: 'team', url: '/roleadmin', parent: 2, desc: '系统管理/角色管理', sorts: 1, conditions: 1  },
+    { id: 5, title: '权限管理', icon: 'coffee', url: '/poweradmin', parent: 2, desc: '系统管理/权限管理', sorts: 2, conditions: 1  },
+    { id: 6, title: '菜单管理', icon: 'appstore', url: '/menuadmin', parent: 2, desc: '系统管理/菜单管理', sorts: 3, conditions: 1  },
 ];
 
 // 所有的权限数据
 const powers = [
-    { id: 1, menu: 2, title: '新增', code: 'add', desc: '用户管理 - 添加权限', sorts: 1, conditions: 1 },
-    { id: 2, menu: 2, title: '修改', code: 'up', desc: '用户管理 - 修改权限', sorts: 2, conditions: 1 },
-    { id: 3, menu: 2, title: '查看', code: 'see', desc: '用户管理 - 查看权限', sorts: 3, conditions: -1 },
+    { id: 1, menu: 3, title: '新增', code: 'add', desc: '用户管理 - 添加权限', sorts: 1, conditions: 1 },
+    { id: 2, menu: 3, title: '修改', code: 'up', desc: '用户管理 - 修改权限', sorts: 2, conditions: 1 },
+    { id: 3, menu: 3, title: '查看', code: 'see', desc: '用户管理 - 查看权限', sorts: 3, conditions: -1 },
     { id: 4, menu: 3, title: '新增', code: 'add', desc: '用户管理 - 添加权限', sorts: 1, conditions: 1 },
 ];
 // 所有的角色数据
 const roles = [
-    { id: 1, title: '超级管理员', desc: '超级管理员拥有所有权限', sorts: 1, conditions: 1, powers: [{ menuId: 1, powers: [] }, { menuId:2, powers:[1,2,3] },{ menuId: 3, powers: [4] },{ menuId: 4, powers: [] },{ menuId: 5, powers: [] }] },
-    { id: 2, title: '管理员', desc: '普通管理员', sorts: 2, conditions: 1, powers: [] },
+    { id: 1, title: '超级管理员', desc: '超级管理员拥有所有权限', sorts: 1, conditions: 1, powers: [{ menuId: 1, powers: [] },{ menuId: 2, powers: [] }, { menuId:3, powers:[1,2,3] },{ menuId: 4, powers: [4] },{ menuId: 5, powers: [] },{ menuId: 6, powers: [] }] },
+    { id: 2, title: '管理员', desc: '普通管理员', sorts: 2, conditions: 1, powers: [{ menuId: 1, powers: [] }, { menuId: 2, powers: [] }, { menuId:3, powers:[] }, {menuId: 4, powers:[4]}] },
     { id: 3, title: '运维人员', desc: '运维人员不能删除对象', sorts: 3, conditions: 1, powers: [] },
 ];
 
@@ -150,7 +151,7 @@ const getPowerByMenuId  = (request) => {
         console.log('排序后：', powers.filter((item) => item.menu === menuId).sort((a, b) => a.sorts - b.sorts));
         return { status: 200, data: powers.filter((item) => item.menu === menuId).sort((a, b) => a.sorts - b.sorts), message: 'success'};
     } else {
-        return { status: 200, data: powers, message: 'success' };
+        return { status: 200, data: [], message: 'success' };
     }
 };
 // 根据权限ID查询对应的权限

@@ -89,7 +89,10 @@ export default class PowerAdminContainer extends React.Component {
         this.setState({
             loading: true,
         });
-        this.props.actions.getPowerDataByMenuId({ menuId }).then((res) => {
+        const params = {
+            menuId: Number(menuId) || null,
+        };
+        this.props.actions.getPowerDataByMenuId(params).then((res) => {
             console.log('返回的是什么啊：', res);
             if (res.status === 200) {
                 this.setState({
@@ -139,17 +142,16 @@ export default class PowerAdminContainer extends React.Component {
     }
 
     /** 递归构建树结构 **/
-    makeTreeDom(data, key = '') {
-        return data.map((item, index) => {
-            const k = key ? `${key}-${item.id}` : `${item.id}`;
+    makeTreeDom(data) {
+        return data.map((item) => {
             if (item.children) {
                 return (
-                    <TreeNode title={item.title} key={k} id={item.id} p={item.parent}>
-                        { this.makeTreeDom(item.children, k) }
+                    <TreeNode title={item.title} key={`${item.id}`}  p={item.parent}>
+                        { this.makeTreeDom(item.children) }
                     </TreeNode>
                 );
             } else {
-                return <TreeNode title={item.title} key={k} id={item.id} p={item.parent}/>;
+                return <TreeNode title={item.title} key={`${item.id}`} id={item.id} p={item.parent}/>;
             }
         });
     }
@@ -159,13 +161,14 @@ export default class PowerAdminContainer extends React.Component {
         console.log('选择的什么：', e);
         if (e.selected) {   // 选中时才触发
             const p = e.node.props;
-            this.getData(p.id);
+            this.getData(p.eventKey);
             this.setState({
-                treeSelect: { title: p.title, id: p.id },
+                treeSelect: { title: p.title, id: p.eventKey },
             });
         } else {
             this.setState({
                 treeSelect: {},
+                data: [],
             });
         }
     };
@@ -391,7 +394,7 @@ export default class PowerAdminContainer extends React.Component {
                       defaultExpandedKeys={['0']}
                       onSelect={this.onTreeSelect}
                   >
-                      <TreeNode title="根" key="0" id={null} selectable={false}>
+                      <TreeNode title="根" key="0" selectable={false}>
                           { this.makeTreeDom(this.state.sourceData) }
                       </TreeNode>
                   </Tree>
@@ -458,7 +461,7 @@ export default class PowerAdminContainer extends React.Component {
                               { max: 12, message: '最多输入12位字符' }
                               ],
                       })(
-                          <Input placeholder="请输入菜单链接" disabled={this.state.operateType === 'see'} />
+                          <Input placeholder="请输入权限Code" disabled={this.state.operateType === 'see'} />
                       )}
                   </FormItem>
                   <FormItem
