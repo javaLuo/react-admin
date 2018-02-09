@@ -19,18 +19,18 @@ const users = [
 // 头部消息数据
 const msg = {
     notice: [   // 通知数据
-        {title: '你收到了14份新周报', time: '昨天', icon: 'mail', color: '#FE5D58'},
-        {title: '国庆节放假安排', time: '今天上午', icon: 'star', color: '#3391E5'},
-        {title: 'leader 将你添加到开发小组', time: '今天上午', icon: 'team', color: '#9DDEDE'},
+        {title: '你收到了12份新需求变更', time: '昨天', icon: 'mail', color: '#FE5D58'},
+        {title: '公告：国庆节放假安排', time: '今天上午', icon: 'star', color: '#3391E5'},
+        {title: 'leader将你添加到新的开发小组', time: '今天上午', icon: 'team', color: '#9DDEDE'},
     ],
     message: [  // 消息数据
-        {title: '小明回复了你', time: '昨天', info: '最新的代码已经提交至git，请拉取更新', icon: 'smile-o', color: '#FE5D58'},
-        {title: '小红评论了你', time: '今天上午', info: '之前封装的组件可以正常使用，兼容性没有问题哦', icon: 'smile-o', color: '#3391E5'},
+        {title: '大神回复了你', time: '昨天', info: '版本更新了，你去参考一下分支A的代码', icon: 'smile-o', color: '#FE5D58'},
+        {title: '测试员小红评论了你', time: '今天上午', info: '大佬，那确实不是一个BUG，是我考虑不周，见谅，下午请你喝奶茶', icon: 'smile-o', color: '#3391E5'},
     ],
     work: [ // 待办数据
-        {title: '新系统部署', info: '服务器环境已经搭建完毕，需要下一步部署', type:'未开始', color:''},
-        {title: '需求变更', info: '需求又TM变啦，哥，改一下咯', type:'进行中', color: 'blue'},
-        {title: 'A版本代码合并', info: 'git上的分支需合并至master', type:'已完成', color: 'geekblue'},
+        {title: '系统部署', info: '服务器环境已经搭建完毕，需要下一步部署', type:'未开始', color:''},
+        {title: '需求变更', info: '今早有6个优先级高的需求改动', type:'进行中', color: 'blue'},
+        {title: '分支A代码合并', info: 'git上的分支需合并至master', type:'已完成', color: 'geekblue'},
     ]
 };
 
