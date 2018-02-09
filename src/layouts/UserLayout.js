@@ -16,7 +16,7 @@ import { Link, Route, Switch, Redirect} from 'react-router-dom';
 // 路由子页面
 // ==================
 import Bundle from '../a_component/bundle';
-import lazeNotFound from 'bundle-loader?lazy&name=notfound!../a_container/notfound';
+import lazeNotFound from 'bundle-loader?lazy&name=notfound!../a_container/Notfound';
 import lazeLogin from 'bundle-loader?lazy&name=login!../a_container/Login';
 
 const NotFound = (props) => (<Bundle load={lazeNotFound}>{(NotFound) => <NotFound {...props} />}</Bundle>);

@@ -36,6 +36,7 @@ const { Option } = Select;
     (state) => ({
         allMenu: state.sys.allMenu,
         powerTreeData: state.sys.powerTreeData,
+        userinfo: state.app.userinfo,
     }),
     (dispatch) => ({
         actions: bindActionCreators({ getAllRoles, getRoles, addUser, upUser, delUser, setPowersByRoleId, findAllPowerByRoleId, getUserList, setUserRoles }, dispatch),
@@ -48,6 +49,7 @@ export default class RoleAdminContainer extends React.Component {
         history: P.any,
         actions: P.any,
         allMenu: P.any,
+        userinfo: P.any,
         form: P.any,
     };
 
@@ -304,7 +306,7 @@ export default class RoleAdminContainer extends React.Component {
                 width: 200,
                 render: (text, record) => {
                     const controls = [];
-
+                    const u = this.props.userinfo && this.props.userinfo.userInfo || {};
                     controls.push(
                         <span key="0" className="control-btn green" onClick={() => this.onModalShow(record, 'see')}>
                             <Tooltip placement="top" title="查看">
@@ -326,7 +328,8 @@ export default class RoleAdminContainer extends React.Component {
                             </Tooltip>
                         </span>
                     );
-                    controls.push(
+                    console.log('usrinfo:', this.props.userinfo);
+                    u.id !== record.id && controls.push(
                         <Popconfirm key="3" title="确定删除吗?" onConfirm={() => this.onDel(record.id)} okText="确定" cancelText="取消">
                             <span className="control-btn red">
                                 <Tooltip placement="top" title="删除">

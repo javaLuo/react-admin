@@ -14,6 +14,7 @@ const onLogout = (state, { payload }) => {
 };
 
 const setUserInfo = (state, { payload }) => {
+  console.log('来了没：userinfo', payload);
   return Object.assign({}, state, {
       userinfo: payload,
   });

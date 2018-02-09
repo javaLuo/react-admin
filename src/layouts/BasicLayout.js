@@ -14,7 +14,7 @@ import { Link, Route, Switch, Redirect} from 'react-router-dom';
 // 路由子页面
 // ==================
 import Bundle from '../a_component/bundle';
-import lazeNotFound from 'bundle-loader?lazy&name=notfound!../a_container/notfound';
+import lazeNotFound from 'bundle-loader?lazy&name=notfound!../a_container/Notfound';
 import lazeHome from 'bundle-loader?lazy&name=home!../a_container/home';
 import lazeMenuAdmin from 'bundle-loader?lazy&name=menuadmin!../a_container/System/MenuAdmin';
 import lazePowerAdmin from 'bundle-loader?lazy&name=poweradmin!../a_container/System/PowerAdmin';
@@ -36,7 +36,6 @@ import Menu from '../a_component/Menu';
 import Footer from '../a_component/Footer';
 import Bread from '../a_component/Bread';
 import css from './BasicLayout.scss';
-
 
 // ==================
 // 本页面所需action
