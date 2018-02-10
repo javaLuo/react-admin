@@ -86,6 +86,9 @@ export default class PowerAdminContainer extends React.Component {
 
     /** 根据所选菜单id获取其下权限数据 **/
     getData(menuId = null) {
+        const p = this.props.powers;
+        if (!p.includes('power:query')){ return; }
+
         this.setState({
             loading: true,
         });
@@ -375,6 +378,7 @@ export default class PowerAdminContainer extends React.Component {
   render() {
       const { form } = this.props;
       const { getFieldDecorator } = form;
+      const p = this.props.powers;
       const formItemLayout = {  // 表单布局
           labelCol: {
               xs: { span: 24 },
@@ -408,7 +412,7 @@ export default class PowerAdminContainer extends React.Component {
                               type="primary"
                               icon="plus-circle-o"
                               onClick={() => this.onModalShow(null, 'add')}
-                              disabled={!this.state.treeSelect.id}
+                              disabled={!(this.state.treeSelect.id && p.includes('power:add'))}
                           >
                               {`添加${this.state.treeSelect.title || ''}权限`}
                           </Button>

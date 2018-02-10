@@ -93,6 +93,9 @@ export default class RoleAdminContainer extends React.Component {
 
     // 查询当前页面所需列表数据
     onGetData(pageNum, pageSize) {
+        const p = this.props.powers;
+        if (!p.includes('user:query')){ return; }
+
         const params = {
             pageNum,
             pageSize,

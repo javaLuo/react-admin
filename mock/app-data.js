@@ -51,6 +51,10 @@ const powers = [
     { id: 3, menu: 3, title: '查看', code: 'user:query', desc: '用户管理 - 查看权限', sorts: 3, conditions: 1 },
     { id: 4, menu: 3, title: '删除', code: 'user:del', desc: '用户管理 - 删除权限', sorts: 4, conditions: 1 },
     { id: 5, menu: 3, title: '分配角色', code: 'user:role', desc: '用户管理 - 分配角色权限', sorts: 5, conditions: 1 },
+    { id: 6, menu: 4, title: '新增', code: 'role:add', desc: '角色管理 - 添加权限', sorts: 1, conditions: 1 },
+    { id: 7, menu: 4, title: '修改', code: 'role:up', desc: '角色管理 - 修改权限', sorts: 2, conditions: 1 },
+    { id: 4, menu: 3, title: '查看', code: 'role:query', desc: '角色管理 - 查看权限', sorts: 4, conditions: 1 },
+    { id: 9, menu: 4, title: '删除', code: 'role:del', desc: '角色管理 - 删除权限', sorts: 2, conditions: 1 },
 ];
 // 所有的角色数据
 const roles = [
