@@ -1,7 +1,10 @@
 /** 通用reducer **/
 
 const initState = {
-  userinfo: null, // 用户信息(登录后用户基本信息、角色、菜单、权限 均保存在此，供全局调用)
+  userinfo: null, // 当前用户基本信息
+  menus: [],      // 当前用户所有已授权的菜单
+  roles: [],      // 当前用户拥有的所有角色
+  powers: [],     // 当前用户拥有的权限code列表，页面中的按钮的权限控制将根据此数据源判断
 };
 
 
@@ -10,13 +13,19 @@ const actDefault = (state) => state;
 const onLogout = (state, { payload }) => {
   return Object.assign({}, state, {
       userinfo: null,
+      menus: [],
+      roles: [],
+      powers: [],
   });
 };
 
 const setUserInfo = (state, { payload }) => {
   console.log('来了没：userinfo', payload);
   return Object.assign({}, state, {
-      userinfo: payload,
+      userinfo: payload.userInfo,
+      menus: payload.menus,
+      roles: payload.roles,
+      powers: payload.powers.map((item) => item.code),
   });
 };
 

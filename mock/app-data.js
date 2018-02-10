@@ -24,8 +24,8 @@ const msg = {
         {title: 'leader将你添加到新的开发小组', time: '今天上午', icon: 'team', color: '#9DDEDE'},
     ],
     message: [  // 消息数据
-        {title: '大神回复了你', time: '昨天', info: '版本更新了，你去参考一下分支A的代码', icon: 'smile-o', color: '#FE5D58'},
-        {title: '测试员小红评论了你', time: '今天上午', info: '大佬，那确实不是一个BUG，是我考虑不周，见谅，下午请你喝奶茶', icon: 'smile-o', color: '#3391E5'},
+        {title: '大神回复了你', time: '昨天', info: '版本更新了，你去参考一下分支A的代码', icon: 'smile-o', color: '#3391E5'},
+        {title: '测试员小红评论了你', time: '今天上午', info: '大佬，那确实不是一个BUG，是我考虑不周，见谅，下午请你喝奶茶', icon: 'smile-o', color: '#FE5D58'},
     ],
     work: [ // 待办数据
         {title: '系统部署', info: '服务器环境已经搭建完毕，需要下一步部署', type:'未开始', color:''},
@@ -46,14 +46,15 @@ const menus = [
 
 // 所有的权限数据
 const powers = [
-    { id: 1, menu: 3, title: '新增', code: 'add', desc: '用户管理 - 添加权限', sorts: 1, conditions: 1 },
-    { id: 2, menu: 3, title: '修改', code: 'up', desc: '用户管理 - 修改权限', sorts: 2, conditions: 1 },
-    { id: 3, menu: 3, title: '查看', code: 'see', desc: '用户管理 - 查看权限', sorts: 3, conditions: -1 },
-    { id: 4, menu: 3, title: '新增', code: 'add', desc: '用户管理 - 添加权限', sorts: 1, conditions: 1 },
+    { id: 1, menu: 3, title: '新增', code: 'user:add', desc: '用户管理 - 添加权限', sorts: 1, conditions: 1 },
+    { id: 2, menu: 3, title: '修改', code: 'user:up', desc: '用户管理 - 修改权限', sorts: 2, conditions: 1 },
+    { id: 3, menu: 3, title: '查看', code: 'user:query', desc: '用户管理 - 查看权限', sorts: 3, conditions: 1 },
+    { id: 4, menu: 3, title: '删除', code: 'user:del', desc: '用户管理 - 删除权限', sorts: 4, conditions: 1 },
+    { id: 5, menu: 3, title: '分配角色', code: 'user:role', desc: '用户管理 - 分配角色权限', sorts: 5, conditions: 1 },
 ];
 // 所有的角色数据
 const roles = [
-    { id: 1, title: '超级管理员', desc: '超级管理员拥有所有权限', sorts: 1, conditions: 1, powers: [{ menuId: 1, powers: [] },{ menuId: 2, powers: [] }, { menuId:3, powers:[1,2,3] },{ menuId: 4, powers: [4] },{ menuId: 5, powers: [] },{ menuId: 6, powers: [] }] },
+    { id: 1, title: '超级管理员', desc: '超级管理员拥有所有权限', sorts: 1, conditions: 1, powers: [{ menuId: 1, powers: [] },{ menuId: 2, powers: [] }, { menuId:3, powers:[1,2,3,4,5] },{ menuId: 4, powers: [4] },{ menuId: 5, powers: [] },{ menuId: 6, powers: [] }] },
     { id: 2, title: '管理员', desc: '普通管理员', sorts: 2, conditions: 1, powers: [{ menuId: 1, powers: [] }, { menuId: 2, powers: [] }, { menuId:3, powers:[] }, {menuId: 4, powers:[4]}] },
     { id: 3, title: '运维人员', desc: '运维人员不能删除对象', sorts: 3, conditions: 1, powers: [] },
 ];
@@ -158,6 +159,7 @@ const getPowerByMenuId  = (request) => {
 const getPowerById = (request) => {
     const p = JSON.parse(request.body);
     let res = [];
+    console.log('开始查权限了，都有什么：', p);
     if (p.id instanceof Array) {
         res = powers.filter((item) => p.id.includes(item.id));
     } else {

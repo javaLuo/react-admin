@@ -18,8 +18,6 @@ import css from './index.scss';
 // ==================
 
 import { Tree, Button, Table, Tooltip, Icon, Popconfirm, Modal, Form, Select, Input, InputNumber, message, Divider } from 'antd';
-import { Icons } from '../../../util/json';
-import MenuChose from '../../../a_component/TreeChose/menuChose';
 
 // ==================
 // 本页面所需action
@@ -38,6 +36,7 @@ const { TextArea } = Input;
 @connect(
     (state) => ({
         menus: state.sys.menus,
+        powers: state.app.powers,
     }),
     (dispatch) => ({
         actions: bindActionCreators({ addPower, getMenus, upPower, delPower, getPowerDataByMenuId }, dispatch),
@@ -51,6 +50,7 @@ export default class PowerAdminContainer extends React.Component {
         actions: P.any,
         form: P.any,
         menus: P.array,
+        powers: P.array,
     };
 
   constructor(props) {
@@ -315,22 +315,22 @@ export default class PowerAdminContainer extends React.Component {
                 width: 120,
                 render: (text, record) => {
                     let controls = [];
-
-                    controls.push(
+                    const p = this.props.powers;
+                    p.includes("power:query") && controls.push(
                         <span key="0" className="control-btn green" onClick={() => this.onModalShow(record, 'see')}>
                             <Tooltip placement="top" title="查看">
                                 <Icon type="eye" />
                             </Tooltip>
                         </span>
                     );
-                    controls.push(
+                    p.includes("power:up") && controls.push(
                         <span key="1" className="control-btn blue" onClick={() => this.onModalShow(record, 'up')}>
                             <Tooltip placement="top" title="修改">
                                 <Icon type="edit" />
                             </Tooltip>
                         </span>
                     );
-                    controls.push(
+                    p.includes("power:del") && controls.push(
                         <Popconfirm key="2" title="确定删除吗?" okText="确定" cancelText="取消" onConfirm={() => this.onDel(record)}>
                             <span className="control-btn red">
                                 <Tooltip placement="top" title="删除">

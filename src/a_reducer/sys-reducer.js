@@ -1,7 +1,7 @@
 /** 通用reducer **/
 
 const initState = {
-    menus: [], // 用户信息
+    menus: [], // 所有的菜单信息（用于菜单管理，无视权限）
     powerTreeData: [],  // 分配权限treeTable组件所需原始数据
 };
 

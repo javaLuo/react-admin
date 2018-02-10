@@ -35,8 +35,8 @@ const { TextArea } = Input;
 const { Option } = Select;
 @connect(
     (state) => ({
-        allMenu: state.sys.allMenu,
         powerTreeData: state.sys.powerTreeData,
+        powers: state.app.powers,
     }),
     (dispatch) => ({
         actions: bindActionCreators({ getAllPowers, getRoles, addRole, upRole, delRole, setPowersByRoleId, findAllPowerByRoleId }, dispatch),
@@ -48,7 +48,7 @@ export default class RoleAdminContainer extends React.Component {
         location: P.any,
         history: P.any,
         actions: P.any,
-        allMenu: P.any,
+        powers: P.array,
         form: P.any,
         powerTreeData: P.array,
     };
@@ -322,29 +322,29 @@ export default class RoleAdminContainer extends React.Component {
                 width: 200,
                 render: (text, record) => {
                     const controls = [];
-
-                    controls.push(
+                    const p = this.props.powers;
+                    p.includes('role:query') && controls.push(
                         <span key="0" className="control-btn green" onClick={() => this.onModalShow(record, 'see')}>
                             <Tooltip placement="top" title="查看">
                                 <Icon type="eye" />
                             </Tooltip>
                         </span>
                     );
-                    controls.push(
+                    p.includes('role:up') && controls.push(
                         <span key="1" className="control-btn blue" onClick={() => this.onModalShow(record, 'up')}>
                             <Tooltip placement="top" title="修改">
                                 <Icon type="edit" />
                             </Tooltip>
                         </span>
                     );
-                    controls.push(
+                    p.includes('role:power') && controls.push(
                         <span key="2" className="control-btn blue" onClick={() => this.onAllotPowerClick(record)}>
                             <Tooltip placement="top" title="分配权限">
                                 <Icon type="tool" />
                             </Tooltip>
                         </span>
                     );
-                    controls.push(
+                    p.includes('role:del') && controls.push(
                         <Popconfirm key="3" title="确定删除吗?" onConfirm={() => this.onDel(record.id)} okText="确定" cancelText="取消">
                             <span className="control-btn red">
                                 <Tooltip placement="top" title="删除">
@@ -388,6 +388,7 @@ export default class RoleAdminContainer extends React.Component {
     render() {
         const me = this;
         const { form } = me.props;
+        const p = this.props.powers;
         const { getFieldDecorator } = form;
         const formItemLayout = {
             labelCol: {
@@ -404,19 +405,23 @@ export default class RoleAdminContainer extends React.Component {
             <div>
               <div className="g-search">
                   <ul className="search-func">
-                      <li><Button type="primary" onClick={() => this.onModalShow(null, 'add')}><Icon type="plus-circle-o" />添加角色</Button></li>
+                      <li><Button type="primary" disabled={!p.includes('role:add')} onClick={() => this.onModalShow(null, 'add')}><Icon type="plus-circle-o" />添加角色</Button></li>
                   </ul>
                   <Divider type="vertical" />
-                  <ul className="search-ul">
-                      <li><Input placeholder="请输入角色名" onChange={(e) => this.searchTitleChange(e)} value={this.state.searchTitle}/></li>
-                      <li>
-                          <Select placeholder="请选择状态" allowClear style={{ width: '200px' }} onChange={(e) => this.searchConditionsChange(e)} value={this.state.searchConditions}>
-                              <Option value={1}>启用</Option>
-                              <Option value={-1}>禁用</Option>
-                          </Select>
-                      </li>
-                      <li><Button icon="search" type="primary" onClick={() => this.onSearch()}>搜索</Button></li>
-                  </ul>
+                  {
+                      p.includes('role:query') && (
+                          <ul className="search-ul">
+                              <li><Input placeholder="请输入角色名" onChange={(e) => this.searchTitleChange(e)} value={this.state.searchTitle}/></li>
+                              <li>
+                                  <Select placeholder="请选择状态" allowClear style={{ width: '200px' }} onChange={(e) => this.searchConditionsChange(e)} value={this.state.searchConditions}>
+                                      <Option value={1}>启用</Option>
+                                      <Option value={-1}>禁用</Option>
+                                  </Select>
+                              </li>
+                              <li><Button icon="search" type="primary" onClick={() => this.onSearch()}>搜索</Button></li>
+                          </ul>
+                      )
+                  }
               </div>
               <div className="diy-table">
                 <Table

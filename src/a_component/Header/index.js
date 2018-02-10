@@ -270,7 +270,7 @@ export default class Com extends React.PureComponent {
                     >
                         <div className={c(css.userhead, 'flex-row flex-ac')}>
                             <Avatar size="small" icon={'user'} />
-                            <span className={css.username}>{u && u.userInfo ? u.userInfo.username : null}</span>
+                            <span className={css.username}>{u && u.username}</span>
                         </div>
                     </Dropdown>
                 </div>

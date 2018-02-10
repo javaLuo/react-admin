@@ -50,6 +50,7 @@ const { Content } = Layout;
 @connect(
     (state) => ({
         userinfo: state.app.userinfo,
+        menus: state.app.menus,
     }),
     (dispatch) => ({
         actions: bindActionCreators({ onLogout, setUserInfo, getNews, clearNews, getNewsTotal }, dispatch),
@@ -61,6 +62,7 @@ export default class AppContainer extends React.Component {
         history: P.any,
         actions: P.any,
         userinfo: P.any,
+        menus: P.array,
     };
 
     constructor(props) {
@@ -165,7 +167,7 @@ export default class AppContainer extends React.Component {
         return (
             <Layout className={css.page}>
                 <Menu
-                    data={u && u.menus ? u.menus : []}
+                    data={this.props.menus}
                     collapsed={this.state.collapsed}
                     location={this.props.location}
                 />
@@ -183,7 +185,7 @@ export default class AppContainer extends React.Component {
                         clearLoading={this.state.clearLoading}
                     />
                     <Bread
-                        menus={u && u.menus ? u.menus : []}
+                        menus={this.props.menus}
                         location={this.props.location}
                     />
                     <Content className={css.content}>

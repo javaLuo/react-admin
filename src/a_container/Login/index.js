@@ -98,6 +98,7 @@ export default class LoginContainer extends React.Component {
       this.loginIn(values.username, values.password).then((res) =>{
           if (res) {
               message.success('登录成功');
+              console.log('登录返回的信息：', res);
               if (this.state.rememberPassword) {
                   localStorage.setItem('userLoginInfo', JSON.stringify({username: values.username, password: tools.compile(values.password)})); // 保存用户名和密码
               } else {
@@ -147,7 +148,7 @@ export default class LoginContainer extends React.Component {
       menus = res3.data;
 
       /** 4.获取权限信息 **/
-     const res4 = await this.props.actions.getPowerById({id: powersTemp.map((item) => item.powers)});
+     const res4 = await this.props.actions.getPowerById({id: Array.from(new Set(powersTemp.reduce((a, b) => [...a, ...b.powers], [])))});
      if (!res4 || res4.status !== 200){ return false; }    // 权限查询失败
      powers = res4.data;
 
