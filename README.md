@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://github.com/javaLuo/react-admin/">
-    <img alt="react-router" src="http://isluo.com/imgs/react-logo.jpg" width="100">
+    <img alt="react-admin" src="http://isluo.com/imgs/react-logo.jpg" width="100">
   </a>
 </p>
 
