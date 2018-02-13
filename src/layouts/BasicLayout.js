@@ -191,7 +191,6 @@ export default class AppContainer extends React.Component {
                     <Content className={css.content}>
                         <Switch>
                             <Redirect exact from="/" to="/home" />
-                            <Redirect exact from="/system" to="/system/menuadmin" />
                             <Route exact path="/home" component={Home} />
                             <Route exact path="/system/menuadmin" component={MenuAdmin} />
                             <Route exact path="/system/poweradmin" component={PowerAdmin} />

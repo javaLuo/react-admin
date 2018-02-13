@@ -92,11 +92,10 @@ export default class LoginContainer extends React.Component {
       if(error){
         return;
       }
-      this.setState({
-          loading: true,
-      });
+      this.setState({ loading: true });
       this.loginIn(values.username, values.password).then((res) =>{
-          if (res) {
+          console.log('AAA:', res);
+          if (res.status === 200) {
               message.success('登录成功');
               console.log('登录返回的信息：', res);
               if (this.state.rememberPassword) {
@@ -105,16 +104,17 @@ export default class LoginContainer extends React.Component {
                   localStorage.removeItem('userLoginInfo');
               }
               /** 将这些信息加密后存入sessionStorage,并存入store **/
-              sessionStorage.setItem('userinfo', tools.compile(JSON.stringify(res)));
+              sessionStorage.setItem('userinfo', tools.compile(JSON.stringify(res.data)));
               setTimeout(() => {
-                  this.props.actions.setUserInfo(res);
+                  this.props.actions.setUserInfo(res.data);
                   this.props.history.replace('/');
               });  // 跳转到主页
+          } else {
+              message.error(res.message);
+              this.setState({ loading: false });
           }
       }).catch((err) => {
-          this.setState({
-              loading: false
-          });
+          this.setState({ loading: false });
       });
     });
   }
@@ -133,26 +133,26 @@ export default class LoginContainer extends React.Component {
       let powers = [];
       /** 1.登录 **/
       const res1 = await this.props.actions.onLogin({ username, password });    // 登录接口
-      if (!res1 || res1.status !== 200){ return false; }                        // 登录失败
+      if (!res1 || res1.status !== 200){ return res1; }                        // 登录失败
       userInfo = res1.data;
 
       /** 2.获取角色信息 **/
       const res2 = await this.props.actions.getRoleById({id: userInfo.roles});    // 查询所有角色信息
-      if (!res2 || res2.status !== 200){ return false; }                          // 角色查询失败
+      if (!res2 || res2.status !== 200){ return res2; }                          // 角色查询失败
       roles = res2.data;
 
       /** 3.获取菜单信息 **/
       const powersTemp = roles.reduce((a, b) => [...a, ...b.powers], []);
       const res3 = await this.props.actions.getMenusById({id: powersTemp.map((item) => item.menuId)}); // 查询所有菜单信息
-      if (!res3 || res3.status !== 200){ return false; }
+      if (!res3 || res3.status !== 200){ return res3; }
       menus = res3.data;
 
       /** 4.获取权限信息 **/
      const res4 = await this.props.actions.getPowerById({id: Array.from(new Set(powersTemp.reduce((a, b) => [...a, ...b.powers], [])))});
-     if (!res4 || res4.status !== 200){ return false; }    // 权限查询失败
+     if (!res4 || res4.status !== 200){ return res4; }    // 权限查询失败
      powers = res4.data;
 
-     return { userInfo, roles, menus, powers };
+     return { status: 200, data: {userInfo, roles, menus, powers} };
   }
 
   // 记住密码按钮点击

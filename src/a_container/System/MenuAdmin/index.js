@@ -37,6 +37,7 @@ const { TextArea } = Input;
 
 @connect(
     (state) => ({
+        powers: state.app.powers,
     }),
     (dispatch) => ({
         actions: bindActionCreators({ addMenu, getMenus, upMenu, delMenu }, dispatch),
@@ -44,6 +45,15 @@ const { TextArea } = Input;
 )
 @Form.create()
 export default class MenuAdminContainer extends React.Component {
+
+    static propTypes = {
+        location: P.any,
+        history: P.any,
+        actions: P.any,
+        powers: P.array,
+        form: P.any,
+    };
+
   constructor(props) {
       super(props);
       this.state = {
@@ -65,6 +75,8 @@ export default class MenuAdminContainer extends React.Component {
 
   /** 获取本页面所需数据 **/
   getData() {
+      const p = this.props.powers;
+      if (!p.includes("menu:query")){ return; }
       this.setState({
           loading: true,
       });
@@ -302,23 +314,24 @@ export default class MenuAdminContainer extends React.Component {
                 key: 'control',
                 width: 120,
                 render: (text, record) => {
+                    const p = this.props.powers;
                     let controls = [];
 
-                    controls.push(
+                    p.includes("menu:query") && controls.push(
                         <span key="0" className="control-btn green" onClick={() => this.onModalShow(record, 'see')}>
                             <Tooltip placement="top" title="查看">
                                 <Icon type="eye" />
                             </Tooltip>
                         </span>
                     );
-                    controls.push(
+                    p.includes("menu:up") && controls.push(
                         <span key="1" className="control-btn blue" onClick={() => this.onModalShow(record, 'up')}>
                             <Tooltip placement="top" title="修改">
                                 <Icon type="edit" />
                             </Tooltip>
                         </span>
                     );
-                    controls.push(
+                    p.includes("menu:del") && controls.push(
                         <Popconfirm key="2" title="确定删除吗?" okText="确定" cancelText="取消" onConfirm={() => this.onDel(record)}>
                             <span className="control-btn red">
                                 <Tooltip placement="top" title="删除">
@@ -362,6 +375,7 @@ export default class MenuAdminContainer extends React.Component {
     }
 
   render() {
+      const p = this.props.powers;
       const { form } = this.props;
       const { getFieldDecorator } = form;
       const formItemLayout = {  // 表单布局
@@ -398,7 +412,7 @@ export default class MenuAdminContainer extends React.Component {
                               type="primary"
                               icon="plus-circle-o"
                               onClick={() => this.onModalShow(null, 'add')}
-                              disabled={!this.state.treeSelect.title}
+                              disabled={!(this.state.treeSelect.title && p.includes('menu:add'))}
                           >
                               {`添加${this.state.treeSelect.title || ''}子菜单`}
                           </Button>
@@ -522,14 +536,3 @@ export default class MenuAdminContainer extends React.Component {
     );
   }
 }
-
-// ==================
-// PropTypes
-// ==================
-
-MenuAdminContainer.propTypes = {
-  location: P.any,
-  history: P.any,
-  actions: P.any,
-    form: P.any,
-};
