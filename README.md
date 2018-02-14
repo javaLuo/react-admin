@@ -1,6 +1,7 @@
 # [React-admin](https://github.com/javaLuo/react-admin/) &middot; ![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)
 
 标准后台管理系统解决方案<br/>
+动态菜单配置，权限精确到按钮<br/>
 完成进度： 80%
 
 ## what's this?
@@ -14,10 +15,10 @@ react+redux+webpack+antd
 
 ## 内置通用功能
 
-  用户管理 增删改查 分配角色
-  角色管理 增删改查 分配菜单和权限
-  权限管理 增删改查
-  菜单管理 增删改查
+  用户管理 增删改查 分配角色<br/>
+  角色管理 增删改查 分配菜单和权限<br/>
+  权限管理 增删改查<br/>
+  菜单管理 增删改查<br/>
   
   关系：权限 依附于 菜单 依附于 角色 依附于 用户
 
