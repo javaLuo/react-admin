@@ -40,8 +40,9 @@ class HomePageContainer extends React.Component {
       <div className={classNames(css.home, "all_nowarp")}>
           <div className={css.box}>
               <img src={ImgLogo} />
-              <div className={css.title} onClick={this.onOpen}>React-Luo</div>
-              <div className={css.info}>react、redux、webpack3、eslint、babel6、antd</div>
+              <div className={css.title} onClick={this.onOpen}>React-admin</div>
+              <div className={css.info}>标准React+Redux分层结构，react16、router4、antd3、webpack3、ES6/7/8</div>
+              <div className={css.info}>动态菜单配置，权限精确到按钮</div>
           </div>
       </div>
     );

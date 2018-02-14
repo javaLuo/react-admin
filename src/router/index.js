@@ -28,21 +28,40 @@ const history = createHistory();
     })
 )
 export default class RootContainer extends React.Component {
+
+    static propTypes = {
+        dispatch: P.func,
+        children: P.any,
+        actions: P.any,
+        userinfo: P.any,
+    };
+
   constructor(props) {
     super(props);
   }
 
-  /** 权限控制 **/
+  componentWillMount() {
+      const userinfo = sessionStorage.getItem('userinfo');
+      /**
+       * sessionStorage中有user信息，但store中没有
+       * 说明刷新了页面，需要重新同步user数据到store
+       * **/
+      if (userinfo && !this.props.userinfo) {
+          this.props.actions.setUserInfo(JSON.parse(tools.uncompile(userinfo)));
+      }
+  }
+
+  /** 跳转到某个路由之前触发 **/
   onEnter(Component, props) {
+      /**
+       *  有用户信息，说明已登录
+       *  没有，则跳转至登录页
+       * **/
       const userinfo = sessionStorage.getItem('userinfo');
       if (userinfo) {
-          if (!this.props.userinfo) { // 说明刷新了页面，store中的用户信息丢失了，需要同步一下用户信息到store
-              setTimeout(() => this.props.actions.setUserInfo(JSON.parse(tools.uncompile(userinfo))));
-          }
          return <Component {...props} />;
-      } else {
-          return <Redirect to='/user/login' />;
       }
+      return <Redirect to='/user/login' />;
   }
 
   render() {
@@ -60,14 +79,3 @@ export default class RootContainer extends React.Component {
     );
   }
 }
-
-// ==================
-// PropTypes
-// ==================
-
-RootContainer.propTypes = {
-  dispatch: P.func,
-  children: P.any,
-    actions: P.any,
-    userinfo: P.any,
-};

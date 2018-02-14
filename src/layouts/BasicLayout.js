@@ -14,13 +14,15 @@ import { Link, Route, Switch, Redirect} from 'react-router-dom';
 // 路由子页面
 // ==================
 import Bundle from '../a_component/bundle';
-import lazeNotFound from 'bundle-loader?lazy&name=notfound!../a_container/Notfound';
+import lazeNotFound from 'bundle-loader?lazy&name=notfound!../a_container/ErrorPages/404';
+import lazeNoPower from 'bundle-loader?lazy&name=notfound!../a_container/ErrorPages/401';
 import lazeHome from 'bundle-loader?lazy&name=home!../a_container/home';
 import lazeMenuAdmin from 'bundle-loader?lazy&name=menuadmin!../a_container/System/MenuAdmin';
 import lazePowerAdmin from 'bundle-loader?lazy&name=poweradmin!../a_container/System/PowerAdmin';
 import lazeRoleAdmin from 'bundle-loader?lazy&name=roleadmin!../a_container/System/RoleAdmin';
 import lazeUserAdmin from 'bundle-loader?lazy&name=useradmin!../a_container/System/UserAdmin';
 const NotFound = (props) => (<Bundle load={lazeNotFound}>{(Com) => <Com {...props} />}</Bundle>);
+const NoPower = (props) => (<Bundle load={lazeNoPower}>{(Com) => <Com {...props} />}</Bundle>);
 const Home = (props) => (<Bundle load={lazeHome}>{(Com) => <Com {...props} />}</Bundle>);
 const MenuAdmin = (props) => (<Bundle load={lazeMenuAdmin}>{(Com) => <Com {...props} />}</Bundle>);
 const PowerAdmin = (props) => (<Bundle load={lazePowerAdmin}>{(Com) => <Com {...props} />}</Bundle>);
@@ -50,6 +52,7 @@ const { Content } = Layout;
 @connect(
     (state) => ({
         userinfo: state.app.userinfo,
+        powers: state.app.powers,
         menus: state.app.menus,
     }),
     (dispatch) => ({
@@ -61,6 +64,7 @@ export default class AppContainer extends React.Component {
         location: P.any,
         history: P.any,
         actions: P.any,
+        powers: P.array,
         userinfo: P.any,
         menus: P.array,
     };
@@ -104,7 +108,7 @@ export default class AppContainer extends React.Component {
         console.log('触发0？');
         this.props.actions.onLogout().then(() => {
             message.success('退出成功');
-            this.props.history.push('/');
+            this.props.history.push('/user/login');
         });
     };
 
@@ -140,7 +144,6 @@ export default class AppContainer extends React.Component {
         this.setState({
             clearLoading: true,
         });
-        console.log('到这里了：', type);
         this.props.actions.clearNews({type}).then((res) => {
             if (res.status === 200) {
                 this.setState({
@@ -160,6 +163,33 @@ export default class AppContainer extends React.Component {
             });
         });
     };
+
+    /**
+     * 工具 - 判断当前用户是否有该路由权限，如果没有就跳转至401页
+     * @pathname: 路由路径
+     * **/
+    checkRouterPower(pathname) {
+        const m = this.props.menus.map((item) => item.url.replace(/^\//, '')); // 当前用户拥有的所有菜单
+        const urls = pathname.split('/').filter((item) => !!item);
+        for(let i=0; i<urls.length; i++) {
+            if (!m.includes(urls[i])){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /** 切换路由时触发 **/
+    onEnter(Component, props) {
+        /**
+         * 检查当前用户是否有该路由页面的权限
+         * 没有则跳转至401页
+         * **/
+        if (this.checkRouterPower(props.location.pathname)) {
+            return <Component {...props} />;
+        }
+        return <Redirect to='/nopower' />;
+    }
 
     render() {
         const u = this.props.userinfo;
@@ -191,11 +221,12 @@ export default class AppContainer extends React.Component {
                     <Content className={css.content}>
                         <Switch>
                             <Redirect exact from="/" to="/home" />
-                            <Route exact path="/home" component={Home} />
-                            <Route exact path="/system/menuadmin" component={MenuAdmin} />
-                            <Route exact path="/system/poweradmin" component={PowerAdmin} />
-                            <Route exact path="/system/roleadmin" component={RoleAdmin} />
-                            <Route exact path="/system/useradmin" component={UserAdmin} />
+                            <Route exact path="/home"  render={(props) => this.onEnter(Home, props)} />
+                            <Route exact path="/system/menuadmin" render={(props) => this.onEnter(MenuAdmin, props)} />
+                            <Route exact path="/system/poweradmin" render={(props) => this.onEnter(PowerAdmin, props)} />
+                            <Route exact path="/system/roleadmin" render={(props) => this.onEnter(RoleAdmin, props)} />
+                            <Route exact path="/system/useradmin" render={(props) => this.onEnter(UserAdmin, props)} />
+                            <Route exact path="/nopower" component={NoPower} />
                             <Route render={NotFound} />
                         </Switch>
                     </Content>

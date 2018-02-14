@@ -257,22 +257,35 @@ export default class Com extends React.PureComponent {
                                 </div>
                         </Tooltip>
                     </Popover>
-                    <Dropdown
-                        overlay={
-                            <Menu className={css.menu} selectedKeys={[]} onClick={this.onMenuClick}>
-                                <Menu.Item><a href="http://isluo.com" target="_blank" rel="noopener noreferrer"><Icon type="global" />isluo.com</a></Menu.Item>
-                                <Menu.Item><a href="https://github.com/javaLuo/react-admin" target="_blank" rel="noopener noreferrer"><Icon type="github" />GitHub</a></Menu.Item>
-                                <Menu.Divider />
-                                <Menu.Item key="logout" ><Icon type="logout" />退出登录</Menu.Item>
-                            </Menu>
-                        }
-                        placement="bottomRight"
-                    >
-                        <div className={c(css.userhead, 'flex-row flex-ac')}>
-                            <Avatar size="small" icon={'user'} />
-                            <span className={css.username}>{u && u.username}</span>
-                        </div>
-                    </Dropdown>
+                    {
+                        u ? (
+                            <Dropdown
+                                overlay={
+                                    <Menu className={css.menu} selectedKeys={[]} onClick={this.onMenuClick}>
+                                        <Menu.Item><a href="http://isluo.com" target="_blank" rel="noopener noreferrer"><Icon type="global" />isluo.com</a></Menu.Item>
+                                        <Menu.Item><a href="https://github.com/javaLuo/react-admin" target="_blank" rel="noopener noreferrer"><Icon type="github" />GitHub</a></Menu.Item>
+                                        <Menu.Divider />
+                                        <Menu.Item key="logout" ><Icon type="logout" />退出登录</Menu.Item>
+                                    </Menu>
+                                }
+                                placement="bottomRight"
+                            >
+                                <div className={c(css.userhead, 'flex-row flex-ac')}>
+                                    <Icon type="smile-o" />
+                                    <span className={css.username}>{u.username}</span>
+                                </div>
+                            </Dropdown>
+                        ) : (
+                            <Tooltip
+                                placement="bottom"
+                                title="点击登录"
+                            >
+                                <div className={css.full}>
+                                    <Link to="/user/login">未登录</Link>
+                                </div>
+                            </Tooltip>
+                        )
+                    }
                 </div>
             </Header>
         );

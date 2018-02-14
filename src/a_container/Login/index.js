@@ -105,10 +105,8 @@ export default class LoginContainer extends React.Component {
               }
               /** 将这些信息加密后存入sessionStorage,并存入store **/
               sessionStorage.setItem('userinfo', tools.compile(JSON.stringify(res.data)));
-              setTimeout(() => {
-                  this.props.actions.setUserInfo(res.data);
-                  this.props.history.replace('/');
-              });  // 跳转到主页
+              this.props.actions.setUserInfo(res.data);
+              setTimeout(() => this.props.history.replace('/'));  // 跳转到主页,用setTimeout是为了等待上一句设置用户信息完成
           } else {
               message.error(res.message);
               this.setState({ loading: false });
@@ -178,9 +176,9 @@ export default class LoginContainer extends React.Component {
     const { getFieldDecorator } = this.props.form;
     return (
       <div className={css.page}>
-        <div className={css.canvasBox}>
-            <CanvasBack />
-        </div>
+        {/*<div className={css.canvasBox}>*/}
+            {/*<CanvasBack />*/}
+        {/*</div>*/}
         <div className={c(css.loginBox, {[css.show] : this.state.show}, 'all_trans5')}>
           <Form>
               <div className={css.title}>

@@ -1,7 +1,5 @@
 /** Canvas背景效果，变化的线条 **/
 import React from 'react';
-import P from 'prop-types';
-import c from 'classnames';
 import css from './index.scss';
 
 class CanvasBack extends React.PureComponent {
@@ -26,7 +24,7 @@ class CanvasBack extends React.PureComponent {
 
     init() {
         const canvas = this.myCanvas;
-
+        console.log('获取到了吗canvas：', canvas);
         canvas.width = screen.availWidth;
         canvas.height = canvas.offsetHeight;
         canvas.style.width = `${screen.availWidth}px`;
@@ -43,11 +41,11 @@ class CanvasBack extends React.PureComponent {
         for (let i = 0; i < this.state.point; i++) {
             this.circleArr.push(this.drawCricle(c2d, this.num(canvas.width * 1.5, -canvas.width * 0.5), this.num(canvas.height * 1.5, -canvas.height * 0.5), this.num(25, 8), this.num(30, -30)/40, this.num(30, -30)/40));
         }
-        setTimeout(()=>this.animate(), 16);
+        this.animate();
     }
 
     animate() {
-        (() => this.draw())();
+        this.draw();
         for (let i = 0; i < this.state.point; i++) {
             const cir = this.circleArr[i];
             cir.x += cir.moveX;
@@ -58,7 +56,7 @@ class CanvasBack extends React.PureComponent {
             else if (cir.y < -this.myCanvas.height * 0.2) cir.y = this.myCanvas.height * 1.2;
             
         }
-        this.animateTimer = requestAnimationFrame(() =>this.animate());
+        this.animateTimer = requestAnimationFrame(this.animate);
     }
 
 //线条：开始xy坐标，结束xy坐标，线条透明度
@@ -109,7 +107,7 @@ class CanvasBack extends React.PureComponent {
 
     //每帧绘制
     draw () {
-        this.state.context.clearRect(0,0,this.myCanvas.width, this.myCanvas.height);
+        this.state.context.clearRect(0,0,this.myCanvas.width , this.myCanvas.height);
         for (let i = 0; i < this.state.point; i++) {
             this.drawCricle(this.state.context, this.circleArr[i].x, this.circleArr[i].y, this.circleArr[i].r);
         }

@@ -1,4 +1,4 @@
-/* 404 NotFound */
+/* 401 没有权限 */
 
 import React from 'react';
 import { connect } from 'react-redux';
@@ -6,7 +6,7 @@ import { bindActionCreators } from 'redux';
 import { Button } from 'antd';
 import P from 'prop-types';
 import css from './index.scss';
-import ImgNotFound from '../../assets/error.gif';
+import Img from '../../assets/error.gif';
 
 @connect(
     (state) => ({
@@ -15,7 +15,7 @@ import ImgNotFound from '../../assets/error.gif';
         actions: bindActionCreators({}, dispatch),
     })
 )
-export default class HomePageContainer extends React.Component {
+export default class NoPowerContainer extends React.Component {
   static propTypes = {
       history: P.any,
   };
@@ -42,12 +42,12 @@ export default class HomePageContainer extends React.Component {
     return (
       <div className={css.page}>
           <div>
-            <div className={css.title}>404</div>
-            <div className={css.info}>Oh dear</div>
-            <div className={css.info}>这里什么也没有</div>
+            <div className={css.title}>401</div>
+            <div className={css.info}>你没有访问该页面的权限</div>
+            <div className={css.info}>请联系你的管理员</div>
             <Button className={css.backBtn} type="primary" ghost onClick={this.onGoBackHome}>返回首页</Button>
           </div>
-          <img src={ImgNotFound + `?${new Date().getTime()}`} />
+          <img src={Img + `?${new Date().getTime()}`} />
       </div>
     );
   }
