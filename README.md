@@ -22,6 +22,24 @@ react+redux+webpack+antd
   
   关系：权限 依附于 菜单 依附于 角色 依附于 用户
 
+## 构建 Start
+
+```
+npm install       # 安装依赖模块
+```
+
+```
+npm run dev       # 运行开发环境，默认监听8888端口
+```
+
+```
+npm run build     # 正式打包，用于生产环境
+```
+
+```
+npm run dist     # 运行正式打包后的最终代码，默认监听8888端口
+```
+
 ## 预览地址 Demo
 
 http://isluo.com/work/admin/index.html <br/>
