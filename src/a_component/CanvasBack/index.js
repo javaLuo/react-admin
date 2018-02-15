@@ -1,130 +1,177 @@
 /** Canvas背景效果，变化的线条 **/
 import React from 'react';
 import css from './index.scss';
+import P from 'prop-types';
 
-class CanvasBack extends React.PureComponent {
+export default class CanvasBack extends React.PureComponent {
+    static propTypes = {
+        row: P.number,  // 纵向密集度
+        col: P.number,  // 横向密集度
+    };
+
     constructor(props) {
         super(props);
         this.state = {
-            point: 18, // 生成35个点
             context: null,
         };
-        this.context = null;
-        this.circleArr = [];
+        this.ctx = null;
+        this.dots = []; // 所有的点
+        this.mouseXY = null;    // 当前鼠标所在位置
         this.animateTimer = null;
     }
 
     componentDidMount() {
-        this.init();
-    }
-
-    componentWillUnmount() {
-        window.cancelAnimationFrame(this.animateTimer);
-    }
-
-    init() {
-        const canvas = this.myCanvas;
-        console.log('获取到了吗canvas：', canvas);
-        canvas.width = screen.availWidth;
-        canvas.height = canvas.offsetHeight;
-        canvas.style.width = `${screen.availWidth}px`;
-        const c2d = canvas.getContext('2d');
-
-        c2d.strokeStyle = 'rgba(0,0,0,0.01)';
-        c2d.strokeWidth = 1;
-        c2d.fillStyle = 'rgba(0,0,0,0.01)';
-
-        this.setState({
-            context: canvas.getContext('2d'),
-        });
-
-        for (let i = 0; i < this.state.point; i++) {
-            this.circleArr.push(this.drawCricle(c2d, this.num(canvas.width * 1.5, -canvas.width * 0.5), this.num(canvas.height * 1.5, -canvas.height * 0.5), this.num(25, 8), this.num(30, -30)/40, this.num(30, -30)/40));
-        }
+        console.log(this.myCanvas.clientWidth);
+        this.ctx = this.myCanvas.getContext("2d");
+        this.ctx.strokeStyle = "rgba(255,255,255,1)";
+        this.width = this.myCanvas.clientWidth;
+        this.height = this.myCanvas.clientHeight;
+        this.myCanvas.width = this.width;
+        this.myCanvas.height = this.height;
+        this.init(this.props.row, this.props.col, this.width, this.height);
         this.animate();
     }
 
-    animate() {
-        this.draw();
-        for (let i = 0; i < this.state.point; i++) {
-            const cir = this.circleArr[i];
-            cir.x += cir.moveX;
-            cir.y += cir.moveY;
-            if (cir.x > this.myCanvas.width * 1.2) cir.x = -this.myCanvas.width * 0.2;
-            else if (cir.x < -this.myCanvas.width * 0.2) cir.x = this.myCanvas.width * 1.2;
-            if (cir.y > this.myCanvas.height * 1.2) cir.y = -this.myCanvas.height * 0.2;
-            else if (cir.y < -this.myCanvas.height * 0.2) cir.y = this.myCanvas.height * 1.2;
-            
+    componentWillUnmount() {
+        //this.myCanvas.removeEventListener("click");
+        window.cancelAnimationFrame(this.animateTimer);
+    }
+
+    /** 初始化canvas **/
+    init(row, col, width, height) {
+        const step_row = height/(row-2);
+        const step_col = width/(col-2);
+        console.log('初始化的什么：', row, col, width ,height);
+        for(let i=0; i<row; i++) {
+            for(let j=0; j<col; j++) {
+                const temp = {
+                    x: j * step_col - step_col/2,			// 原始坐标x
+                    y: i * step_row - step_row/2,			// 原始坐标y
+                    sx: this.random(-step_row/2, step_row/2),	// 当前偏移量x
+                    sy: this.random(-step_col/2, step_col/2),	// 当前偏移量y
+                    dx: !!(Math.round(this.random(0, 1))),		// 当前方向x
+                    dy: !!(Math.round(this.random(0, 1))),		// 当前方向y
+                    color: this.random(80, 255),				// b通道颜色值
+                    dcolor: !!(Math.round(this.random(0, 1))),	// 颜色改变向量
+                };
+                this.dots.push(temp);
+            }
         }
-        this.animateTimer = requestAnimationFrame(this.animate);
+
+        // 绑定鼠标事件
+        this.myCanvas.addEventListener("mousemove", (e) => this.initEvent(e), false);
     }
 
-//线条：开始xy坐标，结束xy坐标，线条透明度
-    Line (x, y, _x, _y, o) {
-        let line = {};
-        line.beginX = x;
-        line.beginY = y;
-        line.closeX = _x;
-        line.closeY = _y;
-        line.o = o;
-        return line;
-    }
-    //点：圆心xy坐标，半径，每帧移动xy的距离
-    Circle (x, y, r, moveX, moveY) {
-        let circle = {};
-        circle.x = x;
-        circle.y = y;
-        circle.r = r;
-        circle.moveX = moveX;
-        circle.moveY = moveY;
-        return circle;
-    }
-    //生成max和min之间的随机数
-    num (max, _min) {
-        const min = arguments[1] || 0;
-        return Math.floor(Math.random()*(max-min)+min);
-    }
-    // 绘制圆点
-    drawCricle (cxt, x, y, r, moveX, moveY) {
-        const circle = this.Circle(x, y, r, moveX, moveY);
-        cxt.beginPath();
-        cxt.arc(circle.x, circle.y, circle.r, 0, 2*Math.PI);
-        cxt.closePath();
-        cxt.fill();
-        return circle;
-    }
-    //绘制线条
-    drawLine (cxt, x, y, _x, _y, o) {
-        const line = this.Line(x, y, _x, _y, o);
-        cxt.beginPath();
-        cxt.strokeStyle = 'rgba(0,0,0.02,'+ o +')';
-        cxt.moveTo(line.beginX, line.beginY);
-        cxt.lineTo(line.closeX, line.closeY);
-        cxt.closePath();
-        cxt.stroke();
-
+    /** 鼠标绑定事件 **/
+    initEvent(e) {
+        this.mouseXY = [e.offsetX, e.offsetY];
     }
 
-    //每帧绘制
-    draw () {
-        this.state.context.clearRect(0,0,this.myCanvas.width , this.myCanvas.height);
-        for (let i = 0; i < this.state.point; i++) {
-            this.drawCricle(this.state.context, this.circleArr[i].x, this.circleArr[i].y, this.circleArr[i].r);
-        }
-        for (let i = 0; i < this.state.point; i++) {
-            for (let j = 0; j < this.state.point; j++) {
-                if (i + j < this.state.point) {
-                    const A = Math.abs(this.circleArr[i+j].x - this.circleArr[i].x),
-                        B = Math.abs(this.circleArr[i+j].y - this.circleArr[i].y);
-                    const lineLength = Math.sqrt(A*A + B*B);
-                    const C = 1/lineLength*7 + 0.005;
-                    const lineOpacity = C > 0.05 ? 0.05 : C;
-                    if (lineOpacity > 0) {
-                        this.drawLine(this.state.context, this.circleArr[i].x, this.circleArr[i].y, this.circleArr[i+j].x, this.circleArr[i+j].y, lineOpacity);
-                    }
+    /** 工具 - 获取范围随机数 **/
+    random(min, max) {
+        return Math.random()* (max - min) + min;
+    }
+
+    /** 绘制一帧 **/
+     drow(dots, row, col, ctx, width, height) {
+        ctx.fillRect(0,0,width,height);
+
+        for(let i=0; i< row; i++) {
+            for(let j=0; j< col-1; j++) {
+                const k = i * col + j;
+                const k1 = k + 1;
+                const k2 = k + col;
+                const k3 = k - col + 1;
+                if (i <= row-2) {
+                    ctx.beginPath();
+                    ctx.moveTo(dots[k].x + dots[k].sx, dots[k].y+dots[k].sy);
+                    ctx.lineTo(dots[k1].x + dots[k1].sx, dots[k1].y+dots[k1].sy);
+                    ctx.lineTo(dots[k2].x + dots[k2].sx, dots[k2].y+dots[k2].sy);
+                    ctx.closePath();
+                    const c = Math.round((dots[k].color + dots[k1].color+dots[k2].color)/3);
+                    ctx.fillStyle=`rgb(0,${Math.round(c/1.15)},${c})`;
+                    ctx.fill();
+                }
+                if (i > 0) {
+                    ctx.beginPath();
+                    ctx.moveTo(dots[k].x + dots[k].sx, dots[k].y+dots[k].sy);
+                    ctx.lineTo(dots[k1].x + dots[k1].sx, dots[k1].y+dots[k1].sy);
+                    ctx.lineTo(dots[k3].x + dots[k3].sx, dots[k3].y+dots[k3].sy);
+                    ctx.closePath();
+                    const c = Math.round((dots[k].color + dots[k1].color+dots[k3].color)/3);
+                    ctx.fillStyle=`rgb(0, ${Math.round(c/1.15)},${c})`;
+                    ctx.fill();
                 }
             }
         }
+    }
+
+    /** 动画函数 **/
+    animate() {
+        const row = this.props.row;
+        const col = this.props.col;
+        const width = this.width;
+        const height = this.height;
+        const mouseXY = this.mouseXY;
+        const step_row = height/(row-2);
+        const step_col = width/(col-2);
+
+        this.dots.forEach(function(item, index){
+            if (item.dx) {	// 增
+                if(item.sx<(step_col/3)){
+                    item.sx+= 0.1;
+                } else {
+                    item.dx = !item.dx;
+                }
+            } else {	// 减
+                if(item.sx>-(step_col/3)){
+                    item.sx-= 0.1;
+                } else {
+                    item.dx = !item.dx;
+                }
+            }
+
+            if (item.dy) {	// 增
+                if(item.sy<(step_row/3)){
+                    item.sy+= 0.1;
+                } else {
+                    item.dy = !item.dy;
+                }
+            } else {	// 减
+                if(item.sy>-(step_row/3)){
+                    item.sy-= 0.1;
+                } else {
+                    item.dy = !item.dy;
+                }
+            }
+
+            /** 计算当前点与鼠标之间的距离比例 **/
+            let m = 0;
+            if (mouseXY){
+                const x1 = item.x+item.sx;
+                const y1 = item.y+item.sy;
+                m = Math.min(Math.sqrt(Math.pow(x1 - mouseXY[0],2) + Math.pow(y1 - mouseXY[1],2)), 100);
+                m = (100 - m) / 200;
+            }
+
+            /** 处理颜色变化 **/
+            if (item.dcolor) {	// 颜色变亮
+                if (m !== 0 ? item.color < 255 : item.color < 180) {
+                    item.color += 1;
+                } else {
+                    item.dcolor = !item.dcolor;
+                }
+            } else {
+                if (m !== 0 ? item.color > 250 : item.color > 100) {
+                    item.color -= 1;
+                } else {
+                    item.dcolor = !item.dcolor;
+                }
+            }
+        });
+
+        this.drow(this.dots, row, col,this.ctx, width, height);
+        this.animateTimer = requestAnimationFrame(() => this.animate());
     }
 
     render() {
@@ -135,8 +182,3 @@ class CanvasBack extends React.PureComponent {
         );
     }
 }
-
-CanvasBack.propTypes = {
-};
-
-export default CanvasBack;

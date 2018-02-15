@@ -176,9 +176,9 @@ export default class LoginContainer extends React.Component {
     const { getFieldDecorator } = this.props.form;
     return (
       <div className={css.page}>
-        {/*<div className={css.canvasBox}>*/}
-            {/*<CanvasBack />*/}
-        {/*</div>*/}
+        <div className={css.canvasBox}>
+            <CanvasBack row={12} col={8}/>
+        </div>
         <div className={c(css.loginBox, {[css.show] : this.state.show}, 'all_trans5')}>
           <Form>
               <div className={css.title}>
@@ -250,7 +250,7 @@ export default class LoginContainer extends React.Component {
                 />
               </FormItem>
               <div style={{ lineHeight: '40px' }}>
-                <Checkbox checked={this.state.rememberPassword} onChange={(e) => this.onRemember(e)}>记住密码</Checkbox>
+                <Checkbox className={css.remember} checked={this.state.rememberPassword} onChange={(e) => this.onRemember(e)}>记住密码</Checkbox>
                 <Button
                     className={css['submit-btn']}
                     size="large"
