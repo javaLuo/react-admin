@@ -33,7 +33,6 @@ export default class Com extends React.PureComponent {
     }
 
     componentWillReceiveProps(nextP) {
-        console.log('数据是什么：', nextP.data);
         if (this.props.data !== nextP.data) {
             this.makeSourceData(nextP.data);
         }
@@ -45,7 +44,6 @@ export default class Com extends React.PureComponent {
     /** 处理当前选中 **/
     nowChosed(location) {
         const paths = location.pathname.split('/').filter((item) => !!item);
-        console.log('选中啊？', location);
         this.setState({
             chosedKey: [location.pathname],
             openKeys: paths.map((item) => `/${item}`)
@@ -68,7 +66,6 @@ export default class Com extends React.PureComponent {
         });
         const sourceData = this.dataToJson(null, d) || [];
         const treeDom = this.makeTreeDom(sourceData, '');
-        console.log('得到了什么2：', sourceData, treeDom);
         this.setState({
             sourceData,
             treeDom
@@ -123,7 +120,7 @@ export default class Com extends React.PureComponent {
                     theme="dark"
                     mode="inline"
                     selectedKeys={this.state.chosedKey}
-                    openKeys={this.state.openKeys}
+                    {... this.props.collapsed ? {} : { openKeys: this.state.openKeys}}
                     onOpenChange={(e) => this.onOpenChange(e)}
                 >
                     {this.state.treeDom}

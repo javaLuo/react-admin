@@ -99,3 +99,13 @@ export const getNewsTotal = (params = {}) => async(dispatch) => {
         message.error('网络错误，请重试');
     }
 };
+
+export const test = (params = {}) => async(dispatch) => {
+    try {
+        const res = await Fetchapi.newFetch('api/test', params);
+        console.log('test得到了什么：', res.data);
+        return res.data;
+    } catch(err) {
+        message.error('网络错误，请重试');
+    }
+};

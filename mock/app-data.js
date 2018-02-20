@@ -1,8 +1,8 @@
-import Mock from 'mockjs';
-
-Mock.setup({
-    timeout: '0-500',
-});
+const Mock = require('mockjs');
+//
+// Mock.setup({
+//     timeout: '0-500',
+// });
 
 /**
  * 模拟数据
@@ -79,8 +79,8 @@ const roles = [
  * 方法
  * **/
 // 登录
-const onLogin = (request) => {
-    const p = JSON.parse(request.body);
+const onLogin = (p) => {
+    // const p = JSON.parse(request.body);
     console.log(p, users);
     const u = users.find((item, index) => {
         return item.username === p.username;
@@ -93,8 +93,8 @@ const onLogin = (request) => {
     return { status: 200, data: u, message: '登录成功' };
 };
 // 删除消息数据
-const clearNews = (request) => {
-    const p = JSON.parse(request.body);
+const clearNews = (p) => {
+    // const p = JSON.parse(request.body);
     switch(p.type){
         case 'notice': msg.notice.length = 0;break;
         case 'message': msg.message.length = 0;break;
@@ -103,12 +103,12 @@ const clearNews = (request) => {
     return { status: 200, data: msg, total: msg.notice.length + msg.message.length + msg.work.length, message: '删除成功' };
 };
 // 获取所有菜单
-const getMenus = (request) => {
+const getMenus = (p) => {
     return { status: 200, data: menus, message: 'success' };
 };
 // 获取菜单（根据ID）
-const getMenusById = (request) => {
-    const p = JSON.parse(request.body);
+const getMenusById = (p) => {
+    // const p = JSON.parse(request.body);
     let res = [];
     if (p.id instanceof Array) {
         res = menus.filter((item) => p.id.includes(item.id));
@@ -120,16 +120,16 @@ const getMenusById = (request) => {
 };
 
 // 添加新菜单
-const addMenu = (request) => {
-    const p = JSON.parse(request.body);
+const addMenu = (p) => {
+    // const p = JSON.parse(request.body);
     console.log('添加：', p);
     p.id = ++id_sequence;
     menus.push(p);
     return { status: 200, data: menus, message: '添加成功' };
 };
 // 修改菜单
-const upMenu = (request) => {
-    const p = JSON.parse(request.body);
+const upMenu = (p) => {
+    // const p = JSON.parse(request.body);
     console.log('到这了吗：', p);
     const oldIndex = menus.findIndex((item) => item.id === p.id);
     if (oldIndex !== -1){
@@ -141,8 +141,8 @@ const upMenu = (request) => {
     }
 };
 // 删除菜单
-const delMenu = (request) => {
-    const p = JSON.parse(request.body);
+const delMenu = (p) => {
+    // const p = JSON.parse(request.body);
     console.log('到这了吗：', p);
     const oldIndex = menus.findIndex((item) => item.id === p.id);
 
@@ -160,8 +160,8 @@ const delMenu = (request) => {
     }
 };
 // 根据菜单ID查询其下权限
-const getPowerByMenuId  = (request) => {
-    const p = JSON.parse(request.body);
+const getPowerByMenuId  = (p) => {
+    // const p = JSON.parse(request.body);
     const menuId = p.menuId;
 
     if (menuId) {
@@ -172,8 +172,8 @@ const getPowerByMenuId  = (request) => {
     }
 };
 // 根据权限ID查询对应的权限
-const getPowerById = (request) => {
-    const p = JSON.parse(request.body);
+const getPowerById = (p) => {
+    // const p = JSON.parse(request.body);
     let res = [];
     console.log('开始查权限了，都有什么：', p);
     if (p.id instanceof Array) {
@@ -185,15 +185,15 @@ const getPowerById = (request) => {
     return {status: 200, data: res, message: 'success'};
 };
 // 添加权限
-const addPower = (request) => {
-    const p = JSON.parse(request.body);
+const addPower = (p) => {
+    // const p = JSON.parse(request.body);
     p.id = ++id_sequence;
     powers.push(p);
     return { status: 200, data: null, message: 'success' };
 };
 // 修改权限
-const upPower = (request) => {
-    const p = JSON.parse(request.body);
+const upPower = (p) => {
+    // const p = JSON.parse(request.body);
     console.log('到这了吗：', p);
     const oldIndex = powers.findIndex((item) => item.id === p.id);
     if (oldIndex !== -1){
@@ -205,8 +205,8 @@ const upPower = (request) => {
     }
 };
 // 删除权限
-const delPower = (request) => {
-    const p = JSON.parse(request.body);
+const delPower = (p) => {
+    // const p = JSON.parse(request.body);
     console.log('到这了吗：', p);
     const oldIndex = powers.findIndex((item) => item.id === p.id);
 
@@ -218,8 +218,8 @@ const delPower = (request) => {
     }
 };
 // 查询角色（分页,条件筛选）
-const getRoles = (request) => {
-    const p = JSON.parse(request.body);
+const getRoles = (p) => {
+    // const p = JSON.parse(request.body);
     const map = roles.filter((item) => {
         let yeah = true;
         if (p.title && !item.title.includes(p.title)) {
@@ -235,12 +235,12 @@ const getRoles = (request) => {
     return { status: 200, data: { list: res, total: roles.length }, message: 'success' };
 };
 // 查询角色（所有）
-const getAllRoles = (request) => {
+const getAllRoles = (p) => {
     return { status: 200, data: roles, message: 'success' };
 };
 // 查询角色（通过角色ID）
-const getRoleById = (request) => {
-    const p = JSON.parse(request.body);
+const getRoleById = (p) => {
+    // const p = JSON.parse(request.body);
     let res = [];
     if (p.id instanceof Array) {
         res = roles.filter((item) => p.id.includes(item.id));
@@ -251,15 +251,15 @@ const getRoleById = (request) => {
     return {status: 200, data: res, message: 'success'};
 };
 // 添加角色
-const addRole = (request) => {
-    const p = JSON.parse(request.body);
+const addRole = (p) => {
+    // const p = JSON.parse(request.body);
     p.id = ++id_sequence;
     roles.push(p);
     return { status: 200, data: null, message: 'success' };
 };
 // 修改角色
-const upRole = (request) => {
-    const p = JSON.parse(request.body);
+const upRole = (p) => {
+    // const p = JSON.parse(request.body);
     const oldIndex = roles.findIndex((item) => item.id === p.id);
     if (oldIndex !== -1){
         const news = Object.assign({}, roles[oldIndex], p);
@@ -270,8 +270,8 @@ const upRole = (request) => {
     }
 };
 // 删除角色
-const delRole = (request) => {
-    const p = JSON.parse(request.body);
+const delRole = (p) => {
+    // const p = JSON.parse(request.body);
     const oldIndex = roles.findIndex((item) => item.id === p.id);
     console.log('开始删除：', oldIndex);
     if(oldIndex !== -1) {
@@ -282,8 +282,8 @@ const delRole = (request) => {
     }
 };
 // 根据角色ID查询该角色所拥有的菜单和权限详细信息
-const findAllPowerByRoleId = (request) => {
-    const p = JSON.parse(request.body);
+const findAllPowerByRoleId = (p) => {
+    // const p = JSON.parse(request.body);
     const t = roles.find((item) => item.id === p.id);
     if (t) {
         const res = t.powers.map((item, index) => {
@@ -300,7 +300,7 @@ const findAllPowerByRoleId = (request) => {
     }
 };
 // 获取所有的菜单及权限数据 - 为了构建PowerTree组件
-const getAllPowers = (request) => {
+const getAllPowers = (p) => {
     const res = menus.map((item) => {
         const _menu = item;
         const _powers = powers.filter((v) => v.menu === item.id && v.conditions === 1);
@@ -310,8 +310,8 @@ const getAllPowers = (request) => {
     return { status: 200, data: res, message: 'success' };
 };
 // 给指定角色分配菜单和权限
-const setPowersByRoleId = (request) => {
-    const p = JSON.parse(request.body);
+const setPowersByRoleId = (p) => {
+    // const p = JSON.parse(request.body);
     const oldIndex = roles.findIndex((item) => item.id === p.id);
     if (oldIndex !== -1){
         let pow = p.menus.map((item) => ({ menuId: item, powers: [] }));
@@ -330,8 +330,8 @@ const setPowersByRoleId = (request) => {
     }
 };
 // 条件分页查询用户列表
-const getUserList = (request) => {
-    const p = JSON.parse(request.body);
+const getUserList = (p) => {
+    // const p = JSON.parse(request.body);
     const map = users.filter((item) => {
         let yeah = true;
         if (p.username && !item.username.includes(p.username)) {
@@ -346,15 +346,15 @@ const getUserList = (request) => {
     return { status: 200, data: { list: res, total: roles.length }, message: 'success' };
 };
 // 添加用户
-const addUser = (request) => {
-    const p = JSON.parse(request.body);
+const addUser = (p) => {
+    // const p = JSON.parse(request.body);
     p.id = ++id_sequence;
     users.push(p);
     return { status: 200, data: null, message: 'success' };
 };
 // 修改用户
-const upUser = (request) => {
-    const p = JSON.parse(request.body);
+const upUser = (p) => {
+    // const p = JSON.parse(request.body);
     const oldIndex = users.findIndex((item) => item.id === p.id);
     if (oldIndex !== -1){
         const news = Object.assign({}, users[oldIndex], p);
@@ -365,8 +365,8 @@ const upUser = (request) => {
     }
 };
 // 删除用户
-const delUser = (request) => {
-    const p = JSON.parse(request.body);
+const delUser = (p) => {
+    // const p = JSON.parse(request.body);
     const oldIndex = users.findIndex((item) => item.id === p.id);
     if(oldIndex !== -1) {
         users.splice(oldIndex, 1);
@@ -376,8 +376,8 @@ const delUser = (request) => {
     }
 };
 // 给用户分配角色
-const setUserRoles = (request) => {
-    const p = JSON.parse(request.body);
+const setUserRoles = (p) => {
+    // const p = JSON.parse(request.body);
     const oldIndex = users.findIndex((item) => item.id === p.id);
     if(oldIndex !== -1) {
         users.splice(oldIndex, 1);
@@ -387,62 +387,98 @@ const setUserRoles = (request) => {
     }
 };
 
+exports.mockApi = (url, params) => {
+    console.log('传来的是什么：', url, params);
+    switch(url){
+        case '/api/login':
+            console.log('难道不应该走这里吗');
+            return onLogin(params);
+        case '/api/getnews': return {status: 200, data: msg, total: msg.notice.length + msg.message.length + msg.work.length, message: 'success'};
+        case '/api/clearnews': return clearNews(params);
+        case '/api/getnewstotal': return { status: 200, data: msg.notice.length + msg.message.length + msg.work.length, message: 'success' };
+        case '/api/getmenus': return getMenus(params);
+        case '/api/getMenusById': return getMenusById(params);
+        case '/api/addmenu': return addMenu(params);
+        case '/api/upmenu': return upMenu(params);
+        case '/api/delmenu': return delMenu(params);
+        case '/api/getpowerbymenuid': return getPowerByMenuId(params);
+        case '/api/getPowerById': return getPowerById(params);
+        case '/api/addpower': return addPower(params);
+        case '/api/uppower': return upPower(params);
+        case '/api/delpower': return delPower(params);
+        case '/api/getroles': return getRoles(params);
+        case '/api/getAllRoles': return getAllRoles(params);
+        case '/api/getRoleById': return getRoleById(params);
+        case '/api/addrole': return addRole(params);
+        case '/api/uprole': return upRole(params);
+        case '/api/delrole': return delRole(params);
+        case '/api/findAllPowerByRoleId': return findAllPowerByRoleId(params);
+        case '/api/getAllPowers': return getAllPowers(params);
+        case '/api/setPowersByRoleId': return setPowersByRoleId(params);
+        case '/api/getUserList': return getUserList(params);
+        case '/api/addUser': return addUser(params);
+        case '/api/upUser': return upUser(params);
+        case '/api/delUser': return delUser(params);
+        case '/api/setUserRoles': return setUserRoles(params);
+        default: return { status: 404, data: null, message: 'api not found' };
+    }
+};
 /**
  * API拦截
  * **/
-// 登录请求
-Mock.mock('api/login', (params) => onLogin(params));
-// 获取消息数据
-Mock.mock('api/getnews', () => {return {status: 200, data: msg, total: msg.notice.length + msg.message.length + msg.work.length, message: 'success'};});
-// 删除消息数据
-Mock.mock('api/clearnews', (params) => clearNews(params));
-// 获取消息总数
-Mock.mock('api/getnewstotal', () => ({ status: 200, data: msg.notice.length + msg.message.length + msg.work.length, message: 'success' }));
-// 获取所有菜单
-Mock.mock('api/getmenus', (params) => getMenus(params));
-// 获取菜单（根据ID）
-Mock.mock('api/getMenusById', (params) => getMenusById(params));
-// 添加菜单
-Mock.mock('api/addmenu', (params) => addMenu(params));
-// 修改菜单
-Mock.mock('api/upmenu', (params) => upMenu(params));
-// 删除菜单
-Mock.mock('api/delmenu', (params) => delMenu(params));
-// 根据菜单ID查询其下权限
-Mock.mock('api/getpowerbymenuid', (params) => getPowerByMenuId(params));
-// 根据权限ID查询对应的权限
-Mock.mock('api/getPowerById', (params) => getPowerById(params));
-// 添加权限
-Mock.mock('api/addpower', (params) => addPower(params));
-// 修改权限
-Mock.mock('api/uppower', (params) => upPower(params));
-// 删除权限
-Mock.mock('api/delpower', (params) => delPower(params));
-// 查询角色（分页）
-Mock.mock('api/getroles', (params) => getRoles(params));
-// 查询角色（所有）
-Mock.mock('api/getAllRoles', (params) => getAllRoles(params));
-// 查询角色（通过角色ID）
-Mock.mock('api/getRoleById', (params) => getRoleById(params));
-// 添加角色
-Mock.mock('api/addrole', (params) => addRole(params));
-// 修改角色
-Mock.mock('api/uprole', (params) => upRole(params));
-// 删除角色
-Mock.mock('api/delrole', (params) => delRole(params));
-// 根据角色ID查询该角色所拥有的菜单和权限详细信息
-Mock.mock('api/findAllPowerByRoleId', (params) => findAllPowerByRoleId(params));
-// 获取所有的菜单及权限数据 - 为了构建PowerTree组件
-Mock.mock('api/getAllPowers', (params) => getAllPowers(params));
-// 给指定角色分配菜单和权限
-Mock.mock('api/setPowersByRoleId', (params) => setPowersByRoleId(params));
-// 条件分页查询用户列表
-Mock.mock('api/getUserList', (params) => getUserList(params));
-// 添加用户
-Mock.mock('api/addUser', (params) => addUser(params));
-// 修改用户
-Mock.mock('api/upUser', (params) => upUser(params));
-// 删除用户
-Mock.mock('api/delUser', (params) => delUser(params));
-// 给用户分配角色
-Mock.mock('api/setUserRoles', (params) => setUserRoles(params));
+// // 登录请求
+// Mock.mock('api/login', (params) => onLogin(params));
+// // 获取消息数据
+// Mock.mock('api/getnews', () => {return {status: 200, data: msg, total: msg.notice.length + msg.message.length + msg.work.length, message: 'success'};});
+// // 删除消息数据
+// Mock.mock('api/clearnews', (params) => clearNews(params));
+// // 获取消息总数
+// Mock.mock('api/getnewstotal', () => ({ status: 200, data: msg.notice.length + msg.message.length + msg.work.length, message: 'success' }));
+// // 获取所有菜单
+// Mock.mock('api/getmenus', (params) => getMenus(params));
+// // 获取菜单（根据ID）
+// Mock.mock('api/getMenusById', (params) => getMenusById(params));
+// // 添加菜单
+// Mock.mock('api/addmenu', (params) => addMenu(params));
+// // 修改菜单
+// Mock.mock('api/upmenu', (params) => upMenu(params));
+// // 删除菜单
+// Mock.mock('api/delmenu', (params) => delMenu(params));
+// // 根据菜单ID查询其下权限
+// Mock.mock('api/getpowerbymenuid', (params) => getPowerByMenuId(params));
+// // 根据权限ID查询对应的权限
+// Mock.mock('api/getPowerById', (params) => getPowerById(params));
+// // 添加权限
+// Mock.mock('api/addpower', (params) => addPower(params));
+// // 修改权限
+// Mock.mock('api/uppower', (params) => upPower(params));
+// // 删除权限
+// Mock.mock('api/delpower', (params) => delPower(params));
+// // 查询角色（分页）
+// Mock.mock('api/getroles', (params) => getRoles(params));
+// // 查询角色（所有）
+// Mock.mock('api/getAllRoles', (params) => getAllRoles(params));
+// // 查询角色（通过角色ID）
+// Mock.mock('api/getRoleById', (params) => getRoleById(params));
+// // 添加角色
+// Mock.mock('api/addrole', (params) => addRole(params));
+// // 修改角色
+// Mock.mock('api/uprole', (params) => upRole(params));
+// // 删除角色
+// Mock.mock('api/delrole', (params) => delRole(params));
+// // 根据角色ID查询该角色所拥有的菜单和权限详细信息
+// Mock.mock('api/findAllPowerByRoleId', (params) => findAllPowerByRoleId(params));
+// // 获取所有的菜单及权限数据 - 为了构建PowerTree组件
+// Mock.mock('api/getAllPowers', (params) => getAllPowers(params));
+// // 给指定角色分配菜单和权限
+// Mock.mock('api/setPowersByRoleId', (params) => setPowersByRoleId(params));
+// // 条件分页查询用户列表
+// Mock.mock('api/getUserList', (params) => getUserList(params));
+// // 添加用户
+// Mock.mock('api/addUser', (params) => addUser(params));
+// // 修改用户
+// Mock.mock('api/upUser', (params) => upUser(params));
+// // 删除用户
+// Mock.mock('api/delUser', (params) => delUser(params));
+// // 给用户分配角色
+// Mock.mock('api/setUserRoles', (params) => setUserRoles(params));

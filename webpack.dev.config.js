@@ -21,18 +21,19 @@ module.exports = {
         filename: 'bundle.js'       //编译后的文件名字
     },
     devtool: '#source-map',         // 报错的时候正确的输出哪一行报错
+
     module: {
         rules: [
             {   // 编译前通过eslint检查代码 (注释掉即可取消eslint检测)
                 test: /\.js?$/,
                 enforce: 'pre',
                 loader: 'eslint-loader',
-                include: [path.resolve(__dirname, "src"), path.resolve(__dirname, "mock")]
+                include: path.resolve(__dirname, "src")
             },
             {   // .js .jsx用babel解析
                 test: /\.js?$/,
-                include: [path.resolve(__dirname, "src"), path.resolve(__dirname, "mock")],
                 loader: 'happypack/loader?id=happybabel',
+                include: path.resolve(__dirname, "src"),
             },
             {   // .css 解析
                 test: /\.css$/,

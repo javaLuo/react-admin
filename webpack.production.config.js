@@ -18,7 +18,7 @@ module.exports = {
         rules: [
             {   // .js .jsx用babel解析
                 test: /\.js?$/,
-                include: [path.resolve(__dirname, "src"), path.resolve(__dirname, "mock")],
+                include: path.resolve(__dirname, "src"),
                 loader: 'babel-loader'
             },
             {   // .css 解析

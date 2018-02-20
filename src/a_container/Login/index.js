@@ -131,6 +131,7 @@ export default class LoginContainer extends React.Component {
       let powers = [];
       /** 1.登录 **/
       const res1 = await this.props.actions.onLogin({ username, password });    // 登录接口
+      console.log('登录返回', res1);
       if (!res1 || res1.status !== 200){ return res1; }                        // 登录失败
       userInfo = res1.data;
 
@@ -194,7 +195,7 @@ export default class LoginContainer extends React.Component {
                         prefix={<Icon type="user" style={{ fontSize: 13 }} />}
                         size="large"
                         id="username"   // 为了获取焦点
-                        placeholder="用户名"
+                        placeholder="admin/user"
                         onPressEnter={() => this.onSubmit()}
                       />
                   )}
@@ -207,7 +208,7 @@ export default class LoginContainer extends React.Component {
                         prefix={<Icon type="lock" style={{ fontSize: 13 }} />}
                         size="large"
                         type="password"
-                        placeholder="密码"
+                        placeholder="123456/123456"
                         onPressEnter={() => this.onSubmit()}
                       />
                   )}
