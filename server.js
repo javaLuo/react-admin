@@ -48,12 +48,12 @@ if (env === 'production') {                 // 如果是生产环境，则运行
 }
 
 /** 监听POST请求，返回MOCK模拟数据 **/
-app.post("*", (req, res, next) =>{                   // 所有POST请求都返回index.html
+app.post("*", (req, res, next) => {
     const result = mock.mockApi(req.originalUrl, req.body);
     res.send(result);
 });
 
 /** 启动服务，监听PORT端口 **/
-app.listen(PORT, function () {
+app.listen(PORT, () => {
     console.log('服务已启动: http://localhost:%s', PORT);
 });
