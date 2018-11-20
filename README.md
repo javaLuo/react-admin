@@ -42,7 +42,7 @@ npm run dist     # 运行正式打包后的最终代码，默认监听8888端�
 
 ## 预览地址 Demo
 
-http://isluo.com/work/admin/index.html <br/>
+https://isluo.com/work/admin <br/>
 账号：admin / user<br/>
 密码：123456 / 123456
 
