@@ -1,0 +1,25 @@
+{
+  "short_name": "react",
+  "name": "react",
+  "icons": [
+    {
+      "src": "./icons/favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "./icons/apple-touch-icon-114x114.png",
+      "sizes": "114x114",
+      "type": "image/png"
+    },
+    {
+      "src": "./icons/apple-touch-icon-144x144.png",
+      "sizes": "144x144",
+      "type": "image/png"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#222222",
+  "background_color": "#222222"
+}

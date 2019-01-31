@@ -1,33 +1,38 @@
 {
-    "env": {
-        "browser": true,
-        "commonjs": true,
-        "es6": true,
-        "mocha": true,
-        "jquery": true
+  "env": {
+    "browser": true,
+    "commonjs": true,
+    "es6": true,
+    "mocha": true
+  },
+  "extends": "plugin:react/recommended",
+  "parser": "babel-eslint",
+  "parserOptions": {
+    "ecmaVersion": 8,
+    "ecmaFeatures": {
+      "impliedStrict": true,
+      "jsx": true
     },
-    "parser": "babel-eslint",
-    "extends": "plugin:react/recommended",
-    "parserOptions": {
-        "ecmaVersion": 8,
-        "ecmaFeatures": {
-            "impliedStrict": true,
-            "experimentalObjectRestSpread": true,
-            "jsx": true
-        },
-        "sourceType": "module"
-    },
-    "plugins": [
-        "react"
-    ],
-    "rules": {
-        "semi": "warn",
-        "no-cond-assign": "error",
-        "no-debugger": "error",
-        "no-dupe-args": "error",
-        "no-caller": "error",
-        "no-unmodified-loop-condition": "error",
-        "no-with": "error",
-        "no-catch-shadow": "error"
+    "allowImportExportEverywhere": true,
+    "sourceType": "module"
+  },
+  "plugins": ["react", "prettier"],
+  "settings": {
+    "react": {
+      "version": "16.4"
     }
+  },
+  "rules": {
+    "semi": "warn",
+    "no-unused-vars": "off",
+    "no-cond-assign": "error",
+    "no-debugger": "warn",
+    "no-dupe-args": "error",
+    "no-caller": "error",
+    "no-unmodified-loop-condition": "error",
+    "no-with": "error",
+    "no-catch-shadow": "error",
+    "react/no-unescaped-entities": "off",
+    "prettier/prettier": "warn"
+  }
 }

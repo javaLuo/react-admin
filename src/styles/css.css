@@ -1,50 +1,119 @@
 /* 全局配置 */
-*{
-    -webkit-overflow-scrolling: touch;			/* 允许独立滚动区域，解决IOS上的非body元素滚动条滚动时卡顿 */
-    -webkit-tap-highlight-color: transparent;	/* 覆盖IOS上用户点击连接时的默认高亮颜色 */
-    outline: none;
+* {
+  -webkit-overflow-scrolling: touch; /* 允许独立滚动区域，解决IOS上的非body元素滚动条滚动时卡顿 */
+  -webkit-tap-highlight-color: transparent; /* 覆盖IOS上用户点击连接时的默认高亮颜色 */
+  outline: none;
 }
 
-body{
-    margin:0;
-    padding:0;
-    background-color:#fff;
-    -webkit-font-smoothing:antialiased;			/* 平滑字体 */
-    -moz-osx-font-smoothing: grayscale;			/* 平滑字体 */
-    -ms-touch-action: manipulation;				/* 允许触摸驱动的平移和拖拽缩放 */
-    touch-action: manipulation;					/* 允许触摸驱动的平移和拖拽缩放 */
-    -webkit-text-size-adjust:100%;				/* 关闭IOS横屏时，自动调整字体大小的功能 */
-    font-family: Myriad Pro,Helvetica Neue,Arial,Helvetica,sans-serif;
-    font-size:14px;
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #fff;
+  -webkit-font-smoothing: antialiased; /* 平滑字体 */
+  -moz-osx-font-smoothing: grayscale; /* 平滑字体 */
+  -ms-touch-action: manipulation; /* 允许触摸驱动的平移和拖拽缩放 */
+  touch-action: manipulation; /* 允许触摸驱动的平移和拖拽缩放 */
+  -webkit-text-size-adjust: 100%; /* 关闭IOS横屏时，自动调整字体大小的功能 */
+  font-family: Myriad Pro, Helvetica Neue, Arial, Helvetica, sans-serif;
+  font-size: 14px;
 }
-ul{position:relative;margin:0;padding:0;}								/* ul样式重置 */
-li{position:relative;list-style:none;margin:0;padding:0;}				/* li样式重置 */
-img{border:0;}
-input{line-height:normal;}
-img,input,a,a:focus,a:hover,a:active{outline:none;text-decoration: none;}
-label{cursor:pointer;}
-sub,sup{font-size:75%;line-height: 0;position: relative;vertical-align: baseline;} /* 重新定义上标和下标的表现 */
-sup{top: -.5em;}
-sub{bottom: -.25em;}
+ul {
+  position: relative;
+  margin: 0;
+  padding: 0;
+} /* ul样式重置 */
+li {
+  position: relative;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+} /* li样式重置 */
+img {
+  border: 0;
+}
+input {
+  line-height: normal;
+}
+img,
+input,
+a,
+a:focus,
+a:hover,
+a:active {
+  outline: none;
+  text-decoration: none;
+}
+label {
+  cursor: pointer;
+}
+sub,
+sup {
+  font-size: 75%;
+  line-height: 0;
+  position: relative;
+  vertical-align: baseline;
+} /* 重新定义上标和下标的表现 */
+sup {
+  top: -0.5em;
+}
+sub {
+  bottom: -0.25em;
+}
 
 /* 常用功能 */
-:global(.all_nowarp){white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}/* 禁止换行,末尾省略 */
-:global(.all_nowarp2){display: -webkit-box;-webkit-box-orient: vertical;overflow:hidden;text-overflow:ellipsis;-webkit-line-clamp:2;}/* 禁止换行，2行，末尾省略，div的高度需要正好是2行的高度 */
-:global(.all_nowarp3){display: -webkit-box;-webkit-box-orient: vertical;overflow:hidden;text-overflow:ellipsis;-webkit-line-clamp:3;}/* 禁止换行，3行，末尾省略，div的高度需要正好是2行的高度 */
-:global(.all_warp){word-break:break-all;word-wrap:break-word;} /* 强制换行 */
-:global(.all_b){-moz-box-sizing:border-box;-webkit-box-sizing:border-box;box-sizing:border-box;}	/* 内框模式 */
-:global(.all_clear:after){content:".";height:0;overflow:hidden;visibility:hidden;display:block;clear:both;} /* 清楚浮动 */
-:global(.all_trans){transition:all 300ms;-webkit-transition:all 300ms;}/* 过渡效果 */
-:global(.all_trans5){transition:all 500ms;-webkit-transition:all 500ms;}/* 过渡效果 */
+.all_nowarp {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+} /* 禁止换行,末尾省略 */
+.all_nowarp2 {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  -webkit-line-clamp: 2;
+} /* 禁止换行，2行，末尾省略，div的高度需要正好是2行的高度 */
+.all_nowarp3 {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  -webkit-line-clamp: 3;
+} /* 禁止换行，3行，末尾省略，div的高度需要正好是2行的高度 */
+.all_warp {
+  word-break: break-all;
+  word-wrap: break-word;
+} /* 强制换行 */
+.all_b {
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+} /* 内框模式 */
+.all_clear:after {
+  content: ".";
+  height: 0;
+  overflow: hidden;
+  visibility: hidden;
+  display: block;
+  clear: both;
+} /* 清楚浮动 */
+.all_trans {
+  transition: all 300ms;
+  -webkit-transition: all 300ms;
+} /* 过渡效果 */
+.all_trans5 {
+  transition: all 500ms;
+  -webkit-transition: all 500ms;
+} /* 过渡效果 */
 
 /* 美化滚动条 */
 ::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
-    background-color: transparent;
+  width: 6px;
+  height: 6px;
+  background-color: transparent;
 }
 
 /*定义滑块 内阴影+圆角*/
 ::-webkit-scrollbar-thumb {
-    background-color: #333;
+  background-color: #333;
 }

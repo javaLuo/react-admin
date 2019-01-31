@@ -1,33 +1,31 @@
-.page{
-	position: relative;
-	height: 100%;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	background-color: #fff;
-	letter-spacing: 1px;
-	.title{
-		font-size: 100px;
-		font-weight: bold;
-		color: #888;
-		@supports (-webkit-background-clip: text) {
-			-webkit-background-clip: text;
-			-webkit-text-fill-color: transparent;
-			background-image: url(../../assets/snow.gif);
-			background-repeat: repeat;
-			opacity: .5;
-		}
-
-	}
-	.info{
-		font-size: 20px;
-		color: #888;
-	}
-	.backBtn{
-		margin-top: 10px;
-	}
-	img{
-		margin-left: 100px;
-
-	}
+.page-error {
+  position: relative;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #fff;
+  letter-spacing: 1px;
+  .title {
+    font-size: 100px;
+    font-weight: bold;
+    color: #888;
+    @supports (-webkit-background-clip: text) {
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-image: url(../../assets/snow.gif);
+      background-repeat: repeat;
+      opacity: 0.5;
+    }
+  }
+  .info {
+    font-size: 20px;
+    color: #888;
+  }
+  .backBtn {
+    margin-top: 10px;
+  }
+  img {
+    margin-left: 100px;
+  }
 }

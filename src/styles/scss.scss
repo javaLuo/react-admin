@@ -1,104 +1,90 @@
-/* SASS测试 */
-:global(.scss_btn){
-  $color: #ff0000;
-  background-color: $color;
-  color: #fff;
-  padding: 2px;
-}
-
 /** flex布局相关 **/
-:global{
-  .flex-row{
-    display: flex;
-    flex-direction: row;
-  }
-  .flex-col{
-    display: flex;
-    flex-direction: column;
-  }
-  .flex-auto{
-    flex: auto;
-  }
-  .flex-none{
-    flex: none;
-  }
-  .flex-1{
-    flex: 1;
-  }
-  .flex-jc{
-    justify-content: center;
-  }
-  .flex-je{
-    justify-content: flex-end;
-  }
-  .flex-jsb{
-    justify-content: space-between;
-  }
-  .flex-jsa{
-    justify-content: space-around;
-  }
-  .flex-ac{
-    align-items: center;
-  }
-  .flex-ae{
-    align-items: flex-end;
-  }
+.flex-row {
+  display: flex;
+  flex-direction: row;
+}
+.flex-col {
+  display: flex;
+  flex-direction: column;
+}
+.flex-auto {
+  flex: auto;
+}
+.flex-none {
+  flex: none;
+}
+.flex-1 {
+  flex: 1;
+}
+.flex-jc {
+  justify-content: center;
+}
+.flex-je {
+  justify-content: flex-end;
+}
+.flex-jsb {
+  justify-content: space-between;
+}
+.flex-jsa {
+  justify-content: space-around;
+}
+.flex-ac {
+  align-items: center;
+}
+.flex-ae {
+  align-items: flex-end;
 }
 
 /* 全局table基础样式 */
-:global{
-  .diy-table {
-    .control-btn {
-      font-size: 14px;
-      cursor: pointer;
-      &.green {
-        color: #00a854;
-      }
-      &.red {
-        color: #ff3333;
-      }
-      &.blue {
-        color: #0066cc;
-      }
+.diy-table {
+  .control-btn {
+    font-size: 14px;
+    cursor: pointer;
+    &.green {
+      color: #00a854;
     }
-    .ant-pagination {
-      margin-right: 20px;
+    &.red {
+      color: #ff3333;
     }
-    td {
-      max-width: 300px;
-      min-width: 50px;
+    &.blue {
+      color: #0066cc;
     }
+  }
+  .ant-pagination {
+    margin-right: 20px;
+  }
+  td {
+    max-width: 300px;
+    min-width: 50px;
   }
 }
 
 /* 全局search基础样式 */
-:global{
-  .g-search{
+.g-search {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+  .ant-divider {
+    margin: 0 20px;
+  }
+  .search-func {
     display: flex;
-    align-items: center;
-    margin-bottom: 8px;
-    .ant-divider{
-      margin: 0 20px;
-    }
-    .search-func{
-      display: flex;
-    }
-      .search-ul{
-        display: flex;
-        &>li{
-          padding: 2px;
-          margin-right: 4px;
-          &>span:first-child{
-            min-width: 90px;
-            text-align: right;
-            display: inline-block;
-            margin-right: 10px;
-          }
-        }
-        &.btns{
-          border-top: solid 1px #f0f0f0;
-          padding-top: 4px;
-        }
+  }
+  .search-ul {
+    display: flex;
+    & > li {
+      padding: 2px;
+      margin-right: 4px;
+      & > span:first-child {
+        min-width: 90px;
+        text-align: right;
+        display: inline-block;
+        margin-right: 10px;
       }
+    }
+    &.btns {
+      border-top: solid 1px #f0f0f0;
+      padding-top: 4px;
+    }
   }
 }
