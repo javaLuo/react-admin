@@ -13,6 +13,17 @@ react+redux+webpack+antd
  <li>仿antd-pro外观，但没有使用dva和roadhog</li>
 </ul>
 
+## 构建 Start
+
+```javascript
+yarn install       // 安装依赖模块
+yarn dll           // 编译静态资源
+yarn start         // 运行开发环境，默认监听8888端口
+yarn build         // 正式打包，生成最终代码
+yarn dist          // 运行正式打包后的最终代码，默认监听8888端口
+yarn distmac       // MacOS下运行正式打包后的最终代码，默认监听8888端口
+```
+
 ## 最近更新
 * 把所有包版本都升级到了最新 React16.7,webpack4.29,babel7...
 * 去掉了一些鸡肋的东西，真正项目中基本都不会用到
@@ -33,17 +44,6 @@ react+redux+webpack+antd
   菜单管理 增删改查<br/>
   
   关系：权限 依附于 菜单 依附于 角色 依附于 用户
-
-## 构建 Start
-
-```
-yarn install       // 安装依赖模块
-yarn dll           // 编译静态资源
-yarn start         // 运行开发环境，默认监听8888端口
-yarn build         // 正式打包，生成最终代码
-yarn dist          // 运行正式打包后的最终代码，默认监听8888端口
-yarn distmac       // MacOS下运行正式打包后的最终代码，默认监听8888端口
-```
 
 
 ## 预览地址 Demo
