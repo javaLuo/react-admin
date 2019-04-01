@@ -5,7 +5,6 @@ import axios from "axios"; // 封装了fetch请求的库
 export default class ApiService {
   // ajax请求
   static newPost(url, bodyObj = {}) {
-    console.log(baseUrl, url);
     return reqwest({
       url: `${baseUrl}/${url}`, // URL
       method: "post", // 请求方式
@@ -19,7 +18,6 @@ export default class ApiService {
 
   // fetch请求
   static newFetch(url, bodyObj = {}) {
-    console.log(baseUrl, url, bodyObj);
     return axios({
       url: `${baseUrl}/${url}`,
       method: "post",

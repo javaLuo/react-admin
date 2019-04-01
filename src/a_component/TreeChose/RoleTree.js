@@ -34,7 +34,6 @@ export default class RoleTreeComponent extends React.PureComponent {
       this.makeSourceData(nextP.data);
     }
     if (this.props.defaultKeys !== nextP.defaultKeys) {
-      console.log("是什么：", nextP.defaultKeys);
       this.setState({
         nowKeys: nextP.defaultKeys.map(item => `${item}`)
       });
@@ -93,7 +92,6 @@ export default class RoleTreeComponent extends React.PureComponent {
 
   /** 树节点选中时触发 **/
   onTreeSelect = (keys, e) => {
-    console.log("选中：", keys, e);
     if (e.selected) {
       // 选中
       this.setState({

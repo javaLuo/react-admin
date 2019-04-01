@@ -1,13 +1,15 @@
+/** 这是用于生产环境的webpack配置文件 **/
+
 const path = require("path");
 const webpack = require("webpack"); // webpack核心
 const ExtractTextPlugin = require("extract-text-webpack-plugin"); // 为了单独打包css
 const HtmlWebpackPlugin = require("html-webpack-plugin"); // 生成html
 const CleanWebpackPlugin = require("clean-webpack-plugin"); // 每次打包前清除旧的build文件夹
-const UglifyJsPlugin = require("uglifyjs-webpack-plugin"); // 代码压缩插件，webpack本身自带了，引入这个是为了配置参数
 const SWPrecacheWebpackPlugin = require("sw-precache-webpack-plugin"); // 生成一个server-worker用于缓存
 const FaviconsWebpackPlugin = require("favicons-webpack-plugin"); // 自动生成各尺寸的favicon图标
 const CopyWebpackPlugin = require("copy-webpack-plugin"); // 复制文件用
-
+const TerserPlugin = require("terser-webpack-plugin"); // 优化js
+const webpackbar = require("webpackbar");
 /**
  * 基础路径
  * 比如我上传到自己的服务器填写的是："/work/pwa/"，最终访问为"https://isluo.com/work/pwa/#/"
@@ -25,7 +27,18 @@ module.exports = {
     filename: "dist/[name].[chunkhash:8].js",
     chunkFilename: "dist/[name].[chunkhash:8].chunk.js"
   },
-  context: __dirname,
+  optimization: {
+    minimizer: [
+      new TerserPlugin({
+        parallel: true, // 多线程并行构建
+        terserOptions: {
+          output: {
+            comments: false // 不保留注释
+          }
+        }
+      })
+    ]
+  },
   module: {
     rules: [
       {
@@ -43,6 +56,11 @@ module.exports = {
         })
       },
       {
+        // .scss 解析
+        test: /\.scss$/,
+        use: ["style-loader", "css-loader", "postcss-loader", "sass-loader"]
+      },
+      {
         // .less 解析
         test: /\.less$/,
         use: ExtractTextPlugin.extract({
@@ -50,28 +68,21 @@ module.exports = {
           use: [
             "css-loader",
             "postcss-loader",
-            "less-loader",
             { loader: "less-loader", options: { javascriptEnabled: true } }
           ]
         })
       },
       {
-        // .sass 解析
-        test: /\.scss$/,
-        include: path.resolve(__dirname, "src"),
-        use: ["style-loader", "css-loader", "postcss-loader", "sass-loader"]
-      },
-      {
         // 文件解析
         test: /\.(eot|woff|svg|ttf|woff2|appcache|mp3|mp4|pdf)(\?|$)/,
         include: path.resolve(__dirname, "src"),
-        use: ["file-loader?name=dist/assets/[name].[ext]"]
+        use: ["file-loader?name=dist/assets/[name].[hash:4].[ext]"]
       },
       {
         // 图片解析
         test: /\.(png|jpg|gif)$/,
         include: path.resolve(__dirname, "src"),
-        use: ["url-loader?limit=8192&name=dist/assets/[name].[ext]"]
+        use: ["url-loader?limit=8192&name=dist/assets/[name].[hash:4].[ext]"]
       },
       {
         // wasm文件解析
@@ -88,6 +99,7 @@ module.exports = {
     ]
   },
   plugins: [
+    new webpackbar(),
     /**
      * 在window环境中注入全局变量
      * 这里这么做是因为src/registerServiceWorker.js中有用到，为了配置PWA
@@ -98,20 +110,10 @@ module.exports = {
       })
     }),
     /**
-     * 打包前删除上一次打包留下的旧代码
+     * 打包前删除上一次打包留下的旧代码（根据output.path）
      * **/
-    new CleanWebpackPlugin(["build"]),
-    /**
-     * 压缩代码
-     * webpack已经内置了，这里是因为想要配置一些参数
-     * **/
-    new UglifyJsPlugin({
-      uglifyOptions: {
-        compress: {
-          drop_console: true // 是否删除代码中所有的console
-        }
-      }
-    }),
+    new CleanWebpackPlugin(),
+
     /**
      * 提取CSS等样式生成单独的CSS文件
      * **/
@@ -180,7 +182,7 @@ module.exports = {
     })
   ],
   resolve: {
-    extensions: [".js", ".jsx", ".less", "scss", ".css", ".wasm"], //后缀名自动补全
+    extensions: [".js", ".jsx", ".less", ".css", ".wasm"], //后缀名自动补全
     alias: {
       "@": path.resolve(__dirname, "src")
     }

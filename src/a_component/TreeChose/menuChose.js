@@ -68,7 +68,6 @@ export default class MenuChoseComponent extends React.PureComponent {
 
   /** 树节点选中时触发 **/
   onTreeSelect = (keys, e) => {
-    console.log("选中：", keys, e);
     if (e.selected) {
       // 选中
       this.setState({

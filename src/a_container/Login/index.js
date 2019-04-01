@@ -138,7 +138,6 @@ export default class LoginContainer extends React.Component {
     let powers = [];
     /** 1.登录 **/
     const res1 = await this.props.actions.onLogin({ username, password }); // 登录接口
-    console.log("登录返回", res1);
     if (!res1 || res1.status !== 200) {
       return res1;
     } // 登录失败

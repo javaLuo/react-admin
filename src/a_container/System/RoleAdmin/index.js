@@ -132,7 +132,6 @@ export default class RoleAdminContainer extends React.Component {
     this.props.actions
       .getRoles(tools.clearNull(params))
       .then(res => {
-        console.log("返回的什么：", res);
         if (res.status === 200) {
           this.setState({
             data: res.data.list,
@@ -239,7 +238,6 @@ export default class RoleAdminContainer extends React.Component {
           me.props.actions
             .addRole(params)
             .then(res => {
-              console.log("添加用户返回数据：", res);
               if (res.status === 200) {
                 message.success("添加成功");
                 this.onGetData(this.state.pageNum, this.state.pageSize);
@@ -284,11 +282,8 @@ export default class RoleAdminContainer extends React.Component {
 
   /** 分配权限按钮点击，权限控件出现 **/
   onAllotPowerClick(record) {
-    console.log("record是什么：", record);
     const menus = record.powers.map(item => item.menuId); // 需默认选中的菜单项ID
-    console.log("record是什么2：", menus);
     const powers = record.powers.reduce((v1, v2) => [...v1, ...v2.powers], []); // 需默认选中的权限ID
-    console.log("record是什么2：", menus, powers);
     this.setState({
       nowData: record,
       powerTreeShow: true,
@@ -305,7 +300,6 @@ export default class RoleAdminContainer extends React.Component {
 
   // 菜单树确定 给角色分配菜单
   onMenuTreeOk(arr) {
-    console.log("所选择的：", arr);
     const params = {
       id: this.state.nowData.id,
       menus: arr.menus,
@@ -317,9 +311,7 @@ export default class RoleAdminContainer extends React.Component {
     this.props.actions
       .setPowersByRoleId(params)
       .then(res => {
-        console.log("权限到这了吗：", res);
         if (res.status === 200) {
-          message.success("权限分配成功");
           this.onGetData(this.state.pageNum, this.state.pageSize);
           this.onMenuTreeClose();
         } else {
@@ -338,7 +330,6 @@ export default class RoleAdminContainer extends React.Component {
 
   // 表单页码改变
   onTablePageChange(page, pageSize) {
-    console.log("页码改变：", page, pageSize);
     this.onGetData(page, pageSize);
   }
 

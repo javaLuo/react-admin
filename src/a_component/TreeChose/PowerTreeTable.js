@@ -60,7 +60,6 @@ export default class TreeTable extends React.PureComponent {
 
   // 处理原始数据，将原始数据处理为层级关系(菜单的层级关系)
   makeSourceData(data, defaultChecked) {
-    console.log("原始数据是什么：", data);
     let d = _.cloneDeep(data);
     // 按照sort排序
     d.sort((a, b) => {
@@ -69,11 +68,9 @@ export default class TreeTable extends React.PureComponent {
 
     const sourceData = this.dataToJson(null, d) || [];
 
-    console.log("jsonMenu是什么：", sourceData);
     // 再来看看哪些需要被默认选中
     const treeChecked = defaultChecked.menus || [];
     const btnDtoChecked = defaultChecked.powers || [];
-    console.log("需要被默认直接选中：", data, btnDtoChecked);
     this.setState({
       sourceData0: data,
       sourceData,
@@ -140,13 +137,11 @@ export default class TreeTable extends React.PureComponent {
   makeRowSelection() {
     return {
       onChange: (selectedRowKeys, selectedRows) => {
-        console.log("有改变时触发", selectedRowKeys, selectedRows);
         this.setState({
           treeChecked: selectedRowKeys
         });
       },
       onSelect: (record, selected, selectedRows) => {
-        console.log("单个选中或取消触发:", record, selected, selectedRows);
         const t = this.state.sourceData0.find(item => item.id === record.id);
         if (selected) {
           // 选中，连带其权限全部勾选
@@ -180,7 +175,6 @@ export default class TreeTable extends React.PureComponent {
           this.setState({
             // treeChecked: this.state.sourceData0.map((item) => item.id),
             btnDtoChecked: this.state.sourceData0.reduce((v1, v2) => {
-              console.log("处理中：", v1, v2);
               return [...v1, ...v2.powers.map(k => k.id)];
             }, [])
           });
@@ -197,7 +191,6 @@ export default class TreeTable extends React.PureComponent {
 
   // TABLE btn权限选中和取消选中，需要记录哪些被选中
   onBtnDtoChange(e, id, record) {
-    console.log(e, id, record);
     const old = _.cloneDeep(this.state.btnDtoChecked);
     let treeChecked = _.cloneDeep(this.state.treeChecked);
     if (e.target.checked) {
@@ -221,7 +214,6 @@ export default class TreeTable extends React.PureComponent {
       btnDtoChecked: old,
       treeChecked
     });
-    console.log("现在选中的有：", old);
   }
 
   render() {

@@ -103,7 +103,6 @@ export default class MenuAdminContainer extends React.Component {
     this.props.actions
       .getMenus()
       .then(res => {
-        console.log("请求菜单：", res);
         if (res.status === 200) {
           this.setState({
             data: res.data,
@@ -132,7 +131,6 @@ export default class MenuAdminContainer extends React.Component {
       return a.sorts - b.sorts;
     });
     const sourceData = this.dataToJson(null, d) || [];
-    console.log("得到了什么2：", sourceData);
     this.setState({
       sourceData
     });
@@ -153,7 +151,6 @@ export default class MenuAdminContainer extends React.Component {
 
   /** 递归构建树结构 **/
   makeTreeDom(data) {
-    console.log("所有的key:", data);
     return data.map(item => {
       if (item.children) {
         return (
@@ -169,7 +166,6 @@ export default class MenuAdminContainer extends React.Component {
 
   /** 点击树目录时触发 **/
   onTreeSelect = (keys, e) => {
-    console.log("选中：", keys, e);
     let treeSelect = { title: "根", id: "0" };
     if (e.selected) {
       // 选中
@@ -187,7 +183,6 @@ export default class MenuAdminContainer extends React.Component {
   /** 工具 - 根据parentID返回parentName **/
   getNameByParentId = id => {
     const p = this.state.data.find(item => item.id === id);
-    console.log("传来的是什么：", id, p);
     return p ? p.title : undefined;
   };
 
@@ -258,7 +253,6 @@ export default class MenuAdminContainer extends React.Component {
           this.props.actions
             .addMenu(tools.clearNull(params))
             .then(res => {
-              console.log("返回了什么", res);
               if (res.status === 200) {
                 message.success("添加成功");
                 this.getData();
@@ -424,7 +418,6 @@ export default class MenuAdminContainer extends React.Component {
 
   /** 构建表格数据 **/
   makeData(data) {
-    console.log("DATA:", data);
     if (!data) {
       return [];
     }

@@ -21,7 +21,6 @@ export default class CanvasBack extends React.PureComponent {
   }
 
   componentDidMount() {
-    console.log(this.myCanvas.clientWidth);
     this.ctx = this.myCanvas.getContext("2d");
     this.ctx.strokeStyle = "rgba(255,255,255,1)";
     this.width = this.myCanvas.clientWidth;

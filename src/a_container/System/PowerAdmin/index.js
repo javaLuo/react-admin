@@ -120,7 +120,6 @@ export default class PowerAdminContainer extends React.Component {
     this.props.actions
       .getPowerDataByMenuId(params)
       .then(res => {
-        console.log("返回的是什么啊：", res);
         if (res.status === 200) {
           this.setState({
             data: res.data
@@ -145,13 +144,11 @@ export default class PowerAdminContainer extends React.Component {
   /** 处理原始数据，将原始数据处理为层级关系 **/
   makeSourceData(data) {
     const d = _.cloneDeep(data);
-    console.log("d是什么：", d);
     // 按照sort排序
     d.sort((a, b) => {
       return a.sorts - b.sorts;
     });
     const sourceData = this.dataToJson(null, d) || [];
-    console.log("得到了什么2：", sourceData);
     this.setState({
       sourceData
     });
@@ -194,7 +191,6 @@ export default class PowerAdminContainer extends React.Component {
 
   /** 点击树目录时触发 **/
   onTreeSelect = (keys, e) => {
-    console.log("选择的什么：", e);
     if (e.selected) {
       // 选中时才触发
       const p = e.node.props;
@@ -213,7 +209,6 @@ export default class PowerAdminContainer extends React.Component {
   /** 工具 - 根据parentID返回parentName **/
   getNameByParentId = id => {
     const p = this.state.data.find(item => item.id === id);
-    console.log("传来的是什么：", id, p);
     return p ? p.title : undefined;
   };
 
@@ -262,7 +257,6 @@ export default class PowerAdminContainer extends React.Component {
         if (err) {
           return;
         }
-        console.log("检查parent:", this.state.formParent);
         const params = {
           title: values.formTitle,
           code: values.formCode,
@@ -276,7 +270,6 @@ export default class PowerAdminContainer extends React.Component {
           this.props.actions
             .addPower(params)
             .then(res => {
-              console.log("返回了什么", res);
               if (res.status === 200) {
                 message.success("添加成功");
                 this.getData(this.state.treeSelect.id);
@@ -425,7 +418,6 @@ export default class PowerAdminContainer extends React.Component {
 
   /** 构建表格数据 **/
   makeData(data) {
-    console.log("DATA:", data);
     if (!data) {
       return [];
     }

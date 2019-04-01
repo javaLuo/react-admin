@@ -88,7 +88,6 @@ export default class Com extends React.PureComponent {
   makeTreeDom(data, key) {
     return data.map((item, index) => {
       const newKey = `${key}/${item.url.replace(/\//, "")}`;
-      console.log("都是些什么啊：", newKey);
       if (item.children) {
         return (
           <SubMenu

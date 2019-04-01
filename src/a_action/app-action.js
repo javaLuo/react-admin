@@ -80,7 +80,6 @@ export const getNews = (params = {}) => async dispatch => {
 export const clearNews = (params = {}) => async dispatch => {
   try {
     const res = await Fetchapi.newFetch("api/clearnews", params);
-    console.log("得到了什么：", res.data);
     return res.data;
   } catch (err) {
     message.error("网络错误，请重试");
@@ -93,7 +92,6 @@ export const clearNews = (params = {}) => async dispatch => {
 export const getNewsTotal = (params = {}) => async dispatch => {
   try {
     const res = await Fetchapi.newFetch("api/getnewstotal", params);
-    console.log("得到了什么：", res.data);
     return res.data;
   } catch (err) {
     message.error("网络错误，请重试");
@@ -103,7 +101,6 @@ export const getNewsTotal = (params = {}) => async dispatch => {
 export const test = (params = {}) => async dispatch => {
   try {
     const res = await Fetchapi.newFetch("api/test", params);
-    console.log("test得到了什么：", res.data);
     return res.data;
   } catch (err) {
     message.error("网络错误，请重试");

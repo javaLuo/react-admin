@@ -10,7 +10,6 @@ import { message } from "antd";
 export const getMenus = (params = {}) => async dispatch => {
   try {
     const res = await Fetchapi.newFetch("api/getmenus", params);
-    console.log("这res是什么：", res);
     if (res.data.status === 200) {
       await dispatch({
         type: "SYS.getMenus",
