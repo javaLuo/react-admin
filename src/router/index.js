@@ -1,23 +1,17 @@
 /** 根路由 **/
 import React from "react";
-import {
-  Router,
-  BrowserRouter,
-  Route,
-  Switch,
-  Redirect
-} from "react-router-dom";
+import { Router, Route, Switch, Redirect } from "react-router-dom";
 import P from "prop-types";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
-import createHistory from "history/createHashHistory"; // 锚点模式的history
+// import {createBrowserHistory as createHistory} from "history/"; // URL模式的history
+import { createHashHistory as createHistory } from "history"; // 锚点模式的history
 import { setUserInfo } from "../a_action/app-action";
 import tools from "../util/tools";
 
 /** 本页面所需页面级组件 **/
 import BasicLayout from "../layouts/BasicLayout";
 import UserLayout from "../layouts/UserLayout";
-
 /** 普通组件 **/
 import { message } from "antd";
 message.config({

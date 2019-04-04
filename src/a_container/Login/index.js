@@ -53,7 +53,7 @@ export default class LoginContainer extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      loading: false, // 是否处于正在登录状态
+      loading: false, // 是否正在登录中
       rememberPassword: false, // 是否记住密码
       codeValue: "00000", // 当前验证码的值
       show: false // 加载完毕时触发动画
@@ -101,7 +101,7 @@ export default class LoginContainer extends React.Component {
                 "userLoginInfo",
                 JSON.stringify({
                   username: values.username,
-                  password: tools.compile(values.password)
+                  password: tools.compile(values.password) // 密码简单加密一下再存到localStorage
                 })
               ); // 保存用户名和密码
             } else {
@@ -139,25 +139,32 @@ export default class LoginContainer extends React.Component {
     /** 1.登录 **/
     const res1 = await this.props.actions.onLogin({ username, password }); // 登录接口
     if (!res1 || res1.status !== 200) {
+      // 登录失败
       return res1;
-    } // 登录失败
+    }
+
     userInfo = res1.data;
 
     /** 2.获取角色信息 **/
     const res2 = await this.props.actions.getRoleById({ id: userInfo.roles }); // 查询所有角色信息
     if (!res2 || res2.status !== 200) {
+      // 角色查询失败
       return res2;
-    } // 角色查询失败
+    }
+
     roles = res2.data;
 
     /** 3.获取菜单信息 **/
     const powersTemp = roles.reduce((a, b) => [...a, ...b.powers], []);
+    // 查询所有菜单信息
     const res3 = await this.props.actions.getMenusById({
       id: powersTemp.map(item => item.menuId)
-    }); // 查询所有菜单信息
+    });
     if (!res3 || res3.status !== 200) {
+      // 查询菜单信息失败
       return res3;
     }
+
     menus = res3.data;
 
     /** 4.获取权限信息 **/
@@ -167,8 +174,9 @@ export default class LoginContainer extends React.Component {
       )
     });
     if (!res4 || res4.status !== 200) {
+      // 权限查询失败
       return res4;
-    } // 权限查询失败
+    }
     powers = res4.data;
 
     return { status: 200, data: { userInfo, roles, menus, powers } };
@@ -193,7 +201,6 @@ export default class LoginContainer extends React.Component {
   }
 
   render() {
-    const me = this;
     const { getFieldDecorator } = this.props.form;
     return (
       <div className="page-login">
@@ -257,7 +264,8 @@ export default class LoginContainer extends React.Component {
                           if (v.length > 4) {
                             callback("验证码为4位字符");
                           } else if (
-                            v.toLowerCase() !== me.state.codeValue.toLowerCase()
+                            v.toLowerCase() !==
+                            this.state.codeValue.toLowerCase()
                           ) {
                             callback("验证码错误");
                           } else {

@@ -18,7 +18,7 @@ const users = [
     password: "123456",
     phone: "13600000000",
     email: "admin@react.com",
-    desc: "超级管理员，不可被删除",
+    desc: "超级管理员",
     conditions: 1,
     roles: [1, 2, 3]
   },
@@ -383,9 +383,7 @@ const roles = [
  * **/
 // 登录
 const onLogin = p => {
-  // const p = JSON.parse(request.body);
-  console.log(p, users);
-  const u = users.find((item, index) => {
+  const u = users.find(item => {
     return item.username === p.username;
   });
   if (!u) {
@@ -457,7 +455,6 @@ const upMenu = p => {
 // 删除菜单
 const delMenu = p => {
   // const p = JSON.parse(request.body);
-  console.log("到这了吗：", p);
   const oldIndex = menus.findIndex(item => item.id === p.id);
 
   if (oldIndex !== -1) {
@@ -466,7 +463,6 @@ const delMenu = p => {
     );
     if (haveChild === -1) {
       menus.splice(oldIndex, 1);
-      console.log("删除之后是什么：", menus);
       return { status: 200, data: menus, message: "success" };
     } else {
       return { status: 204, data: null, message: "该菜单下有子菜单，无法删除" };

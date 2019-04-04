@@ -171,6 +171,7 @@ export default class AppContainer extends React.Component {
                 path="/home"
                 render={props => this.onEnter(Home, props)}
               />
+
               <Route
                 exact
                 path="/system/menuadmin"
@@ -191,8 +192,8 @@ export default class AppContainer extends React.Component {
                 path="/system/useradmin"
                 render={props => this.onEnter(UserAdmin, props)}
               />
-              <Route exact path="/nopower" component={NoPower} />
-              <Route render={NotFound} />
+              <Route exact path="/nopower" component={NotFound} />
+              <Route component={NotFound} />
             </Switch>
           </Content>
           <Footer />

@@ -17,7 +17,6 @@ import {
   message,
   Popconfirm,
   Modal,
-  Radio,
   Tooltip,
   Divider,
   Select
@@ -51,7 +50,6 @@ import {
 // Definition
 // ==================
 const FormItem = Form.Item;
-const RadioGroup = Radio.Group;
 const { TextArea } = Input;
 const { Option } = Select;
 @connect(

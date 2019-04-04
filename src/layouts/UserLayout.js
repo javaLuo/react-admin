@@ -64,7 +64,7 @@ export default class AppContainer extends React.PureComponent {
           <Switch>
             <Redirect exact from="/user" to="/user/login" />
             <Route exact path="/user/login" component={Login} />
-            <Route render={NotFound} />
+            <Route component={NotFound} />
           </Switch>
         </Content>
         <Footer />
