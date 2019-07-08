@@ -49,7 +49,7 @@ yarn distmac       // MacOS下运行正式打包后的最终代码，默认监�
 
 ## 预览地址 Demo
 
-https://isluo.com/work/admin <br/>
+https://isluo.com/work/admin/ <br/>
 账号：admin / user<br/>
 密码：123456 / 123456
 
