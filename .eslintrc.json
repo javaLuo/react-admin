@@ -5,7 +5,7 @@
     "es6": true,
     "mocha": true
   },
-  "extends": "plugin:react/recommended",
+  "extends": ["plugin:react/recommended", "prettier"],
   "parser": "babel-eslint",
   "parserOptions": {
     "ecmaVersion": 8,

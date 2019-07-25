@@ -2,17 +2,18 @@
 
 const path = require('path');
 const webpack = require('webpack'); // webpack核心
-const ExtractTextPlugin = require('extract-text-webpack-plugin'); // 为了单独打包css
+const MiniCssExtractPlugin = require('mini-css-extract-plugin'); // 为了单独打包css
 const HtmlWebpackPlugin = require('html-webpack-plugin'); // 生成html
 const { CleanWebpackPlugin } = require('clean-webpack-plugin'); // 每次打包前清除旧的build文件夹
 const SWPrecacheWebpackPlugin = require('sw-precache-webpack-plugin'); // 生成一个server-worker用于缓存
 const FaviconsWebpackPlugin = require('favicons-webpack-plugin'); // 自动生成各尺寸的favicon图标
 const CopyWebpackPlugin = require('copy-webpack-plugin'); // 复制文件用
 const TerserPlugin = require('terser-webpack-plugin'); // 优化js
-const webpackbar = require('webpackbar');
+const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin'); // 压缩CSS
+const webpackbar = require('webpackbar'); // 进度条
 /**
  * 基础路径
- * 比如我上传到自己的服务器填写的是："/work/pwa/"，最终访问为"https://isluo.com/work/pwa/#/"
+ * 比如我上传到自己的服务器填写的是："/work/pwa/"，最终访问为"https://isluo.com/work/pwa/"
  * 根据你自己的需求填写
  * "/" 就是根路径，假如最终项目上线的地址为：https://isluo.com/， 那就可以直接写"/"
  * **/
@@ -20,12 +21,16 @@ const PUBLIC_PATH = '/';
 
 module.exports = {
   mode: 'production',
-  entry: [path.resolve(__dirname, 'src', 'index')],
+  entry: path.resolve(__dirname, 'src', 'index'),
   output: {
     path: path.resolve(__dirname, 'build'), // 将文件打包到此目录下
     publicPath: PUBLIC_PATH, // 在生成的html中，文件的引入路径会相对于此地址，生成的css中，以及各类图片的URL都会相对于此地址
     filename: 'dist/[name].[chunkhash:8].js',
     chunkFilename: 'dist/[name].[chunkhash:8].chunk.js',
+  },
+  stats: {
+    warningsFilter: warning => /Conflicting order between/gm.test(warning), // 不输出一些警告，多为因CSS引入顺序不同导致的警告
+    children: false, // 不输出子模块的打包信息
   },
   optimization: {
     minimizer: [
@@ -37,7 +42,11 @@ module.exports = {
           },
         },
       }),
+      new OptimizeCSSAssetsPlugin({}),
     ],
+    splitChunks: {
+      chunks: 'all',
+    },
   },
   module: {
     rules: [
@@ -50,10 +59,7 @@ module.exports = {
       {
         // .css 解析
         test: /\.css$/,
-        use: ExtractTextPlugin.extract({
-          fallback: 'style-loader',
-          use: ['css-loader', 'postcss-loader'],
-        }),
+        use: [MiniCssExtractPlugin.loader, 'css-loader', 'postcss-loader'],
       },
       {
         // .scss 解析
@@ -63,22 +69,34 @@ module.exports = {
       {
         // .less 解析
         test: /\.less$/,
-        use: ExtractTextPlugin.extract({
-          fallback: 'style-loader',
-          use: ['css-loader', 'postcss-loader', { loader: 'less-loader', options: { javascriptEnabled: true } }],
-        }),
+        use: [MiniCssExtractPlugin.loader, 'css-loader', 'postcss-loader', { loader: 'less-loader', options: { javascriptEnabled: true } }],
       },
       {
         // 文件解析
-        test: /\.(eot|woff|svg|ttf|woff2|appcache|mp3|mp4|pdf)(\?|$)/,
+        test: /\.(eot|woff|otf|svg|ttf|woff2|appcache|mp3|mp4|pdf)(\?|$)/,
         include: path.resolve(__dirname, 'src'),
-        use: ['file-loader?name=dist/assets/[name].[hash:4].[ext]'],
+        use: [
+          {
+            loader: 'file-loader',
+            options: {
+              name: 'assets/[name].[hash:4].[ext]',
+            },
+          },
+        ],
       },
       {
         // 图片解析
-        test: /\.(png|jpg|gif)$/,
+        test: /\.(png|jpg|jpeg|gif)$/i,
         include: path.resolve(__dirname, 'src'),
-        use: ['url-loader?limit=8192&name=dist/assets/[name].[hash:4].[ext]'],
+        use: [
+          {
+            loader: 'url-loader',
+            options: {
+              limit: 8192,
+              name: 'assets/[name].[hash:4].[ext]',
+            },
+          },
+        ],
       },
       {
         // wasm文件解析
@@ -95,6 +113,10 @@ module.exports = {
     ],
   },
   plugins: [
+    /**
+     * 打包前删除上一次打包留下的旧代码（根据output.path）
+     * **/
+    new CleanWebpackPlugin(),
     new webpackbar(),
     /**
      * 在window环境中注入全局变量
@@ -106,16 +128,10 @@ module.exports = {
       }),
     }),
     /**
-     * 打包前删除上一次打包留下的旧代码（根据output.path）
-     * **/
-    new CleanWebpackPlugin(),
-
-    /**
      * 提取CSS等样式生成单独的CSS文件
      * **/
-    new ExtractTextPlugin({
+    new MiniCssExtractPlugin({
       filename: 'dist/[name].[chunkhash:8].css', // 生成的文件名
-      allChunks: true, // 从所有chunk中提取
     }),
     /**
      * 文件复制

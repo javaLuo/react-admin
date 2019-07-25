@@ -19,8 +19,12 @@ module.exports = {
     publicPath: PUBLIC_PATH, // 文件解析路径，index.html中引用的路径会被设置为相对于此路径
     filename: 'bundle.js', // 编译后的文件名字
   },
-  devtool: 'inline-source-map', // 报错的时候在控制台输出哪一行报错
-  context: __dirname, // entry 和 module.rules.loader 选项相对于此目录开始解析
+  devtool: 'eval-source-map', // 报错的时候在控制台输出哪一行报错
+  optimization: {
+    splitChunks: {
+      chunks: 'all',
+    },
+  },
   module: {
     rules: [
       {
@@ -55,13 +59,28 @@ module.exports = {
         // 文件解析
         test: /\.(eot|woff|otf|svg|ttf|woff2|appcache|mp3|mp4|pdf)(\?|$)/,
         include: path.resolve(__dirname, 'src'),
-        use: ['file-loader?name=assets/[name].[hash:4].[ext]'],
+        use: [
+          {
+            loader: 'file-loader',
+            options: {
+              name: 'assets/[name].[hash:4].[ext]',
+            },
+          },
+        ],
       },
       {
         // 图片解析
-        test: /\.(png|jpg|gif)(\?|$)/,
+        test: /\.(png|jpg|jpeg|gif)$/i,
         include: path.resolve(__dirname, 'src'),
-        use: ['url-loader?limit=8192&name=assets/[name].[hash:4].[ext]'],
+        use: [
+          {
+            loader: 'url-loader',
+            options: {
+              limit: 8192,
+              name: 'assets/[name].[hash:4].[ext]',
+            },
+          },
+        ],
       },
       {
         // wasm文件解析
