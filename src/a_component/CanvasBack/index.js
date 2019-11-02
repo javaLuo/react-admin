@@ -16,7 +16,6 @@ export default class CanvasBack extends React.PureComponent {
     };
     this.ctx = null;
     this.dots = []; // 所有的点
-    this.mouseXY = null; // 当前鼠标所在位置
     this.animateTimer = null;
   }
 
@@ -49,20 +48,12 @@ export default class CanvasBack extends React.PureComponent {
           sy: this.random(-step_col / 2, step_col / 2), // 当前偏移量y
           dx: !!Math.round(this.random(0, 1)), // 当前方向x
           dy: !!Math.round(this.random(0, 1)), // 当前方向y
-          color: this.random(80, 255), // b通道颜色值
+          color: this.random(20, 70), // b通道颜色值
           dcolor: !!Math.round(this.random(0, 1)) // 颜色改变向量
         };
         this.dots.push(temp);
       }
     }
-
-    // 绑定鼠标事件
-    this.myCanvas.addEventListener("mousemove", e => this.initEvent(e), false);
-  }
-
-  /** 鼠标绑定事件 **/
-  initEvent(e) {
-    this.mouseXY = [e.offsetX, e.offsetY];
   }
 
   /** 工具 - 获取范围随机数 **/
@@ -89,7 +80,7 @@ export default class CanvasBack extends React.PureComponent {
           const c = Math.round(
             (dots[k].color + dots[k1].color + dots[k2].color) / 3
           );
-          ctx.fillStyle = `rgb(0,${Math.round(c / 1.15)},${c})`;
+          ctx.fillStyle = `rgb(6,${Math.round(c / 1.3)},${c})`;
           ctx.fill();
         }
         if (i > 0) {
@@ -101,7 +92,7 @@ export default class CanvasBack extends React.PureComponent {
           const c = Math.round(
             (dots[k].color + dots[k1].color + dots[k3].color) / 3
           );
-          ctx.fillStyle = `rgb(0, ${Math.round(c / 1.15)},${c})`;
+          ctx.fillStyle = `rgb(6, ${Math.round(c / 1.3)},${c})`;
           ctx.fill();
         }
       }
@@ -114,7 +105,6 @@ export default class CanvasBack extends React.PureComponent {
     const col = this.props.col;
     const width = this.width;
     const height = this.height;
-    const mouseXY = this.mouseXY;
     const step_row = height / (row - 2);
     const step_col = width / (col - 2);
 
@@ -151,31 +141,17 @@ export default class CanvasBack extends React.PureComponent {
         }
       }
 
-      /** 计算当前点与鼠标之间的距离比例 **/
-      let m = 0;
-      if (mouseXY) {
-        const x1 = item.x + item.sx;
-        const y1 = item.y + item.sy;
-        m = Math.min(
-          Math.sqrt(
-            Math.pow(x1 - mouseXY[0], 2) + Math.pow(y1 - mouseXY[1], 2)
-          ),
-          100
-        );
-        m = (100 - m) / 200;
-      }
-
       /** 处理颜色变化 **/
       if (item.dcolor) {
         // 颜色变亮
-        if (m !== 0 ? item.color < 255 : item.color < 180) {
-          item.color += 1;
+        if (item.color < 80) {
+          item.color += 0.4;
         } else {
           item.dcolor = !item.dcolor;
         }
       } else {
-        if (m !== 0 ? item.color > 250 : item.color > 100) {
-          item.color -= 1;
+        if (item.color > 20) {
+          item.color -= 0.4;
         } else {
           item.dcolor = !item.dcolor;
         }
