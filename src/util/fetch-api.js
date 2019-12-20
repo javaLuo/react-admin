@@ -1,4 +1,4 @@
-import { baseUrl } from "../config";
+import {apiBaseUrl, baseUrl} from "../config";
 import reqwest from "reqwest"; // 封装了ajax请求的库
 import axios from "axios"; // 封装了fetch请求的库
 
@@ -20,6 +20,19 @@ export default class ApiService {
   static newFetch(url, bodyObj = {}) {
     return axios({
       url: `${baseUrl}/${url}`,
+      method: "post",
+      headers: {
+        "Content-Type": "application/json;charset=utf-8"
+      },
+      withCredentials: true,
+      data: JSON.stringify(bodyObj)
+    });
+  }
+
+  // fetch请求
+  static apiFetch(url, bodyObj = {}) {
+    return axios({
+      url: `${apiBaseUrl}/${url}`,
       method: "post",
       headers: {
         "Content-Type": "application/json;charset=utf-8"

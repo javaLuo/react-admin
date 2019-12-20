@@ -20,7 +20,7 @@ export const onTestAdd = num => async dispatch => {
  * **/
 export const onLogin = (params = {}) => async dispatch => {
   try {
-    const res = await Fetchapi.newFetch("api/login", params);
+    const res = await Fetchapi.apiFetch("/v1/login", params);
     return res.data;
   } catch (err) {
     message.error("网络错误，请重试");

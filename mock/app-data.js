@@ -723,8 +723,8 @@ const setUserRoles = p => {
 exports.mockApi = (url, params) => {
   console.log("调用API：", url, params);
   switch (url) {
-    case "/api/login":
-      return onLogin(params);
+  //  case "/api/login":
+  //    return onLogin(params);
     case "/api/getnews":
       return {
         status: 200,
