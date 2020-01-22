@@ -192,8 +192,8 @@ module.exports = {
         icons: {
           // 生成哪些平台需要的图标
           android: true, // 安卓
-          appleIcon: true, // 苹果
-          appleStartup: true, // 苹果启动页
+          appleIcon: false, // 苹果
+          appleStartup: false, // 苹果启动页
           coast: false, // opera
           favicons: true, // web小图标
           firefox: false, // 火狐

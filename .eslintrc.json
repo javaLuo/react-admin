@@ -11,6 +11,7 @@
     "ecmaVersion": 8,
     "ecmaFeatures": {
       "impliedStrict": true,
+      "legacyDecorators": true,
       "jsx": true
     },
     "allowImportExportEverywhere": true,
