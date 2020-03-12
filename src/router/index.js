@@ -13,7 +13,7 @@ import UserLayout from "@/layouts/UserLayout";
 import { message } from "antd";
 message.config({
   // 全局提示只显示2秒
-  duration: 2,
+  duration: 2
 });
 
 const history = createHistory();
@@ -21,12 +21,12 @@ const history = createHistory();
   state => {
     console.log("what state:", state);
     return {
-      userinfo: state.app.userinfo,
+      userinfo: state.app.userinfo
     };
   },
   dispatch => ({
-    setUserInfo: dispatch.app.setUserInfo,
-  }),
+    setUserInfo: dispatch.app.setUserInfo
+  })
 )
 export default class RouterContainer extends React.Component {
   constructor(props) {
@@ -40,7 +40,7 @@ export default class RouterContainer extends React.Component {
      * 说明刷新了页面，需要重新同步user数据到store
      * **/
     if (userinfo && !this.props.userinfo) {
-      this.props.actions.setUserInfo(JSON.parse(tools.uncompile(userinfo)));
+      this.props.setUserInfo(JSON.parse(tools.uncompile(userinfo)));
     }
   }
 
@@ -65,7 +65,10 @@ export default class RouterContainer extends React.Component {
             return (
               <Switch>
                 <Route path="/user" component={UserLayout} />
-                <Route path="/" render={props => this.onEnter(BasicLayout, props)} />
+                <Route
+                  path="/"
+                  render={props => this.onEnter(BasicLayout, props)}
+                />
               </Switch>
             );
           }}

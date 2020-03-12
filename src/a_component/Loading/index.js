@@ -3,15 +3,13 @@ import React from "react";
 import "./index.less";
 import ImgLoading from "@/assets/loading.gif";
 export default class LoadingComponent extends React.PureComponent {
-  static propTypes = {};
-
   constructor(props) {
     super(props);
-    this.state = {};
   }
 
   makeType(p) {
     let msg;
+    console.log("加载出错：", p);
     if (p.error) {
       msg = "加载出错，请刷新页面";
     } else if (p.timedOut) {

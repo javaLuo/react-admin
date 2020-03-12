@@ -7,10 +7,11 @@
   };
  * */
 import React from "react";
-import { Layout, Icon, Menu } from "antd";
+import { Layout, Menu } from "antd";
 import { Link } from "react-router-dom";
 import "./index.less";
 import ImgLogo from "@/assets/logo.png";
+import Icon from "@/a_component/Icon";
 import _ from "lodash";
 
 const { Sider } = Layout;
@@ -22,7 +23,7 @@ export default class MenuCom extends React.PureComponent {
       sourceData: [], // 菜单数据（层级）
       treeDom: [], // 生成的菜单结构
       chosedKey: [], // 当前选中
-      openKeys: [] // 当前需要被展开的项
+      openKeys: [], // 当前需要被展开的项
     };
   }
 
@@ -45,16 +46,20 @@ export default class MenuCom extends React.PureComponent {
     const paths = location.pathname.split("/").filter(item => !!item);
     this.setState({
       chosedKey: [location.pathname],
-      openKeys: paths.map(item => `/${item}`)
+      openKeys: paths.map(item => `/${item}`),
     });
   }
 
   /** 菜单展开和关闭时触发 **/
   onOpenChange(keys) {
     this.setState({
-      openKeys: keys
+      openKeys: keys,
     });
   }
+  onSelect = e => {
+    console.log("被选中：", e);
+    this.props.history.push(e.key);
+  };
 
   /** 处理原始数据，将原始数据处理为层级关系 **/
   makeSourceData(data) {
@@ -67,7 +72,7 @@ export default class MenuCom extends React.PureComponent {
     const treeDom = this.makeTreeDom(sourceData, "");
     this.setState({
       sourceData,
-      treeDom
+      treeDom,
     });
   }
 
@@ -101,18 +106,15 @@ export default class MenuCom extends React.PureComponent {
               ) : (
                 item.title
               )
-            }
-          >
+            }>
             {this.makeTreeDom(item.children, newKey)}
           </SubMenu>
         );
       } else {
         return (
           <Item key={newKey}>
-            <Link to={newKey}>
-              {!item.parent && item.icon ? <Icon type={item.icon} /> : null}
-              <span>{item.title}</span>
-            </Link>
+            {!item.parent && item.icon ? <Icon type={item.icon} /> : null}
+            <span>{item.title}</span>
           </Item>
         );
       }
@@ -121,13 +123,7 @@ export default class MenuCom extends React.PureComponent {
 
   render() {
     return (
-      <Sider
-        width={256}
-        className="sider"
-        trigger={null}
-        collapsible
-        collapsed={this.props.collapsed}
-      >
+      <Sider width={256} className="sider" trigger={null} collapsible collapsed={this.props.collapsed}>
         <div className={this.props.collapsed ? "menuLogo hide" : "menuLogo"}>
           <Link to="/">
             <img src={ImgLogo} />
@@ -140,7 +136,7 @@ export default class MenuCom extends React.PureComponent {
           selectedKeys={this.state.chosedKey}
           {...(this.props.collapsed ? {} : { openKeys: this.state.openKeys })}
           onOpenChange={e => this.onOpenChange(e)}
-        >
+          onSelect={this.onSelect}>
           {this.state.treeDom}
         </Menu>
       </Sider>

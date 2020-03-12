@@ -5,7 +5,6 @@
 // ==================
 
 import React from "react";
-import { connect } from "react-redux";
 
 // ==================
 // 所需的所有组件
@@ -14,17 +13,7 @@ import { connect } from "react-redux";
 import "./index.less";
 import ImgLogo from "@/assets/react-logo.jpg";
 
-@connect(
-  state => ({}),
-  dispatch => ({})
-)
 export default class HomePageContainer extends React.Component {
-  static propTypes = {
-    location: P.any,
-    history: P.any,
-    actions: P.any
-  };
-
   constructor(props) {
     super(props);
     this.state = {};
@@ -36,9 +25,7 @@ export default class HomePageContainer extends React.Component {
         <div className="box">
           <img src={ImgLogo} />
           <div className="title">React-admin</div>
-          <div className="info">
-            标准React+Redux分层结构，react16、router4、antd4、webpack4、ES6+
-          </div>
+          <div className="info">标准React+Redux分层结构，react16、router4、antd4、webpack4、ES6+</div>
           <div className="info">动态菜单配置，权限精确到按钮</div>
         </div>
       </div>

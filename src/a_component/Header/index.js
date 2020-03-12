@@ -10,8 +10,16 @@
 
 import React from "react";
 import { Link } from "react-router-dom";
-import { Layout, Icon, Tooltip, Menu, Dropdown } from "antd";
-
+import { Layout, Tooltip, Menu, Dropdown } from "antd";
+import {
+  MenuFoldOutlined,
+  FullscreenOutlined,
+  FullscreenExitOutlined,
+  GithubOutlined,
+  ChromeOutlined,
+  LogoutOutlined,
+  SmileOutlined
+} from "@ant-design/icons";
 import "./index.less";
 const { Header } = Layout;
 export default class HeaderCom extends React.PureComponent {
@@ -93,31 +101,28 @@ export default class HeaderCom extends React.PureComponent {
           placement="bottom"
           title={this.props.collapsed ? "展开菜单" : "收起菜单"}
         >
-          <Icon
-            className={
-              this.props.collapsed
-                ? "trigger flex-none"
-                : "trigger flex-none fold"
-            }
-            type={"menu-unfold"}
+          <MenuFoldOutlined
+            className={this.props.collapsed ? "trigger fold" : "trigger"}
             onClick={this.toggle}
           />
         </Tooltip>
-        <div className="rightBox flex-auto flex-row flex-je flex-ac">
+        <div className="rightBox">
           <Tooltip
             placement="bottom"
             title={this.state.fullScreen ? "退出全屏" : "全屏"}
           >
-            <div className="full">
-              <Icon
-                className="icon flex-none"
-                type={this.state.fullScreen ? "shrink" : "arrows-alt"}
-                onClick={
-                  this.state.fullScreen
-                    ? this.exitFullScreen
-                    : this.requestFullScreen
-                }
-              />
+            <div className="full all_center">
+              {this.state.fullScreen ? (
+                <FullscreenExitOutlined
+                  className="icon"
+                  onClick={this.exitFullScreen}
+                />
+              ) : (
+                <FullscreenOutlined
+                  className="icon"
+                  onClick={this.requestFullScreen}
+                />
+              )}
             </div>
           </Tooltip>
           {u ? (
@@ -134,7 +139,7 @@ export default class HeaderCom extends React.PureComponent {
                       target="_blank"
                       rel="noopener noreferrer"
                     >
-                      <Icon type="global" />
+                      <ChromeOutlined />
                       blog.isluo.com
                     </a>
                   </Menu.Item>
@@ -144,27 +149,27 @@ export default class HeaderCom extends React.PureComponent {
                       target="_blank"
                       rel="noopener noreferrer"
                     >
-                      <Icon type="github" />
+                      <GithubOutlined />
                       GitHub
                     </a>
                   </Menu.Item>
                   <Menu.Divider />
                   <Menu.Item key="logout">
-                    <Icon type="logout" />
+                    <LogoutOutlined />
                     退出登录
                   </Menu.Item>
                 </Menu>
               }
               placement="bottomRight"
             >
-              <div className="userhead flex-row flex-ac">
-                <Icon type="smile-o" />
+              <div className="userhead all_center">
+                <SmileOutlined />
                 <span className="username">{u.username}</span>
               </div>
             </Dropdown>
           ) : (
             <Tooltip placement="bottom" title="点击登录">
-              <div className="full">
+              <div className="full all_center">
                 <Link to="/user/login">未登录</Link>
               </div>
             </Tooltip>

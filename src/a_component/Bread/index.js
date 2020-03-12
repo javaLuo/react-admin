@@ -1,6 +1,7 @@
 /** 通用动态面包屑 **/
 import React from "react";
-import { Breadcrumb, Icon } from "antd";
+import { Breadcrumb } from "antd";
+import { EnvironmentOutlined } from "@ant-design/icons";
 import "./index.less";
 
 export default class Com extends React.PureComponent {
@@ -27,7 +28,7 @@ export default class Com extends React.PureComponent {
   render() {
     return (
       <div className="bread">
-        <Icon className="icon" type="environment-o" />
+        <EnvironmentOutlined className="icon" />
         <Breadcrumb>
           {this.makeBread(this.props.location, this.props.menus)}
         </Breadcrumb>
