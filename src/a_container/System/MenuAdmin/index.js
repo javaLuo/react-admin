@@ -6,15 +6,13 @@
 
 import React from "react";
 import { connect } from "react-redux";
-import tools from "../../../util/tools";
-import { bindActionCreators } from "redux";
-import P from "prop-types";
+import tools from "@/util/tools";
 import _ from "lodash";
-import "./index.scss";
+import "./index.less";
+
 // ==================
 // 所需的所有组件
 // ==================
-
 import {
   Tree,
   Button,
@@ -30,22 +28,8 @@ import {
   message,
   Divider
 } from "antd";
-import { Icons } from "../../../util/json";
+import { Icons } from "@/util/json";
 
-// ==================
-// 本页面所需action
-// ==================
-
-import {
-  addMenu,
-  getMenus,
-  upMenu,
-  delMenu
-} from "../../../a_action/sys-action";
-
-// ==================
-// Definition
-// ==================
 const { TreeNode } = Tree;
 const FormItem = Form.Item;
 const { Option } = Select;
@@ -56,22 +40,14 @@ const { TextArea } = Input;
     powers: state.app.powers
   }),
   dispatch => ({
-    actions: bindActionCreators(
-      { addMenu, getMenus, upMenu, delMenu },
-      dispatch
-    )
+    addMenu: dispatch.sys.addMenu,
+    getMenus: dispatch.sys.getMenus,
+    upMenu: dispatch.sys.upMenu,
+    delMenu: dispatch.sys.delMenu
   })
 )
 @Form.create()
 export default class MenuAdminContainer extends React.Component {
-  static propTypes = {
-    location: P.any,
-    history: P.any,
-    actions: P.any,
-    powers: P.array,
-    form: P.any
-  };
-
   constructor(props) {
     super(props);
     this.state = {
@@ -100,7 +76,7 @@ export default class MenuAdminContainer extends React.Component {
     this.setState({
       loading: true
     });
-    this.props.actions
+    this.props
       .getMenus()
       .then(res => {
         if (res.status === 200) {
@@ -250,7 +226,7 @@ export default class MenuAdminContainer extends React.Component {
         };
         if (this.state.operateType === "add") {
           // 新增
-          this.props.actions
+          this.props
             .addMenu(tools.clearNull(params))
             .then(res => {
               if (res.status === 200) {
@@ -268,7 +244,7 @@ export default class MenuAdminContainer extends React.Component {
         } else {
           // 修改
           params.id = this.state.nowData.id;
-          this.props.actions
+          this.props
             .upMenu(params)
             .then(res => {
               if (res.status === 200) {
@@ -293,7 +269,7 @@ export default class MenuAdminContainer extends React.Component {
   /** 删除一条数据 **/
   onDel = record => {
     const params = { id: record.id };
-    this.props.actions.delMenu(params).then(res => {
+    this.props.delMenu(params).then(res => {
       if (res.status === 200) {
         this.getData();
         message.success("删除成功");

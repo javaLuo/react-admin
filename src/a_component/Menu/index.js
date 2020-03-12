@@ -1,21 +1,21 @@
 /** 左侧导航 **/
-import React from "react";
-import P from "prop-types";
-import { Layout, Icon, Menu } from "antd";
-import { Link } from "react-router-dom";
-import "./index.scss";
-import ImgLogo from "../../assets/logo.png";
-import _ from "lodash";
-
-const { Sider } = Layout;
-const { SubMenu, Item } = Menu;
-export default class Com extends React.PureComponent {
-  static propTypes = {
+/**
+ * static propTypes = {
     data: P.array, // 所有的菜单数据
     collapsed: P.bool, // 菜单咱开还是收起
     location: P.any
   };
+ * */
+import React from "react";
+import { Layout, Icon, Menu } from "antd";
+import { Link } from "react-router-dom";
+import "./index.less";
+import ImgLogo from "@/assets/logo.png";
+import _ from "lodash";
 
+const { Sider } = Layout;
+const { SubMenu, Item } = Menu;
+export default class MenuCom extends React.PureComponent {
   constructor(props) {
     super(props);
     this.state = {

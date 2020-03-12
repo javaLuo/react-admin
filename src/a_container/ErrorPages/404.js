@@ -4,9 +4,8 @@ import React from "react";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import { Button } from "antd";
-import P from "prop-types";
-import "./index.scss";
-import Img from "../../assets/error.gif";
+import "./index.less";
+import Img from "@/assets/error.gif";
 
 @connect(
   state => ({}),
@@ -15,10 +14,6 @@ import Img from "../../assets/error.gif";
   })
 )
 export default class NotFoundContainer extends React.Component {
-  static propTypes = {
-    history: P.any
-  };
-
   constructor(props) {
     super(props);
     this.state = {

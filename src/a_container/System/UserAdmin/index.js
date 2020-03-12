@@ -6,8 +6,6 @@
 
 import React from "react";
 import { connect } from "react-redux";
-import { bindActionCreators } from "redux";
-import P from "prop-types";
 import {
   Form,
   Button,
@@ -21,30 +19,14 @@ import {
   Divider,
   Select
 } from "antd";
-import "./index.scss";
-import tools from "../../../util/tools"; // 工具
+import "./index.less";
+import tools from "@/util/tools"; // 工具
 
 // ==================
 // 所需的所有组件
 // ==================
 
-import RoleTree from "../../../a_component/TreeChose/RoleTree";
-
-// ==================
-// 本页面所需action
-// ==================
-
-import {
-  getAllRoles,
-  getRoles,
-  addUser,
-  upUser,
-  delUser,
-  setPowersByRoleId,
-  findAllPowerByRoleId,
-  getUserList,
-  setUserRoles
-} from "../../../a_action/sys-action";
+import RoleTree from "@/a_component/TreeChose/RoleTree";
 
 // ==================
 // Definition
@@ -59,20 +41,11 @@ const { Option } = Select;
     powers: state.app.powers // 所有的权限code
   }),
   dispatch => ({
-    actions: bindActionCreators(
-      {
-        getAllRoles,
-        getRoles,
-        addUser,
-        upUser,
-        delUser,
-        setPowersByRoleId,
-        findAllPowerByRoleId,
-        getUserList,
-        setUserRoles
-      },
-      dispatch
-    )
+    getAllRoles: dispatch.sys.getAllRoles,
+    addUser: dispatch.sys.addUser,
+    upUser: dispatch.sys.upUser,
+    delUser: dispatch.sys.delUser,
+    getUserList: dispatch.sys.getUserList
   })
 )
 @Form.create()
@@ -115,7 +88,7 @@ export default class RoleAdminContainer extends React.Component {
 
   // 获取所有的角色数据 - 用于分配角色控件的原始数据
   onGetRoleTreeData() {
-    this.props.actions.getAllRoles().then(res => {
+    this.props.getAllRoles().then(res => {
       if (res.status === 200) {
         this.setState({
           roleData: res.data
@@ -138,7 +111,7 @@ export default class RoleAdminContainer extends React.Component {
       conditions: this.state.searchConditions
     };
     this.setState({ loading: true });
-    this.props.actions
+    this.props
       .getUserList(tools.clearNull(params))
       .then(res => {
         if (res.status === 200) {
@@ -284,7 +257,7 @@ export default class RoleAdminContainer extends React.Component {
   // 删除某一条数据
   onDel(id) {
     this.setState({ loading: true });
-    this.props.actions
+    this.props
       .delUser({ id })
       .then(res => {
         if (res.status === 200) {
@@ -466,7 +439,7 @@ export default class RoleAdminContainer extends React.Component {
     this.setState({
       roleTreeLoading: true
     });
-    this.props.actions
+    this.props
       .upUser(params)
       .then(res => {
         if (res.status === 200) {

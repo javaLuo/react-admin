@@ -1,14 +1,11 @@
 /** Canvas背景效果，变化的线条 **/
 import React from "react";
-import "./index.scss";
-import P from "prop-types";
-
+import "./index.less";
+/**
+ * this.props.col 纵向密度
+ * this.props.row 横向密度
+ * */
 export default class CanvasBack extends React.PureComponent {
-  static propTypes = {
-    row: P.number, // 纵向密集度
-    col: P.number // 横向密集度
-  };
-
   constructor(props) {
     super(props);
     this.state = {

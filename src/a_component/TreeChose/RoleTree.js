@@ -1,21 +1,19 @@
 /* Tree选择 - 角色选择 - 多选 */
 import React from "react";
 import { Tree, Modal } from "antd";
-import P from "prop-types";
 import _ from "lodash";
-import "./RoleTree.scss";
 
 const { TreeNode } = Tree;
 export default class RoleTreeComponent extends React.PureComponent {
-  static propTypes = {
-    data: P.array, // 原始数据
-    title: P.string, // 标题
-    visible: P.bool, // 是否显示
-    defaultKeys: P.array, // 当前默认选中的key们
-    loading: P.bool, // 确定按钮是否在等待中状态
-    onOk: P.func, // 确定
-    onClose: P.func // 关闭
-  };
+  // static propTypes = {
+  //   data: P.array, // 原始数据
+  //   title: P.string, // 标题
+  //   visible: P.bool, // 是否显示
+  //   defaultKeys: P.array, // 当前默认选中的key们
+  //   loading: P.bool, // 确定按钮是否在等待中状态
+  //   onOk: P.func, // 确定
+  //   onClose: P.func // 关闭
+  // };
 
   constructor(props) {
     super(props);

@@ -1,41 +1,34 @@
 /** 根路由 **/
 import React from "react";
 import { Router, Route, Switch, Redirect } from "react-router-dom";
-import P from "prop-types";
 import { connect } from "react-redux";
-import { bindActionCreators } from "redux";
 // import {createBrowserHistory as createHistory} from "history/"; // URL模式的history
 import { createHashHistory as createHistory } from "history"; // 锚点模式的history
-import { setUserInfo } from "../a_action/app-action";
-import tools from "../util/tools";
+import tools from "@/util/tools";
 
 /** 本页面所需页面级组件 **/
-import BasicLayout from "../layouts/BasicLayout";
-import UserLayout from "../layouts/UserLayout";
+import BasicLayout from "@/layouts/BasicLayout";
+import UserLayout from "@/layouts/UserLayout";
 /** 普通组件 **/
 import { message } from "antd";
 message.config({
-  // 全局提示只显示一秒
-  duration: 1
+  // 全局提示只显示2秒
+  duration: 2,
 });
 
 const history = createHistory();
 @connect(
-  state => ({
-    userinfo: state.app.userinfo
-  }),
+  state => {
+    console.log("what state:", state);
+    return {
+      userinfo: state.app.userinfo,
+    };
+  },
   dispatch => ({
-    actions: bindActionCreators({ setUserInfo }, dispatch)
-  })
+    setUserInfo: dispatch.app.setUserInfo,
+  }),
 )
-export default class RootContainer extends React.Component {
-  static propTypes = {
-    dispatch: P.func,
-    children: P.any,
-    actions: P.any,
-    userinfo: P.any
-  };
-
+export default class RouterContainer extends React.Component {
   constructor(props) {
     super(props);
   }
@@ -72,10 +65,7 @@ export default class RootContainer extends React.Component {
             return (
               <Switch>
                 <Route path="/user" component={UserLayout} />
-                <Route
-                  path="/"
-                  render={props => this.onEnter(BasicLayout, props)}
-                />
+                <Route path="/" render={props => this.onEnter(BasicLayout, props)} />
               </Switch>
             );
           }}

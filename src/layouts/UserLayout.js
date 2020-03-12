@@ -6,8 +6,6 @@
 
 import React from "react";
 import { connect } from "react-redux";
-import { bindActionCreators } from "redux";
-import P from "prop-types";
 import Loadable from "react-loadable";
 import { Route, Switch, Redirect } from "react-router-dom";
 
@@ -17,7 +15,7 @@ import { Route, Switch, Redirect } from "react-router-dom";
 import { Layout } from "antd";
 import Loading from "../a_component/loading";
 import Footer from "../a_component/Footer";
-import "./UserLayout.scss";
+import "./UserLayout.less";
 
 // ==================
 // 路由
@@ -38,9 +36,7 @@ const [NotFound, Login] = [
 const { Content } = Layout;
 @connect(
   state => ({}),
-  dispatch => ({
-    actions: bindActionCreators({}, dispatch)
-  })
+  dispatch => ({})
 )
 export default class AppContainer extends React.PureComponent {
   constructor(props) {
@@ -77,8 +73,8 @@ export default class AppContainer extends React.PureComponent {
 // PropTypes
 // ==================
 
-AppContainer.propTypes = {
-  location: P.any,
-  history: P.any,
-  actions: P.any
-};
+// AppContainer.propTypes = {
+//   location: P.any,
+//   history: P.any,
+//   actions: P.any
+// };

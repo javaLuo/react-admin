@@ -33,12 +33,23 @@ if (env === "production") {
       quiet: true, // 是否不输出启动时的相关信息
       stats: {
         colors: true, // 不同信息不同颜色
-        timings: true // 输出各步骤消耗的时间
-      }
-    })
+        timings: true, // 输出各步骤消耗的时间
+      },
+    }),
   );
   // 挂载HMR热更新中间件
   app.use(webpackHotMiddleware(compiler));
+
+  /** 监听POST请求，返回MOCK模拟数据 **/
+  app.post(/\/api.*/, (req, res, next) => {
+    const result = mock.mockApi(req.originalUrl, req.body);
+    res.send(result);
+  });
+  app.get(/\/api.*/, (req, res, next) => {
+    const result = mock.mockApi(req.originalUrl, req.body);
+    res.send(result);
+  });
+
   // 所有请求都返回index.html
   app.get("*", (req, res, next) => {
     const filename = path.join(DIST_DIR, "index.html");
@@ -54,12 +65,6 @@ if (env === "production") {
     });
   });
 }
-
-/** 监听POST请求，返回MOCK模拟数据 **/
-app.post("*", (req, res, next) => {
-  const result = mock.mockApi(req.originalUrl, req.body);
-  res.send(result);
-});
 
 /** 启动服务 **/
 app.listen(PORT, () => {

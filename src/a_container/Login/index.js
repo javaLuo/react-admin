@@ -5,53 +5,33 @@
 // ==================
 
 import React from "react";
-import P from "prop-types";
 import { connect } from "react-redux";
-import { bindActionCreators } from "redux";
-import tools from "../../util/tools";
-import "./index.scss";
+import tools from "@/util/tools";
+import "./index.less";
 // ==================
 // 所需的所有组件
 // ==================
 import Vcode from "react-vcode";
-import { Form, Input, Button, Icon, Checkbox, message } from "antd";
-import CanvasBack from "../../a_component/CanvasBack";
-import LogoImg from "../../assets/logo.png";
+import { Form, Input, Button, Checkbox, message } from "antd";
+import { UserOutlined, KeyOutlined } from "@ant-design/icons";
+import CanvasBack from "@/a_component/CanvasBack";
+import LogoImg from "@/assets/logo.png";
 
-// ==================
-// 本页面所需action
-// ==================
-
-import { onLogin, setUserInfo } from "../../a_action/app-action";
-import {
-  getRoleById,
-  getPowerById,
-  getMenusById
-} from "../../a_action/sys-action";
-// ==================
-// Definition
-// ==================
-const FormItem = Form.Item;
 @connect(
   state => ({}),
   dispatch => ({
-    actions: bindActionCreators(
-      { onLogin, getRoleById, getPowerById, setUserInfo, getMenusById },
-      dispatch
-    )
+    onLogin: dispatch.app.onLogin,
+    setUserInfo: dispatch.app.setUserInfo,
+    getRoleById: dispatch.sys.getRoleById,
+    getPowerById: dispatch.sys.getPowerById,
+    getMenusById: dispatch.sys.getMenusById
   })
 )
-@Form.create()
 export default class LoginContainer extends React.Component {
-  static propTypes = {
-    location: P.any,
-    history: P.any,
-    form: P.any,
-    actions: P.any
-  };
-
+  form = React.createRef();
   constructor(props) {
     super(props);
+
     this.state = {
       loading: false, // 是否正在登录中
       rememberPassword: false, // 是否记住密码
@@ -62,14 +42,15 @@ export default class LoginContainer extends React.Component {
 
   componentDidMount() {
     // 进入登陆页时，判断之前是否保存了用户名和密码
-    const form = this.props.form;
     let userLoginInfo = localStorage.getItem("userLoginInfo");
     if (userLoginInfo) {
       userLoginInfo = JSON.parse(userLoginInfo);
       this.setState({
         rememberPassword: true
       });
-      form.setFieldsValue({
+
+      console.log("what:", this.form);
+      this.form.current.setFieldsValue({
         username: userLoginInfo.username,
         password: tools.uncompile(userLoginInfo.password)
       });
@@ -85,15 +66,13 @@ export default class LoginContainer extends React.Component {
   }
 
   // 用户提交登录
-  onSubmit() {
-    const form = this.props.form;
-    form.validateFields((error, values) => {
-      if (error) {
-        return;
-      }
+  async onSubmit() {
+    try {
+      const values = await this.form.current.validateFields();
       this.setState({ loading: true });
       this.loginIn(values.username, values.password)
         .then(res => {
+          console.log("lo:", res);
           if (res.status === 200) {
             message.success("登录成功");
             if (this.state.rememberPassword) {
@@ -112,7 +91,7 @@ export default class LoginContainer extends React.Component {
               "userinfo",
               tools.compile(JSON.stringify(res.data))
             );
-            this.props.actions.setUserInfo(res.data);
+            this.props.setUserInfo(res.data);
             setTimeout(() => this.props.history.replace("/")); // 跳转到主页,用setTimeout是为了等待上一句设置用户信息完成
           } else {
             message.error(res.message);
@@ -121,7 +100,11 @@ export default class LoginContainer extends React.Component {
         .finally(err => {
           this.setState({ loading: false });
         });
-    });
+    } catch (e) {
+      // 验证未通过
+    }
+
+    return;
   }
 
   /**
@@ -137,7 +120,8 @@ export default class LoginContainer extends React.Component {
     let menus = [];
     let powers = [];
     /** 1.登录 **/
-    const res1 = await this.props.actions.onLogin({ username, password }); // 登录接口
+    console.log("lo1:", username, password);
+    const res1 = await this.props.onLogin({ username, password }); // 登录接口
     if (!res1 || res1.status !== 200) {
       // 登录失败
       return res1;
@@ -146,7 +130,8 @@ export default class LoginContainer extends React.Component {
     userInfo = res1.data;
 
     /** 2.获取角色信息 **/
-    const res2 = await this.props.actions.getRoleById({ id: userInfo.roles }); // 查询所有角色信息
+    const res2 = await this.props.getRoleById({ id: userInfo.roles }); // 查询所有角色信息
+    console.log("获取角色：", res2);
     if (!res2 || res2.status !== 200) {
       // 角色查询失败
       return res2;
@@ -157,7 +142,7 @@ export default class LoginContainer extends React.Component {
     /** 3.获取菜单信息 **/
     const powersTemp = roles.reduce((a, b) => [...a, ...b.powers], []);
     // 查询所有菜单信息
-    const res3 = await this.props.actions.getMenusById({
+    const res3 = await this.props.getMenusById({
       id: powersTemp.map(item => item.menuId)
     });
     if (!res3 || res3.status !== 200) {
@@ -168,7 +153,7 @@ export default class LoginContainer extends React.Component {
     menus = res3.data;
 
     /** 4.获取权限信息 **/
-    const res4 = await this.props.actions.getPowerById({
+    const res4 = await this.props.getPowerById({
       id: Array.from(
         new Set(powersTemp.reduce((a, b) => [...a, ...b.powers], []))
       )
@@ -191,17 +176,18 @@ export default class LoginContainer extends React.Component {
 
   // 验证码改变时触发
   onVcodeChange(code) {
-    const form = this.props.form;
-    form.setFieldsValue({
-      vcode: code // 开发模式自动赋值验证码，正式环境，这里应该赋值''
-    });
-    this.setState({
-      codeValue: code
+    console.log("why:", this.form);
+    setTimeout(() => {
+      this.form.current.setFieldsValue({
+        vcode: code // 开发模式自动赋值验证码，正式环境，这里应该赋值''
+      });
+      this.setState({
+        codeValue: code
+      });
     });
   }
 
   render() {
-    const { getFieldDecorator } = this.props.form;
     return (
       <div className="page-login">
         <div className="canvasBox">
@@ -212,72 +198,72 @@ export default class LoginContainer extends React.Component {
             this.state.show ? "loginBox all_trans5 show" : "loginBox all_trans5"
           }
         >
-          <Form>
+          <Form ref={this.form}>
             <div className="title">
               <img src={LogoImg} alt="logo" />
               <span>React-Admin</span>
             </div>
             <div>
-              <FormItem>
-                {getFieldDecorator("username", {
-                  rules: [
-                    { max: 12, message: "最大长度为12位字符" },
-                    {
-                      required: true,
-                      whitespace: true,
-                      message: "请输入用户名"
-                    }
-                  ]
-                })(
-                  <Input
-                    prefix={<Icon type="user" style={{ fontSize: 13 }} />}
-                    size="large"
-                    id="username" // 为了获取焦点
-                    placeholder="admin/user"
-                    onPressEnter={() => this.onSubmit()}
-                  />
-                )}
-              </FormItem>
-              <FormItem>
-                {getFieldDecorator("password", {
-                  rules: [
-                    { required: true, message: "请输入密码" },
-                    { max: 18, message: "最大长度18个字符" }
-                  ]
-                })(
-                  <Input
-                    prefix={<Icon type="lock" style={{ fontSize: 13 }} />}
-                    size="large"
-                    type="password"
-                    placeholder="123456/123456"
-                    onPressEnter={() => this.onSubmit()}
-                  />
-                )}
-              </FormItem>
-              <FormItem>
-                {getFieldDecorator("vcode", {
-                  rules: [
-                    {
-                      validator: (rule, value, callback) => {
+              <Form.Item
+                name="username"
+                rules={[
+                  { max: 12, message: "最大长度为12位字符" },
+                  {
+                    required: true,
+                    whitespace: true,
+                    message: "请输入用户名"
+                  }
+                ]}
+              >
+                <Input
+                  prefix={<UserOutlined style={{ fontSize: 13 }} />}
+                  size="large"
+                  id="username" // 为了获取焦点
+                  placeholder="admin/user"
+                  onPressEnter={() => this.onSubmit()}
+                />
+              </Form.Item>
+              <Form.Item
+                name="password"
+                rules={[
+                  { required: true, message: "请输入密码" },
+                  { max: 18, message: "最大长度18个字符" }
+                ]}
+              >
+                <Input
+                  prefix={<KeyOutlined style={{ fontSize: 13 }} />}
+                  size="large"
+                  type="password"
+                  placeholder="123456/123456"
+                  onPressEnter={() => this.onSubmit()}
+                />
+              </Form.Item>
+              <Form.Item>
+                <Form.Item
+                  name="vcode"
+                  noStyle
+                  rules={[
+                    (a, b) => ({
+                      validator: (rule, value) => {
                         const v = tools.trim(value);
                         if (v) {
                           if (v.length > 4) {
-                            callback("验证码为4位字符");
+                            return Promise.reject("验证码为4位字符");
                           } else if (
                             v.toLowerCase() !==
                             this.state.codeValue.toLowerCase()
                           ) {
-                            callback("验证码错误");
+                            return Promise.reject("验证码错误");
                           } else {
-                            callback();
+                            return Promise.resolve();
                           }
                         } else {
-                          callback("请输入验证码");
+                          return Promise.reject("请输入验证码");
                         }
                       }
-                    }
-                  ]
-                })(
+                    })
+                  ]}
+                >
                   <Input
                     style={{ width: "200px" }}
                     size="large"
@@ -285,7 +271,7 @@ export default class LoginContainer extends React.Component {
                     placeholder="请输入验证码"
                     onPressEnter={() => this.onSubmit()}
                   />
-                )}
+                </Form.Item>
                 <Vcode
                   height={40}
                   width={150}
@@ -295,7 +281,7 @@ export default class LoginContainer extends React.Component {
                     lines: 16
                   }}
                 />
-              </FormItem>
+              </Form.Item>
               <div style={{ lineHeight: "40px" }}>
                 <Checkbox
                   className="remember"

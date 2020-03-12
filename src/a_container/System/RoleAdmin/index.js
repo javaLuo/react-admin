@@ -6,8 +6,6 @@
 
 import React from "react";
 import { connect } from "react-redux";
-import { bindActionCreators } from "redux";
-import P from "prop-types";
 import {
   Form,
   Button,
@@ -23,67 +21,38 @@ import {
   Select,
   InputNumber
 } from "antd";
-import "./index.scss";
-import tools from "../../../util/tools"; // 工具
+import "./index.less";
+import tools from "@/util/tools"; // 工具
 
 // ==================
 // 所需的所有组件
 // ==================
 
-import TreeTable from "../../../a_component/TreeChose/PowerTreeTable";
-
-// ==================
-// 本页面所需action
-// ==================
-
-import {
-  getAllPowers,
-  getRoles,
-  addRole,
-  upRole,
-  delRole,
-  setPowersByRoleId,
-  findAllPowerByRoleId
-} from "../../../a_action/sys-action";
+import TreeTable from "@/a_component/TreeChose/PowerTreeTable";
 
 // ==================
 // Definition
 // ==================
 const FormItem = Form.Item;
-const RadioGroup = Radio.Group;
 const { TextArea } = Input;
 const { Option } = Select;
 @connect(
   state => ({
-    powerTreeData: state.sys.powerTreeData,
-    powers: state.app.powers
+    powers: state.app.powers,
+    powerTreeData: state.sys.powerTreeData
   }),
   dispatch => ({
-    actions: bindActionCreators(
-      {
-        getAllPowers,
-        getRoles,
-        addRole,
-        upRole,
-        delRole,
-        setPowersByRoleId,
-        findAllPowerByRoleId
-      },
-      dispatch
-    )
+    getAllPowers: dispatch.sys.getAllPowers,
+    getRoles: dispatch.sys.getRoles,
+    addRole: dispatch.sys.addRole,
+    upRole: dispatch.sys.upRole,
+    delRole: dispatch.sys.delRole,
+    setPowersByRoleId: dispatch.sys.setPowersByRoleId,
+    findAllPowerByRoleId: dispatch.sys.findAllPowerByRoleId
   })
 )
 @Form.create()
 export default class RoleAdminContainer extends React.Component {
-  static propTypes = {
-    location: P.any,
-    history: P.any,
-    actions: P.any,
-    powers: P.array,
-    form: P.any,
-    powerTreeData: P.array
-  };
-
   constructor(props) {
     super(props);
     this.state = {
@@ -112,7 +81,7 @@ export default class RoleAdminContainer extends React.Component {
 
   // 获取所有的菜单权限数据 - 用于分配权限控件的原始数据
   onGetPowerTreeData() {
-    this.props.actions.getAllPowers();
+    this.props.getAllPowers();
   }
 
   // 查询当前页面所需列表数据
@@ -129,7 +98,7 @@ export default class RoleAdminContainer extends React.Component {
       conditions: this.state.searchConditions
     };
     this.setState({ loading: true });
-    this.props.actions
+    this.props
       .getRoles(tools.clearNull(params))
       .then(res => {
         if (res.status === 200) {
@@ -152,7 +121,7 @@ export default class RoleAdminContainer extends React.Component {
   // 删除某一条数据
   onDel(id) {
     this.setState({ loading: true });
-    this.props.actions
+    this.props
       .delRole({ id })
       .then(res => {
         if (res.status === 200) {
@@ -308,7 +277,7 @@ export default class RoleAdminContainer extends React.Component {
     this.setState({
       treeOnOkLoading: true
     });
-    this.props.actions
+    this.props
       .setPowersByRoleId(params)
       .then(res => {
         if (res.status === 200) {

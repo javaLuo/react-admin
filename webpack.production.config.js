@@ -4,6 +4,7 @@ const path = require("path");
 const webpack = require("webpack"); // webpack核心
 const MiniCssExtractPlugin = require("mini-css-extract-plugin"); // 为了单独打包css
 const HtmlWebpackPlugin = require("html-webpack-plugin"); // 生成html
+const AntdDayjsWebpackPlugin = require("antd-dayjs-webpack-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin"); // 每次打包前清除旧的build文件夹
 const SWPrecacheWebpackPlugin = require("sw-precache-webpack-plugin"); // 生成一个server-worker用于缓存
 const FaviconsWebpackPlugin = require("favicons-webpack-plugin"); // 自动生成各尺寸的favicon图标
@@ -28,7 +29,7 @@ module.exports = {
     chunkFilename: "dist/[name].[chunkhash:8].chunk.js",
   },
   stats: {
-    warningsFilter: warning => /Conflicting order between/gm.test(warning), // 不输出一些警告，多为因CSS引入顺序不同导致的警告
+    warningsFilter: warning => /Conflicting order/gm.test(warning), // 不输出一些警告，多为因CSS引入顺序不同导致的警告
     children: false, // 不输出子模块的打包信息
   },
   optimization: {
@@ -62,11 +63,6 @@ module.exports = {
         // .css 解析
         test: /\.css$/,
         use: [MiniCssExtractPlugin.loader, "css-loader", "postcss-loader"],
-      },
-      {
-        // .scss 解析
-        test: /\.scss$/,
-        use: ["style-loader", "css-loader", "postcss-loader", "sass-loader"],
       },
       {
         // .less 解析
@@ -120,6 +116,7 @@ module.exports = {
      * **/
     new CleanWebpackPlugin(),
     new webpackbar(),
+    new AntdDayjsWebpackPlugin(), // dayjs 替代 momentjs
     /**
      * 在window环境中注入全局变量
      * 这里这么做是因为src/registerServiceWorker.js中有用到，为了配置PWA
@@ -160,11 +157,7 @@ module.exports = {
      * **/
     new HtmlWebpackPlugin({
       filename: "index.html", // 生成的html存放路径，相对于 output.path
-      template: "./public/index.ejs", // html模板路径
-      templateParameters: {
-        // 自动替换index.ejs中的参数
-        dll: "",
-      },
+      template: "./public/index.html", // html模板路径
       hash: false, // 防止缓存，在引入的文件后面加hash (PWA就是要缓存，这里设置为false)
       inject: true, // 是否将js放在body的末尾
     }),

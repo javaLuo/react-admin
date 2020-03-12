@@ -1,9 +1,7 @@
 /* Tree选择 - 菜单选择 - 单选 */
 import React from "react";
 import { Tree, Modal } from "antd";
-import P from "prop-types";
 import _ from "lodash";
-import "./menuChose.scss";
 
 const { TreeNode } = Tree;
 export default class MenuChoseComponent extends React.PureComponent {
@@ -115,11 +113,11 @@ export default class MenuChoseComponent extends React.PureComponent {
   }
 }
 
-MenuChoseComponent.propTypes = {
-  data: P.array, // 原始数据
-  title: P.string, // 标题
-  visible: P.bool, // 是否显示
-  nowDataKey: P.any, // 当前默认选中哪一个key
-  onOk: P.func, // 确定
-  onClose: P.func // 关闭
-};
+// MenuChoseComponent.propTypes = {
+//   data: P.array, // 原始数据
+//   title: P.string, // 标题
+//   visible: P.bool, // 是否显示
+//   nowDataKey: P.any, // 当前默认选中哪一个key
+//   onOk: P.func, // 确定
+//   onClose: P.func, // 关闭
+// };

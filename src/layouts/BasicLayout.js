@@ -5,11 +5,10 @@
 // ==================
 import React from "react";
 import { connect } from "react-redux";
-import { bindActionCreators } from "redux";
-import P from "prop-types";
 import { Route, Switch, Redirect } from "react-router-dom";
 import Loadable from "react-loadable";
 import tools from "../util/tools";
+
 // ==================
 // 所需的所有普通组件
 // ==================
@@ -19,12 +18,11 @@ import Menu from "../a_component/Menu";
 import Footer from "../a_component/Footer";
 import Bread from "../a_component/Bread";
 import Loading from "../a_component/loading";
-import "./BasicLayout.scss";
+import "./BasicLayout.less";
 
 // ==================
 // 路由
 // ==================
-
 const [NotFound, NoPower, Home, MenuAdmin, PowerAdmin, RoleAdmin, UserAdmin] = [
   () => import(`../a_container/ErrorPages/404`),
   () => import(`../a_container/ErrorPages/401`),
@@ -41,50 +39,23 @@ const [NotFound, NoPower, Home, MenuAdmin, PowerAdmin, RoleAdmin, UserAdmin] = [
 });
 
 // ==================
-// 本页面所需action
-// ==================
-
-import {
-  onLogout,
-  setUserInfo,
-  getNews,
-  clearNews,
-  getNewsTotal
-} from "../a_action/app-action";
-
-// ==================
 // Class
 // ==================
 const { Content } = Layout;
 @connect(
   state => ({
     userinfo: state.app.userinfo,
-    powers: state.app.powers,
     menus: state.app.menus
   }),
   dispatch => ({
-    actions: bindActionCreators(
-      { onLogout, setUserInfo, getNews, clearNews, getNewsTotal },
-      dispatch
-    )
+    onLogout: dispatch.app.onLogout
   })
 )
 export default class AppContainer extends React.Component {
-  static propTypes = {
-    location: P.any,
-    history: P.any,
-    actions: P.any,
-    powers: P.array,
-    userinfo: P.any,
-    menus: P.array
-  };
-
   constructor(props) {
     super(props);
     this.state = {
-      collapsed: false, // 侧边栏是否收起
-      popLoading: false, // 用户消息是否正在加载
-      clearLoading: false // 用户消息是否正在清楚
+      collapsed: false // 侧边栏是否收起
     };
   }
 
@@ -99,7 +70,7 @@ export default class AppContainer extends React.Component {
    * 退出登录
    * **/
   onLogout = () => {
-    this.props.actions.onLogout().then(() => {
+    this.props.onLogout().then(() => {
       message.success("退出成功");
       this.props.history.push("/user/login");
     });
@@ -140,8 +111,6 @@ export default class AppContainer extends React.Component {
   }
 
   render() {
-    const u = this.props.userinfo;
-
     return (
       <Layout className="page-basic">
         <Menu
@@ -159,8 +128,6 @@ export default class AppContainer extends React.Component {
             clearNews={this.clearNews}
             newsData={this.state.newsData}
             newsTotal={this.state.newsTotal}
-            popLoading={this.state.popLoading}
-            clearLoading={this.state.clearLoading}
           />
           <Bread menus={this.props.menus} location={this.props.location} />
           <Content className="content">
@@ -192,7 +159,7 @@ export default class AppContainer extends React.Component {
                 path="/system/useradmin"
                 render={props => this.onEnter(UserAdmin, props)}
               />
-              <Route exact path="/nopower" component={NotFound} />
+              <Route exact path="/nopower" component={NoPower} />
               <Route component={NotFound} />
             </Switch>
           </Content>

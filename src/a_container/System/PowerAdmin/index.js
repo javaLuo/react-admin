@@ -6,10 +6,8 @@
 
 import React from "react";
 import { connect } from "react-redux";
-import { bindActionCreators } from "redux";
-import P from "prop-types";
 import _ from "lodash";
-import "./index.scss";
+import "./index.less";
 // ==================
 // 所需的所有组件
 // ==================
@@ -31,18 +29,6 @@ import {
 } from "antd";
 
 // ==================
-// 本页面所需action
-// ==================
-
-import {
-  addPower,
-  getMenus,
-  upPower,
-  delPower,
-  getPowerDataByMenuId
-} from "../../../a_action/sys-action";
-
-// ==================
 // Definition
 // ==================
 const { TreeNode } = Tree;
@@ -56,23 +42,15 @@ const { TextArea } = Input;
     powers: state.app.powers
   }),
   dispatch => ({
-    actions: bindActionCreators(
-      { addPower, getMenus, upPower, delPower, getPowerDataByMenuId },
-      dispatch
-    )
+    addPower: dispatch.sys.addPower,
+    getMenus: dispatch.sys.getMenus,
+    upPower: dispatch.sys.upPower,
+    delPower: dispatch.sys.delPower,
+    getPowerDataByMenuId: dispatch.sys.getPowerDataByMenuId
   })
 )
 @Form.create()
 export default class PowerAdminContainer extends React.Component {
-  static propTypes = {
-    location: P.any,
-    history: P.any,
-    actions: P.any,
-    form: P.any,
-    menus: P.array,
-    powers: P.array
-  };
-
   constructor(props) {
     super(props);
     this.state = {
@@ -117,7 +95,7 @@ export default class PowerAdminContainer extends React.Component {
     const params = {
       menuId: Number(menuId) || null
     };
-    this.props.actions
+    this.props
       .getPowerDataByMenuId(params)
       .then(res => {
         if (res.status === 200) {
@@ -138,7 +116,7 @@ export default class PowerAdminContainer extends React.Component {
 
   /** 获取所有菜单数据 **/
   getMenuData() {
-    this.props.actions.getMenus();
+    this.props.getMenus();
   }
 
   /** 处理原始数据，将原始数据处理为层级关系 **/
@@ -267,7 +245,7 @@ export default class PowerAdminContainer extends React.Component {
         };
         if (this.state.operateType === "add") {
           // 新增
-          this.props.actions
+          this.props
             .addPower(params)
             .then(res => {
               if (res.status === 200) {
@@ -285,7 +263,7 @@ export default class PowerAdminContainer extends React.Component {
         } else {
           // 修改
           params.id = this.state.nowData.id;
-          this.props.actions
+          this.props
             .upPower(params)
             .then(res => {
               if (res.status === 200) {
@@ -311,7 +289,7 @@ export default class PowerAdminContainer extends React.Component {
   onDel = record => {
     const params = { id: record.id };
     this.setState({ loading: true });
-    this.props.actions.delPower(params).then(res => {
+    this.props.delPower(params).then(res => {
       if (res.status === 200) {
         this.getData();
         message.success("删除成功");

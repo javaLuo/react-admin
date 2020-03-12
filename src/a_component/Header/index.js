@@ -1,12 +1,20 @@
 /** 头部 **/
+
+// Com.propTypes = {
+//   onToggle: P.func, // 菜单收起与展开状态切换
+//   collapsed: P.bool, // 菜单的状态
+//   onLogout: P.func, // 退出登录
+//   userinfo: P.object, // 用户信息
+//   popLoading: P.bool // 消息弹窗是否正在加载数据
+// };
+
 import React from "react";
-import P from "prop-types";
 import { Link } from "react-router-dom";
 import { Layout, Icon, Tooltip, Menu, Dropdown } from "antd";
 
-import "./index.scss";
+import "./index.less";
 const { Header } = Layout;
-export default class Com extends React.PureComponent {
+export default class HeaderCom extends React.PureComponent {
   constructor(props) {
     super(props);
     this.state = {
@@ -166,11 +174,3 @@ export default class Com extends React.PureComponent {
     );
   }
 }
-
-Com.propTypes = {
-  onToggle: P.func, // 菜单收起与展开状态切换
-  collapsed: P.bool, // 菜单的状态
-  onLogout: P.func, // 退出登录
-  userinfo: P.object, // 用户信息
-  popLoading: P.bool // 消息弹窗是否正在加载数据
-};

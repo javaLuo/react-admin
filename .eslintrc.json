@@ -5,10 +5,9 @@
     "es6": true,
     "mocha": true
   },
-  "extends": ["plugin:react/recommended", "prettier"],
   "parser": "babel-eslint",
   "parserOptions": {
-    "ecmaVersion": 8,
+    "ecmaVersion": 9,
     "ecmaFeatures": {
       "impliedStrict": true,
       "legacyDecorators": true,
@@ -17,12 +16,7 @@
     "allowImportExportEverywhere": true,
     "sourceType": "module"
   },
-  "plugins": ["react", "prettier"],
-  "settings": {
-    "react": {
-      "version": "16.4"
-    }
-  },
+  "plugins": ["react", "react-hooks", "prettier"],
   "rules": {
     "semi": "warn",
     "no-unused-vars": "off",
@@ -34,6 +28,7 @@
     "no-with": "error",
     "no-catch-shadow": "error",
     "react/no-unescaped-entities": "off",
+    "react-hooks/rules-of-hooks": "error",
     "prettier/prettier": "warn"
   }
 }
