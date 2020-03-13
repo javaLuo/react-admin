@@ -78,7 +78,6 @@ export default class PowerAdminContainer extends React.Component {
     const params = {
       menuId: Number(menuId) || null,
     };
-    console.log("power:", params);
     this.props
       .getPowerDataByMenuId(params)
       .then(res => {
