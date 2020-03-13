@@ -1,7 +1,9 @@
 .page-power-admin {
+  display: flex;
   .l {
     width: 256px;
     border: solid 1px #f0f0f0;
+    flex: none;
     .title {
       height: 44px;
       line-height: 44px;
@@ -14,9 +16,11 @@
   .r {
     border: solid 1px #f0f0f0;
     margin-left: 16px;
+    flex: auto;
     .searchBox {
       padding: 8px;
       & > ul {
+        display: flex;
         & > li + li {
           margin-left: 4px;
           flex: none;

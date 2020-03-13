@@ -12,47 +12,30 @@ import "./index.less";
 // 所需的所有组件
 // ==================
 
-import {
-  Tree,
-  Button,
-  Table,
-  Tooltip,
-  Icon,
-  Popconfirm,
-  Modal,
-  Form,
-  Select,
-  Input,
-  InputNumber,
-  message,
-  Divider
-} from "antd";
+import { Tree, Button, Table, Tooltip, Popconfirm, Modal, Form, Select, Input, InputNumber, message, Divider } from "antd";
+import { EyeOutlined, ToolOutlined, DeleteOutlined, PlusCircleOutlined } from "@ant-design/icons";
 
-// ==================
-// Definition
-// ==================
 const { TreeNode } = Tree;
-const FormItem = Form.Item;
 const { Option } = Select;
 const { TextArea } = Input;
 
 @connect(
   state => ({
     menus: state.sys.menus,
-    powers: state.app.powers
+    powers: state.app.powers,
   }),
   dispatch => ({
     addPower: dispatch.sys.addPower,
     getMenus: dispatch.sys.getMenus,
     upPower: dispatch.sys.upPower,
     delPower: dispatch.sys.delPower,
-    getPowerDataByMenuId: dispatch.sys.getPowerDataByMenuId
-  })
+    getPowerDataByMenuId: dispatch.sys.getPowerDataByMenuId,
+  }),
 )
-@Form.create()
 export default class PowerAdminContainer extends React.Component {
   constructor(props) {
     super(props);
+    this.form = React.createRef();
     this.state = {
       data: [], // 当前所选菜单下的权限数据
       sourceData: [], // 所有的菜单数据（分层级）
@@ -63,7 +46,7 @@ export default class PowerAdminContainer extends React.Component {
       modalShow: false, // 新增&修改 模态框是否显示
       modalLoading: false, // 新增&修改 模态框是否正在执行请求
       menuChoseShow: false, // 菜单选择树是否出现
-      formParent: { label: undefined, value: undefined } // 表单 - 当前所选菜单的值 { label, value }
+      formParent: { label: undefined, value: undefined }, // 表单 - 当前所选菜单的值 { label, value }
     };
   }
 
@@ -90,26 +73,27 @@ export default class PowerAdminContainer extends React.Component {
     }
 
     this.setState({
-      loading: true
+      loading: true,
     });
     const params = {
-      menuId: Number(menuId) || null
+      menuId: Number(menuId) || null,
     };
+    console.log("power:", params);
     this.props
       .getPowerDataByMenuId(params)
       .then(res => {
         if (res.status === 200) {
           this.setState({
-            data: res.data
+            data: res.data,
           });
         }
         this.setState({
-          loading: false
+          loading: false,
         });
       })
       .catch(() => {
         this.setState({
-          loading: false
+          loading: false,
         });
       });
   }
@@ -122,13 +106,16 @@ export default class PowerAdminContainer extends React.Component {
   /** 处理原始数据，将原始数据处理为层级关系 **/
   makeSourceData(data) {
     const d = _.cloneDeep(data);
+    d.forEach(item => {
+      item.key = String(item.id);
+    });
     // 按照sort排序
     d.sort((a, b) => {
       return a.sorts - b.sorts;
     });
     const sourceData = this.dataToJson(null, d) || [];
     this.setState({
-      sourceData
+      sourceData,
     });
   }
 
@@ -155,31 +142,24 @@ export default class PowerAdminContainer extends React.Component {
           </TreeNode>
         );
       } else {
-        return (
-          <TreeNode
-            title={item.title}
-            key={`${item.id}`}
-            id={item.id}
-            p={item.parent}
-          />
-        );
+        return <TreeNode title={item.title} key={`${item.id}`} id={item.id} p={item.parent} />;
       }
     });
   }
 
   /** 点击树目录时触发 **/
   onTreeSelect = (keys, e) => {
+    console.log("key", keys, e);
     if (e.selected) {
       // 选中时才触发
-      const p = e.node.props;
-      this.getData(p.eventKey);
+      this.getData(keys[0]);
       this.setState({
-        treeSelect: { title: p.title, id: p.eventKey }
+        treeSelect: { title: e.node.title, id: e.node.id },
       });
     } else {
       this.setState({
         treeSelect: {},
-        data: []
+        data: [],
       });
     }
   };
@@ -192,98 +172,92 @@ export default class PowerAdminContainer extends React.Component {
 
   /** 新增&修改 模态框出现 **/
   onModalShow = (data, type) => {
-    const { form } = this.props;
-
-    if (type === "add") {
-      // 新增，需重置表单各控件的值
-      form.resetFields();
-    } else {
-      // 查看或修改，需设置表单各控件的值为当前所选中行的数据
-      // const v = form.getFieldsValue();
-      form.setFieldsValue({
-        formConditions: data.conditions,
-        formDesc: data.desc,
-        formCode: data.code,
-        formSorts: data.sorts,
-        formTitle: data.title
-      });
-    }
     this.setState({
       modalShow: true,
       nowData: data,
       operateType: type,
-      formParent:
-        type === "add"
-          ? { label: undefined, value: undefined }
-          : { label: this.getNameByParentId(data.parent), value: data.parent }
+      formParent: type === "add" ? { label: undefined, value: undefined } : { label: this.getNameByParentId(data.parent), value: data.parent },
+    });
+
+    setTimeout(() => {
+      if (type === "add") {
+        // 新增，需重置表单各控件的值
+        this.form.current.resetFields();
+      } else {
+        // 查看或修改，需设置表单各控件的值为当前所选中行的数据
+        // const v = form.getFieldsValue();
+        this.form.current.setFieldsValue({
+          formConditions: data.conditions,
+          formDesc: data.desc,
+          formCode: data.code,
+          formSorts: data.sorts,
+          formTitle: data.title,
+        });
+      }
     });
   };
 
   /** 新增&修改 模态框关闭 **/
   onClose = () => {
     this.setState({
-      modalShow: false
+      modalShow: false,
     });
   };
 
   /** 新增&修改 提交 **/
-  onOk = () => {
-    const { form } = this.props;
-    form.validateFields(
-      ["formTitle", "formCode", "formDesc", "formSorts", "formConditions"],
-      (err, values) => {
-        if (err) {
-          return;
-        }
-        const params = {
-          title: values.formTitle,
-          code: values.formCode,
-          menu: this.state.treeSelect.id,
-          sorts: values.formSorts,
-          desc: values.formDesc,
-          conditions: values.formConditions
-        };
-        if (this.state.operateType === "add") {
-          // 新增
-          this.props
-            .addPower(params)
-            .then(res => {
-              if (res.status === 200) {
-                message.success("添加成功");
-                this.getData(this.state.treeSelect.id);
-                this.onClose();
-              } else {
-                message.error("添加失败");
-              }
-              this.setState({ modalLoading: false });
-            })
-            .catch(() => {
-              this.setState({ modalLoading: false });
-            });
-        } else {
-          // 修改
-          params.id = this.state.nowData.id;
-          this.props
-            .upPower(params)
-            .then(res => {
-              if (res.status === 200) {
-                message.success("修改成功");
-                this.getData(this.state.treeSelect.id);
-                this.onClose();
-              } else {
-                message.error("修改失败");
-              }
-              this.setState({ modalLoading: false });
-            })
-            .catch(() => {
-              this.setState({ modalLoading: false });
-            });
-        }
-
-        this.setState({ modalLoading: true });
+  async onOk() {
+    try {
+      const values = await this.form.current.validateFields();
+      const params = {
+        title: values.formTitle,
+        code: values.formCode,
+        menu: this.state.treeSelect.id,
+        sorts: values.formSorts,
+        desc: values.formDesc,
+        conditions: values.formConditions,
+      };
+      this.setState({ modalLoading: true });
+      if (this.state.operateType === "add") {
+        // 新增
+        this.props
+          .addPower(params)
+          .then(res => {
+            if (res.status === 200) {
+              message.success("添加成功");
+              this.getData(this.state.treeSelect.id);
+              this.onClose();
+            } else {
+              message.error("添加失败");
+            }
+            this.setState({ modalLoading: false });
+          })
+          .catch(() => {
+            this.setState({ modalLoading: false });
+          });
+      } else {
+        // 修改
+        params.id = this.state.nowData.id;
+        console.log("edit:", params);
+        this.props
+          .upPower(params)
+          .then(res => {
+            if (res.status === 200) {
+              message.success("修改成功");
+              this.getData(this.state.treeSelect.id);
+              this.onClose();
+            } else {
+              message.error("修改失败");
+            }
+            this.setState({ modalLoading: false });
+          })
+          .catch(() => {
+            this.setState({ modalLoading: false });
+          });
       }
-    );
-  };
+    } catch {
+      // 未通过校验
+    }
+  }
 
   /** 删除一条数据 **/
   onDel = record => {
@@ -291,7 +265,7 @@ export default class PowerAdminContainer extends React.Component {
     this.setState({ loading: true });
     this.props.delPower(params).then(res => {
       if (res.status === 200) {
-        this.getData();
+        this.getData(this.state.treeSelect.id);
         message.success("删除成功");
       } else {
         message.error(res.message);
@@ -305,33 +279,28 @@ export default class PowerAdminContainer extends React.Component {
       {
         title: "序号",
         dataIndex: "serial",
-        key: "serial"
+        key: "serial",
       },
       {
         title: "权限名称",
         dataIndex: "title",
-        key: "title"
+        key: "title",
       },
       {
         title: "Code",
         dataIndex: "code",
-        key: "code"
+        key: "code",
       },
       {
         title: "描述",
         dataIndex: "desc",
-        key: "desc"
+        key: "desc",
       },
       {
         title: "状态",
         dataIndex: "conditions",
         key: "conditions",
-        render: (text, record) =>
-          text === 1 ? (
-            <span style={{ color: "green" }}>启用</span>
-          ) : (
-            <span style={{ color: "red" }}>禁用</span>
-          )
+        render: (text, record) => (text === 1 ? <span style={{ color: "green" }}>启用</span> : <span style={{ color: "red" }}>禁用</span>),
       },
       {
         title: "操作",
@@ -342,43 +311,29 @@ export default class PowerAdminContainer extends React.Component {
           const p = this.props.powers;
           p.includes("power:query") &&
             controls.push(
-              <span
-                key="0"
-                className="control-btn green"
-                onClick={() => this.onModalShow(record, "see")}
-              >
+              <span key="0" className="control-btn green" onClick={() => this.onModalShow(record, "see")}>
                 <Tooltip placement="top" title="查看">
-                  <Icon type="eye" />
+                  <EyeOutlined />
                 </Tooltip>
-              </span>
+              </span>,
             );
           p.includes("power:up") &&
             controls.push(
-              <span
-                key="1"
-                className="control-btn blue"
-                onClick={() => this.onModalShow(record, "up")}
-              >
+              <span key="1" className="control-btn blue" onClick={() => this.onModalShow(record, "up")}>
                 <Tooltip placement="top" title="修改">
-                  <Icon type="edit" />
+                  <ToolOutlined />
                 </Tooltip>
-              </span>
+              </span>,
             );
           p.includes("power:del") &&
             controls.push(
-              <Popconfirm
-                key="2"
-                title="确定删除吗?"
-                okText="确定"
-                cancelText="取消"
-                onConfirm={() => this.onDel(record)}
-              >
+              <Popconfirm key="2" title="确定删除吗?" okText="确定" cancelText="取消" onConfirm={() => this.onDel(record)}>
                 <span className="control-btn red">
                   <Tooltip placement="top" title="删除">
-                    <Icon type="delete" />
+                    <DeleteOutlined />
                   </Tooltip>
                 </span>
-              </Popconfirm>
+              </Popconfirm>,
             );
           const result = [];
           controls.forEach((item, index) => {
@@ -388,8 +343,8 @@ export default class PowerAdminContainer extends React.Component {
             result.push(item);
           });
           return result;
-        }
-      }
+        },
+      },
     ];
     return columns;
   };
@@ -409,50 +364,41 @@ export default class PowerAdminContainer extends React.Component {
         desc: item.desc,
         sorts: item.sorts,
         conditions: item.conditions,
-        serial: index + 1
+        serial: index + 1,
       };
     });
   }
 
   render() {
-    const { form } = this.props;
-    const { getFieldDecorator } = form;
     const p = this.props.powers;
     const formItemLayout = {
       // 表单布局
       labelCol: {
         xs: { span: 24 },
-        sm: { span: 4 }
+        sm: { span: 4 },
       },
       wrapperCol: {
         xs: { span: 24 },
-        sm: { span: 19 }
-      }
+        sm: { span: 19 },
+      },
     };
     return (
-      <div className="page-power-admin flex-row">
+      <div className="page-power-admin">
         <div className="l">
           <div className="title">目录结构</div>
           <div>
-            <Tree defaultExpandedKeys={["0"]} onSelect={this.onTreeSelect}>
-              <TreeNode title="根" key="0" selectable={false}>
-                {this.makeTreeDom(this.state.sourceData)}
-              </TreeNode>
-            </Tree>
+            <Tree onSelect={this.onTreeSelect} treeData={this.state.sourceData}></Tree>
           </div>
         </div>
-        <div className="r flex-auto">
+        <div className="r">
           <div className="searchBox">
-            <ul className="flex-row">
+            <ul>
               <li>
                 <Button
                   type="primary"
-                  icon="plus-circle-o"
+                  icon={<PlusCircleOutlined />}
                   onClick={() => this.onModalShow(null, "add")}
-                  disabled={
-                    !(this.state.treeSelect.id && p.includes("power:add"))
-                  }
-                >
+                  disabled={!(this.state.treeSelect.id && p.includes("power:add"))}>
                   {`添加${this.state.treeSelect.title || ""}权限`}
                 </Button>
               </li>
@@ -464,92 +410,58 @@ export default class PowerAdminContainer extends React.Component {
             loading={this.state.loading}
             dataSource={this.makeData(this.state.data)}
             pagination={{
-              pageSize: this.state.pageSize,
               showQuickJumper: true,
-              showTotal: (total, range) => `共 ${total} 条数据`
+              showTotal: (total, range) => `共 ${total} 条数据`,
             }}
           />
         </div>
         {/** 查看&新增&修改用户模态框 **/}
         <Modal
-          title={
-            { add: "新增", up: "修改", see: "查看" }[this.state.operateType]
-          }
+          title={`${{ add: "新增", up: "修改", see: "查看" }[this.state.operateType]}权限: ${this.state.treeSelect.title}->${this.state.nowData
+            ?.title ?? ""}`}
           visible={this.state.modalShow}
-          onOk={this.onOk}
+          onOk={() => this.onOk()}
           onCancel={this.onClose}
-          confirmLoading={this.state.modalLoading}
-        >
-          <Form>
-            <FormItem label="权限名" {...formItemLayout}>
-              {getFieldDecorator("formTitle", {
-                initialValue: undefined,
-                rules: [
+          confirmLoading={this.state.modalLoading}>
+          <Form ref={this.form} initialValues={{ formConditions: 1 }}>
+            <Form.Item
+              label="权限名"
+              name="formTitle"
+              {...formItemLayout}
+              rules={[
+                [
                   { required: true, whitespace: true, message: "必填" },
-                  { max: 12, message: "最多输入12位字符" }
-                ]
-              })(
-                <Input
-                  placeholder="请输入权限名"
-                  disabled={this.state.operateType === "see"}
-                />
-              )}
-            </FormItem>
-            <FormItem label="Code" {...formItemLayout}>
-              {getFieldDecorator("formCode", {
-                initialValue: undefined,
-                rules: [
-                  { required: true, whitespace: true, message: "必填" },
-                  { max: 12, message: "最多输入12位字符" }
-                ]
-              })(
-                <Input
-                  placeholder="请输入权限Code"
-                  disabled={this.state.operateType === "see"}
-                />
-              )}
-            </FormItem>
-            <FormItem label="描述" {...formItemLayout}>
-              {getFieldDecorator("formDesc", {
-                rules: [{ max: 100, message: "最多输入100位字符" }],
-                initialValue: undefined
-              })(
-                <TextArea
-                  rows={4}
-                  disabled={this.state.operateType === "see"}
-                  placeholoder="请输入描述"
-                  autosize={{ minRows: 2, maxRows: 6 }}
-                />
-              )}
-            </FormItem>
-            <FormItem label="排序" {...formItemLayout}>
-              {getFieldDecorator("formSorts", {
-                initialValue: 0,
-                rules: [{ required: true, message: "请输入排序号" }]
-              })(
-                <InputNumber
-                  min={0}
-                  max={99999}
-                  style={{ width: "100%" }}
-                  disabled={this.state.operateType === "see"}
-                />
-              )}
-            </FormItem>
-            <FormItem label="状态" {...formItemLayout}>
-              {getFieldDecorator("formConditions", {
-                initialValue: 1,
-                rules: [{ required: true, message: "请选择状态" }]
-              })(
-                <Select disabled={this.state.operateType === "see"}>
-                  <Option key={1} value={1}>
-                    启用
-                  </Option>
-                  <Option key={-1} value={-1}>
-                    禁用
-                  </Option>
-                </Select>
-              )}
-            </FormItem>
+                  { max: 12, message: "最多输入12位字符" },
+                ],
+              ]}>
+              <Input placeholder="请输入权限名" disabled={this.state.operateType === "see"} />
+            </Form.Item>
+            <Form.Item
+              label="Code"
+              name="formCode"
+              {...formItemLayout}
+              rules={[
+                { required: true, whitespace: true, message: "必填" },
+                { max: 12, message: "最多输入12位字符" },
+              ]}>
+              <Input placeholder="请输入权限Code" disabled={this.state.operateType === "see"} />
+            </Form.Item>
+            <Form.Item label="描述" name="formDesc" {...formItemLayout} rules={[{ max: 100, message: "最多输入100位字符" }]}>
+              <TextArea rows={4} disabled={this.state.operateType === "see"} placeholoder="请输入描述" autosize={{ minRows: 2, maxRows: 6 }} />
+            </Form.Item>
+            <Form.Item label="排序" name="formSorts" {...formItemLayout} rules={[{ required: true, message: "请输入排序号" }]}>
+              <InputNumber min={0} max={99999} style={{ width: "100%" }} disabled={this.state.operateType === "see"} />
+            </Form.Item>
+            <Form.Item label="状态" name="formConditions" {...formItemLayout} rules={[{ required: true, message: "请选择状态" }]}>
+              <Select disabled={this.state.operateType === "see"}>
+                <Option key={1} value={1}>
+                  启用
+                </Option>
+                <Option key={-1} value={-1}>
+                  禁用
+                </Option>
+              </Select>
+            </Form.Item>
           </Form>
         </Modal>
       </div>
