@@ -26,6 +26,7 @@ yarn distmac       // MacOS下运行正式打包后的最终代码，默认监�
 
 ## 最近更新
 
+- 升到antd4, 使用@rematch, 修改权限、菜单、角色后需更新用户信息 （正在做），Typescript
 - 把所有包版本都升级到了最新 React16.7,webpack4.29,babel7...
 - 去掉了一些鸡肋的东西，真正项目中基本都不会用到
 - 去掉了 css-module，感觉太不方便了
