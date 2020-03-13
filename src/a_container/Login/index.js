@@ -28,10 +28,9 @@ import LogoImg from "@/assets/logo.png";
   })
 )
 export default class LoginContainer extends React.Component {
-  form = React.createRef();
   constructor(props) {
     super(props);
-
+    this.form = React.createRef();
     this.state = {
       loading: false, // 是否正在登录中
       rememberPassword: false, // 是否记住密码
@@ -243,7 +242,7 @@ export default class LoginContainer extends React.Component {
                   name="vcode"
                   noStyle
                   rules={[
-                    (a, b) => ({
+                    () => ({
                       validator: (rule, value) => {
                         const v = tools.trim(value);
                         if (v) {

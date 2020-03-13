@@ -30,11 +30,11 @@ const [NotFound, NoPower, Home, MenuAdmin, PowerAdmin, RoleAdmin, UserAdmin] = [
   () => import(`../a_container/System/MenuAdmin`),
   () => import(`../a_container/System/PowerAdmin`),
   () => import(`../a_container/System/RoleAdmin`),
-  () => import(`../a_container/System/UserAdmin`),
+  () => import(`../a_container/System/UserAdmin`)
 ].map(item => {
   return Loadable({
     loader: item,
-    loading: Loading,
+    loading: Loading
   });
 });
 
@@ -45,24 +45,24 @@ const { Content } = Layout;
 @connect(
   state => ({
     userinfo: state.app.userinfo,
-    menus: state.app.menus,
+    menus: state.app.menus
   }),
   dispatch => ({
-    onLogout: dispatch.app.onLogout,
-  }),
+    onLogout: dispatch.app.onLogout
+  })
 )
 export default class AppContainer extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      collapsed: false, // 侧边栏是否收起
+      collapsed: false // 侧边栏是否收起
     };
   }
 
   /** 点击切换菜单状态 **/
   onToggle = () => {
     this.setState({
-      collapsed: !this.state.collapsed,
+      collapsed: !this.state.collapsed
     });
   };
 
@@ -85,7 +85,8 @@ export default class AppContainer extends React.Component {
     if (this.props.menus && this.props.menus.length) {
       menus = this.props.menus;
     } else if (sessionStorage.getItem("userinfo")) {
-      menus = JSON.parse(tools.uncompile(sessionStorage.getItem("userinfo"))).menus;
+      menus = JSON.parse(tools.uncompile(sessionStorage.getItem("userinfo")))
+        .menus;
     }
     const m = menus.map(item => item.url.replace(/^\//, "")); // 当前用户拥有的所有菜单
     const urls = pathname.split("/").filter(item => !!item);
@@ -112,7 +113,12 @@ export default class AppContainer extends React.Component {
   render() {
     return (
       <Layout className="page-basic">
-        <Menu data={this.props.menus} collapsed={this.state.collapsed} location={this.props.location} history={this.props.history} />
+        <Menu
+          data={this.props.menus}
+          collapsed={this.state.collapsed}
+          location={this.props.location}
+          history={this.props.history}
+        />
         <Layout>
           <Header
             collapsed={this.state.collapsed}
@@ -128,12 +134,32 @@ export default class AppContainer extends React.Component {
           <Content className="content">
             <Switch>
               <Redirect exact from="/" to="/home" />
-              <Route exact path="/home" render={props => this.onEnter(Home, props)} />
+              <Route
+                exact
+                path="/home"
+                render={props => this.onEnter(Home, props)}
+              />
 
-              <Route exact path="/system/menuadmin" render={props => this.onEnter(MenuAdmin, props)} />
-              <Route exact path="/system/poweradmin" render={props => this.onEnter(PowerAdmin, props)} />
-              <Route exact path="/system/roleadmin" render={props => this.onEnter(RoleAdmin, props)} />
-              <Route exact path="/system/useradmin" render={props => this.onEnter(UserAdmin, props)} />
+              <Route
+                exact
+                path="/system/menuadmin"
+                render={props => this.onEnter(MenuAdmin, props)}
+              />
+              <Route
+                exact
+                path="/system/poweradmin"
+                render={props => this.onEnter(PowerAdmin, props)}
+              />
+              <Route
+                exact
+                path="/system/roleadmin"
+                render={props => this.onEnter(RoleAdmin, props)}
+              />
+              <Route
+                exact
+                path="/system/useradmin"
+                render={props => this.onEnter(UserAdmin, props)}
+              />
               <Route exact path="/nopower" component={NoPower} />
               <Route component={NotFound} />
             </Switch>

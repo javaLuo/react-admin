@@ -76,9 +76,9 @@ export default class PowerAdminContainer extends React.Component {
     this.getData();
   }
 
-  UNSAFE_componentWillReceiveProps(nextP) {
-    if (nextP.menus !== this.props.menus) {
-      this.makeSourceData(nextP.menus);
+  componentDidUpdate(prevP) {
+    if (prevP.menus !== this.props.menus) {
+      this.makeSourceData(this.props.menus);
     }
   }
 

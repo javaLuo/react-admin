@@ -17,12 +17,11 @@ export default class MenuChoseComponent extends React.PureComponent {
     this.makeSourceData(this.props.data);
   }
 
-  UNSAFE_componentWillReceiveProps(nextP) {
-    if (this.props.data !== nextP.data) {
-      this.makeSourceData(nextP.data);
+  componentDidUpdate(prevP) {
+    if (this.props.data !== prevP.data) {
+      this.makeSourceData(this.props.data);
     }
   }
-
   /** 处理原始数据，将原始数据处理为层级关系 **/
   makeSourceData(data) {
     const d = _.cloneDeep(data);

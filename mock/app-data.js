@@ -660,7 +660,6 @@ const setPowersByRoleId = p => {
 };
 // 条件分页查询用户列表
 const getUserList = p => {
-  // const p = JSON.parse(request.body);
   const map = users.filter(item => {
     let yeah = true;
     if (p.username && !item.username.includes(p.username)) {
@@ -671,10 +670,12 @@ const getUserList = p => {
     }
     return yeah;
   });
-  const res = map.slice(p.pageNum * p.pageSize, (p.pageNum + 1) * p.pageSize);
+  const pageNum = Number(p.pageNum); // 从第1页开始
+  const pageSize = Number(p.pageSize);
+  const res = map.slice((pageNum - 1) * pageSize, pageNum * pageSize);
   return {
     status: 200,
-    data: { list: res, total: roles.length },
+    data: { list: res, total: map.length },
     message: "success"
   };
 };
@@ -729,7 +730,8 @@ exports.mockApi = (path, body, type) => {
     const s = new URLSearchParams(path.split("?")[1]);
     params = {};
     for (let item of s.entries()) {
-      params[item[0]] = params[item[1]];
+      console.log("what fuck:", item);
+      params[item[0]] = item[1];
     }
   }
   console.log("请求接口：", url, params);
