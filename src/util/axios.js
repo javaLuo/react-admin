@@ -1,8 +1,9 @@
 /** 对axios做一些配置 **/
 
 import { baseUrl } from "../config";
-import axios from "axios"; // 封装了fetch请求的库
+import axios from "axios";
 
+// 不需要下面这些mock配置，仅本地测试用
 import Mock from "mockjs";
 const mock = require("../../mock/app-data");
 Mock.mock(/\/api.*/, options => {

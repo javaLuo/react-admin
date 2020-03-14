@@ -9,7 +9,6 @@ export default class LoadingComponent extends React.PureComponent {
 
   makeType(p) {
     let msg;
-    console.log("加载出错：", p);
     if (p.error) {
       msg = "加载出错，请刷新页面";
     } else if (p.timedOut) {
