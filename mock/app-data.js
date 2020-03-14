@@ -20,7 +20,7 @@ const users = [
     email: "admin@react.com",
     desc: "超级管理员",
     conditions: 1,
-    roles: [1, 2, 3],
+    roles: [1, 2, 3]
   },
   {
     id: 2,
@@ -30,8 +30,8 @@ const users = [
     email: "user@react.com",
     desc: "普通管理员",
     conditions: 1,
-    roles: [2],
-  },
+    roles: [2]
+  }
 ];
 
 // 头部消息数据
@@ -42,20 +42,20 @@ const msg = {
       title: "你收到了12份新需求变更",
       time: "昨天",
       icon: "mail",
-      color: "#FE5D58",
+      color: "#FE5D58"
     },
     {
       title: "公告：国庆节放假安排",
       time: "今天上午",
       icon: "star",
-      color: "#3391E5",
+      color: "#3391E5"
     },
     {
       title: "leader将你添加到新的开发小组",
       time: "今天上午",
       icon: "team",
-      color: "#9DDEDE",
-    },
+      color: "#9DDEDE"
+    }
   ],
   message: [
     // 消息数据
@@ -64,15 +64,15 @@ const msg = {
       time: "昨天",
       info: "版本更新了，你去参考一下分支A的代码",
       icon: "smile-o",
-      color: "#3391E5",
+      color: "#3391E5"
     },
     {
       title: "测试员小红评论了你",
       time: "今天上午",
       info: "大佬，那确实不是一个BUG，是我考虑不周，见谅，下午请你喝奶茶",
       icon: "smile-o",
-      color: "#FE5D58",
-    },
+      color: "#FE5D58"
+    }
   ],
   work: [
     // 待办数据
@@ -80,21 +80,21 @@ const msg = {
       title: "系统部署",
       info: "服务器环境已经搭建完毕，需要下一步部署",
       type: "未开始",
-      color: "",
+      color: ""
     },
     {
       title: "需求变更",
       info: "今早有6个优先级高的需求改动",
       type: "进行中",
-      color: "blue",
+      color: "blue"
     },
     {
       title: "分支A代码合并",
       info: "git上的分支需合并至master",
       type: "已完成",
-      color: "geekblue",
-    },
-  ],
+      color: "geekblue"
+    }
+  ]
 };
 
 // 所有的菜单数据
@@ -107,7 +107,7 @@ const menus = [
     parent: null,
     desc: "首页",
     sorts: 0,
-    conditions: 1,
+    conditions: 1
   },
   {
     id: 2,
@@ -117,7 +117,7 @@ const menus = [
     parent: null,
     desc: "系统管理目录分支",
     sorts: 1,
-    conditions: 1,
+    conditions: 1
   },
   {
     id: 3,
@@ -127,7 +127,7 @@ const menus = [
     parent: 2,
     desc: "系统管理/用户管理",
     sorts: 0,
-    conditions: 1,
+    conditions: 1
   },
   {
     id: 4,
@@ -137,7 +137,7 @@ const menus = [
     parent: 2,
     desc: "系统管理/角色管理",
     sorts: 1,
-    conditions: 1,
+    conditions: 1
   },
   {
     id: 5,
@@ -147,7 +147,7 @@ const menus = [
     parent: 2,
     desc: "系统管理/权限管理",
     sorts: 2,
-    conditions: 1,
+    conditions: 1
   },
   {
     id: 6,
@@ -157,8 +157,8 @@ const menus = [
     parent: 2,
     desc: "系统管理/菜单管理",
     sorts: 3,
-    conditions: 1,
-  },
+    conditions: 1
+  }
 ];
 
 // 所有的权限数据
@@ -170,7 +170,7 @@ const powers = [
     code: "user:add",
     desc: "用户管理 - 添加权限",
     sorts: 1,
-    conditions: 1,
+    conditions: 1
   },
   {
     id: 2,
@@ -179,7 +179,7 @@ const powers = [
     code: "user:up",
     desc: "用户管理 - 修改权限",
     sorts: 2,
-    conditions: 1,
+    conditions: 1
   },
   {
     id: 3,
@@ -188,7 +188,7 @@ const powers = [
     code: "user:query",
     desc: "用户管理 - 查看权限",
     sorts: 3,
-    conditions: 1,
+    conditions: 1
   },
   {
     id: 4,
@@ -197,7 +197,7 @@ const powers = [
     code: "user:del",
     desc: "用户管理 - 删除权限",
     sorts: 4,
-    conditions: 1,
+    conditions: 1
   },
   {
     id: 5,
@@ -206,7 +206,7 @@ const powers = [
     code: "user:role",
     desc: "用户管理 - 分配角色权限",
     sorts: 5,
-    conditions: 1,
+    conditions: 1
   },
 
   {
@@ -216,7 +216,7 @@ const powers = [
     code: "role:add",
     desc: "角色管理 - 添加权限",
     sorts: 1,
-    conditions: 1,
+    conditions: 1
   },
   {
     id: 7,
@@ -225,7 +225,7 @@ const powers = [
     code: "role:up",
     desc: "角色管理 - 修改权限",
     sorts: 2,
-    conditions: 1,
+    conditions: 1
   },
   {
     id: 8,
@@ -234,7 +234,7 @@ const powers = [
     code: "role:query",
     desc: "角色管理 - 查看权限",
     sorts: 3,
-    conditions: 1,
+    conditions: 1
   },
   {
     id: 18,
@@ -243,7 +243,7 @@ const powers = [
     code: "role:power",
     desc: "角色管理 - 分配权限",
     sorts: 4,
-    conditions: 1,
+    conditions: 1
   },
   {
     id: 9,
@@ -252,7 +252,7 @@ const powers = [
     code: "role:del",
     desc: "角色管理 - 删除权限",
     sorts: 5,
-    conditions: 1,
+    conditions: 1
   },
 
   {
@@ -262,7 +262,7 @@ const powers = [
     code: "power:add",
     desc: "权限管理 - 添加权限",
     sorts: 1,
-    conditions: 1,
+    conditions: 1
   },
   {
     id: 11,
@@ -271,7 +271,7 @@ const powers = [
     code: "power:up",
     desc: "权限管理 - 修改权限",
     sorts: 2,
-    conditions: 1,
+    conditions: 1
   },
   {
     id: 12,
@@ -280,7 +280,7 @@ const powers = [
     code: "power:query",
     desc: "权限管理 - 查看权限",
     sorts: 3,
-    conditions: 1,
+    conditions: 1
   },
   {
     id: 13,
@@ -289,7 +289,7 @@ const powers = [
     code: "power:del",
     desc: "权限管理 - 删除权限",
     sorts: 2,
-    conditions: 1,
+    conditions: 1
   },
 
   {
@@ -299,7 +299,7 @@ const powers = [
     code: "menu:add",
     desc: "菜单管理 - 添加权限",
     sorts: 1,
-    conditions: 1,
+    conditions: 1
   },
   {
     id: 15,
@@ -308,7 +308,7 @@ const powers = [
     code: "menu:up",
     desc: "菜单管理 - 修改权限",
     sorts: 2,
-    conditions: 1,
+    conditions: 1
   },
   {
     id: 16,
@@ -317,7 +317,7 @@ const powers = [
     code: "menu:query",
     desc: "菜单管理 - 查看权限",
     sorts: 3,
-    conditions: 1,
+    conditions: 1
   },
   {
     id: 17,
@@ -326,8 +326,8 @@ const powers = [
     code: "menu:del",
     desc: "菜单管理 - 删除权限",
     sorts: 2,
-    conditions: 1,
-  },
+    conditions: 1
+  }
 ];
 // 所有的角色数据
 const roles = [
@@ -337,14 +337,14 @@ const roles = [
     desc: "超级管理员拥有所有权限",
     sorts: 1,
     conditions: 1,
-    powers: [
+    menuAndPowers: [
       { menuId: 1, powers: [] },
       { menuId: 2, powers: [] },
       { menuId: 3, powers: [1, 2, 3, 4, 5] },
       { menuId: 4, powers: [6, 7, 8, 9, 18] },
       { menuId: 5, powers: [10, 11, 12, 13] },
-      { menuId: 6, powers: [14, 15, 16, 17] },
-    ],
+      { menuId: 6, powers: [14, 15, 16, 17] }
+    ]
   },
   {
     id: 2,
@@ -352,14 +352,14 @@ const roles = [
     desc: "普通管理员",
     sorts: 2,
     conditions: 1,
-    powers: [
+    menuAndPowers: [
       { menuId: 1, powers: [] },
       { menuId: 2, powers: [] },
       { menuId: 3, powers: [3] },
       { menuId: 4, powers: [6, 7, 8, 18] },
       { menuId: 5, powers: [10, 11, 12] },
-      { menuId: 6, powers: [14, 15, 16] },
-    ],
+      { menuId: 6, powers: [14, 15, 16] }
+    ]
   },
   {
     id: 3,
@@ -367,15 +367,15 @@ const roles = [
     desc: "运维人员不能删除对象",
     sorts: 3,
     conditions: 1,
-    powers: [
+    menuAndPowers: [
       { menuId: 1, powers: [] },
       { menuId: 2, powers: [] },
       { menuId: 3, powers: [3] },
       { menuId: 4, powers: [7, 8] },
       { menuId: 5, powers: [11, 12] },
-      { menuId: 6, powers: [15, 16] },
-    ],
-  },
+      { menuId: 6, powers: [15, 16] }
+    ]
+  }
 ];
 
 /**
@@ -411,7 +411,7 @@ const clearNews = p => {
     status: 200,
     data: msg,
     total: msg.notice.length + msg.message.length + msg.work.length,
-    message: "删除成功",
+    message: "删除成功"
   };
 };
 // 获取所有菜单
@@ -458,7 +458,9 @@ const delMenu = p => {
   const oldIndex = menus.findIndex(item => item.id === p.id);
 
   if (oldIndex !== -1) {
-    const haveChild = menus.findIndex(item => item.parent === menus[oldIndex].id);
+    const haveChild = menus.findIndex(
+      item => item.parent === menus[oldIndex].id
+    );
     if (haveChild === -1) {
       menus.splice(oldIndex, 1);
       return { status: 200, data: menus, message: "success" };
@@ -477,8 +479,10 @@ const getPowerByMenuId = p => {
   if (menuId) {
     return {
       status: 200,
-      data: powers.filter(item => item.menu === menuId).sort((a, b) => a.sorts - b.sorts),
-      message: "success",
+      data: powers
+        .filter(item => item.menu === menuId)
+        .sort((a, b) => a.sorts - b.sorts),
+      message: "success"
     };
   } else {
     return { status: 200, data: [], message: "success" };
@@ -502,7 +506,7 @@ const addPower = p => {
   // const p = JSON.parse(request.body);
   p.id = ++id_sequence;
   powers.push(p);
-  return { status: 200, data: null, message: "success" };
+  return { status: 200, data: { id: p.id }, message: "success" };
 };
 // 修改权限
 const upPower = p => {
@@ -512,7 +516,7 @@ const upPower = p => {
   if (oldIndex !== -1) {
     const news = Object.assign({}, powers[oldIndex], p);
     powers.splice(oldIndex, 1, news);
-    return { status: 200, data: null, message: "success" };
+    return { status: 200, data: { id: p.id }, message: "success" };
   } else {
     return { status: 204, data: null, message: "未找到该条数据" };
   }
@@ -543,10 +547,11 @@ const getRoles = p => {
   });
   const r = map.sort((a, b) => a.sorts - b.sorts);
   const res = r.slice((p.pageNum - 1) * p.pageSize, p.pageNum * p.pageSize);
+  console.log("你在搞笑？", res);
   return {
     status: 200,
     data: { list: res, total: map.length },
-    message: "success",
+    message: "success"
   };
 };
 // 查询角色（所有）
@@ -618,7 +623,9 @@ const findAllPowerByRoleId = p => {
 const getAllPowers = p => {
   const res = menus.map(item => {
     const _menu = item;
-    const _powers = powers.filter(v => v.menu === item.id && v.conditions === 1);
+    const _powers = powers.filter(
+      v => v.menu === item.id && v.conditions === 1
+    );
     _menu.powers = _powers;
     return _menu;
   });
@@ -631,19 +638,57 @@ const setPowersByRoleId = p => {
   if (oldIndex !== -1) {
     let pow = p.menus.map(item => ({ menuId: item, powers: [] }));
     console.log("此时的POW", pow);
-    pow.filter(item => {
-      const parr = p.powers.filter(v => {
-        return powers.findIndex(pv => pv.menu === item.menuId) > -1;
-      });
-      item.powers = parr;
+    // 将每一个权限id归类到对应的菜单里
+    p.powers.forEach(ppItem => {
+      // 通过权限id查询该权限对象
+      const thePowerData = powers.find(pItem => pItem.id === ppItem);
+      if (thePowerData) {
+        const theMenuId = thePowerData.menu;
+        if (theMenuId) {
+          const thePow = pow.find(powItem => powItem.menuId === theMenuId);
+          if (thePow) {
+            thePow.powers.push(ppItem);
+          }
+        }
+      }
     });
+
     console.log("最终的POW：", pow);
-    roles[oldIndex].powers = pow;
+    roles[oldIndex].menuAndPowers = pow;
     return { status: 200, data: null, message: "success" };
   } else {
     return { status: 204, data: null, message: "未找到该条数据" };
   }
 };
+
+// 给指定角色分配菜单和权限
+const setPowersByRoleIds = ps => {
+  ps.forEach(p => {
+    const oldIndex = roles.findIndex(item => item.id === p.id);
+    if (oldIndex !== -1) {
+      let pow = p.menus.map(item => ({ menuId: item, powers: [] }));
+      console.log("此时的POW", pow);
+      // 将每一个权限id归类到对应的菜单里
+      p.powers.forEach(ppItem => {
+        // 通过权限id查询该权限对象
+        const thePowerData = powers.find(pItem => pItem.id === ppItem);
+        if (thePowerData) {
+          const theMenuId = thePowerData.menu;
+          if (theMenuId) {
+            const thePow = pow.find(powItem => powItem.menuId === theMenuId);
+            if (thePow) {
+              thePow.powers.push(ppItem);
+            }
+          }
+        }
+      });
+      console.log("最终的POW：", pow);
+      roles[oldIndex].menuAndPowers = pow;
+    }
+  });
+  return { status: 200, data: null, message: "success" };
+};
+
 // 条件分页查询用户列表
 const getUserList = p => {
   const map = users.filter(item => {
@@ -662,7 +707,7 @@ const getUserList = p => {
   return {
     status: 200,
     data: { list: res, total: map.length },
-    message: "success",
+    message: "success"
   };
 };
 // 添加用户
@@ -729,7 +774,7 @@ exports.mockApi = (path, body, type) => {
         status: 200,
         data: msg,
         total: msg.notice.length + msg.message.length + msg.work.length,
-        message: "success",
+        message: "success"
       };
     case "/api/clearnews":
       return clearNews(params);
@@ -737,7 +782,7 @@ exports.mockApi = (path, body, type) => {
       return {
         status: 200,
         data: msg.notice.length + msg.message.length + msg.work.length,
-        message: "success",
+        message: "success"
       };
     case "/api/getmenus":
       return getMenus(params);
@@ -777,6 +822,8 @@ exports.mockApi = (path, body, type) => {
       return getAllPowers(params);
     case "/api/setPowersByRoleId":
       return setPowersByRoleId(params);
+    case "/api/setPowersByRoleIds":
+      return setPowersByRoleIds(params);
     case "/api/getUserList":
       return getUserList(params);
     case "/api/addUser":

@@ -18,12 +18,7 @@ message.config({
 
 const history = createHistory();
 @connect(
-  state => {
-    console.log("what state:", state);
-    return {
-      userinfo: state.app.userinfo
-    };
-  },
+  state => ({ userinfo: state.app.userinfo }),
   dispatch => ({
     setUserInfo: dispatch.app.setUserInfo
   })
@@ -39,7 +34,7 @@ export default class RouterContainer extends React.Component {
      * sessionStorage中有user信息，但store中没有
      * 说明刷新了页面，需要重新同步user数据到store
      * **/
-    if (userinfo && !this.props.userinfo) {
+    if (userinfo && !this.props.userinfo.userBasicInfo) {
       this.props.setUserInfo(JSON.parse(tools.uncompile(userinfo)));
     }
   }

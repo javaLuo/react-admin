@@ -41,7 +41,7 @@ const { Option } = Select;
   state => ({
     powerTreeData: state.sys.powerTreeData, // 权限树所需数据
     userinfo: state.app.userinfo, // 用户信息
-    powers: state.app.powers // 所有的权限code
+    powersCode: state.app.powersCode // 所有的权限code
   }),
   dispatch => ({
     getAllRoles: dispatch.sys.getAllRoles,
@@ -102,7 +102,7 @@ export default class RoleAdminContainer extends React.Component {
 
   // 查询当前页面所需列表数据
   onGetData(pageNum, pageSize) {
-    const p = this.props.powers;
+    const p = this.props.powersCode;
     if (!p.includes("user:query")) {
       return;
     }
@@ -189,14 +189,13 @@ export default class RoleAdminContainer extends React.Component {
 
   /** 模态框确定 **/
   async onOk() {
-    const me = this;
-
+    // 是查看
     if (this.state.operateType === "see") {
-      // 是查看
       this.onClose();
       return;
     }
     try {
+      const me = this;
       const values = await this.form.current.validateFields();
       me.setState({ modalLoading: true });
       const params = {
@@ -334,7 +333,7 @@ export default class RoleAdminContainer extends React.Component {
         render: (text, record) => {
           const controls = [];
           const u = this.props.userinfo || {};
-          const p = this.props.powers;
+          const p = this.props.powersCode;
 
           p.includes("user:query") &&
             controls.push(
@@ -461,8 +460,7 @@ export default class RoleAdminContainer extends React.Component {
   }
   render() {
     const me = this;
-    const p = this.props.powers;
-    const { form } = me.props;
+    const p = this.props.powersCode;
     const formItemLayout = {
       labelCol: {
         xs: { span: 24 },

@@ -10,6 +10,7 @@ import { message } from "antd";
 export default {
   state: {
     menus: [], // 所有的菜单信息（用于菜单管理，无视权限）
+    roles: [], // 所有的角色信息（用于Model赋予项，无视权限）
     powerTreeData: [] // 分配权限treeTable组件所需原始数据
   },
   reducers: {
@@ -17,6 +18,11 @@ export default {
     reducerSetMenus(state, payload) {
       return { ...state, menus: payload };
     },
+    // 保存所有角色数据
+    reducerSetRoles(state, payload) {
+      return { ...state, roles: payload };
+    },
+
     // 保存所有权限数据
     reducerSetAllPowers(state, payload) {
       return { ...state, powerTreeData: payload };
@@ -113,6 +119,18 @@ export default {
       }
     },
 
+    /** 获取所有角色 **/
+    async getAllRoles() {
+      try {
+        const res = await axios.get("api/getAllRoles");
+        if (res.status === 200) {
+          this.reducerSetRoles(res.data);
+        }
+        return res;
+      } catch (err) {
+        message.error("网络错误，请重试");
+      }
+    },
     /**
      * 添加权限
      * **/
@@ -155,18 +173,6 @@ export default {
     async getRoles(params = {}) {
       try {
         const res = await axios.get(`api/getroles?${qs.stringify(params)}`);
-        return res;
-      } catch (err) {
-        message.error("网络错误，请重试");
-      }
-    },
-
-    /**
-     * 查询所有角色数据
-     * **/
-    async getAllRoles(params = {}) {
-      try {
-        const res = await axios.get(`api/getAllRoles?${qs.stringify(params)}`);
         return res;
       } catch (err) {
         message.error("网络错误，请重试");
@@ -261,6 +267,20 @@ export default {
     async setPowersByRoleId(params = {}) {
       try {
         const res = await axios.post("api/setPowersByRoleId", params);
+        return res;
+      } catch (err) {
+        message.error("网络错误，请重试");
+      }
+    },
+
+    /**
+     * (批量)通过角色ID给指定角色设置菜单及权限
+     * @param params [{id,menus,powers},...]
+     * */
+    async setPowersByRoleIds(params = {}) {
+      try {
+        console.log("idsaaaa:", params);
+        const res = await axios.post("api/setPowersByRoleIds", params);
         return res;
       } catch (err) {
         message.error("网络错误，请重试");

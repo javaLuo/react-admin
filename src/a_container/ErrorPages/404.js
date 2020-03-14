@@ -2,16 +2,13 @@
 
 import React from "react";
 import { connect } from "react-redux";
-import { bindActionCreators } from "redux";
 import { Button } from "antd";
 import "./index.less";
 import Img from "@/assets/error.gif";
 
 @connect(
   state => ({}),
-  dispatch => ({
-    actions: bindActionCreators({}, dispatch)
-  })
+  dispatch => ({})
 )
 export default class NotFoundContainer extends React.Component {
   constructor(props) {

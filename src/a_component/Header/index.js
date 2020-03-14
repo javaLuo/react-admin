@@ -94,7 +94,7 @@ export default class HeaderCom extends React.PureComponent {
   };
 
   render() {
-    const u = this.props.userinfo;
+    const u = this.props.userinfo.userBasicInfo;
     return (
       <Header className="header">
         <Tooltip

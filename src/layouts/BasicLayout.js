@@ -44,8 +44,7 @@ const [NotFound, NoPower, Home, MenuAdmin, PowerAdmin, RoleAdmin, UserAdmin] = [
 const { Content } = Layout;
 @connect(
   state => ({
-    userinfo: state.app.userinfo,
-    menus: state.app.menus
+    userinfo: state.app.userinfo
   }),
   dispatch => ({
     onLogout: dispatch.app.onLogout
@@ -82,8 +81,8 @@ export default class AppContainer extends React.Component {
    * **/
   checkRouterPower(pathname) {
     let menus;
-    if (this.props.menus && this.props.menus.length) {
-      menus = this.props.menus;
+    if (this.props.userinfo.menus && this.props.userinfo.menus.length) {
+      menus = this.props.userinfo.menus;
     } else if (sessionStorage.getItem("userinfo")) {
       menus = JSON.parse(tools.uncompile(sessionStorage.getItem("userinfo")))
         .menus;
@@ -111,10 +110,11 @@ export default class AppContainer extends React.Component {
   }
 
   render() {
+    console.log("smqk:", this.props.userinfo);
     return (
       <Layout className="page-basic">
         <Menu
-          data={this.props.menus}
+          data={this.props.userinfo.menus}
           collapsed={this.state.collapsed}
           location={this.props.location}
           history={this.props.history}
@@ -130,7 +130,10 @@ export default class AppContainer extends React.Component {
             newsData={this.state.newsData}
             newsTotal={this.state.newsTotal}
           />
-          <Bread menus={this.props.menus} location={this.props.location} />
+          <Bread
+            menus={this.props.userinfo.menus}
+            location={this.props.location}
+          />
           <Content className="content">
             <Switch>
               <Redirect exact from="/" to="/home" />

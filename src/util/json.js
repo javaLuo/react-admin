@@ -55,5 +55,5 @@ export const IconsData = [
   "icon-cloud",
   "icon-crown",
   "icon-desktop",
-  "icon-gift",
+  "icon-gift"
 ];

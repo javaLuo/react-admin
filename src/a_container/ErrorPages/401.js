@@ -11,10 +11,6 @@ import Img from "@/assets/error.gif";
   dispatch => ({})
 )
 export default class NoPowerContainer extends React.Component {
-  static propTypes = {
-    history: P.any
-  };
-
   constructor(props) {
     super(props);
     this.state = {

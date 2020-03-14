@@ -12,7 +12,7 @@ export default class Com extends React.PureComponent {
 
   render() {
     return (
-      <Footer className="footer">
+      <Footer className={`footer ${this.props.className}`}>
         © 2018-2020{" "}
         <a
           href="https://blog.isluo.com"

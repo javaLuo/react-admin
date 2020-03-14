@@ -63,7 +63,7 @@ export default class AppContainer extends React.PureComponent {
             <Route component={NotFound} />
           </Switch>
         </Content>
-        <Footer />
+        <Footer className="user-layout" />
       </Layout>
     );
   }

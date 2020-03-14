@@ -19,7 +19,7 @@ export default class RoleTreeComponent extends React.PureComponent {
     super(props);
     this.state = {
       sourceData: [], // 原始数据，有层级关系
-      nowKeys: [], // 当前选中的keys
+      nowKeys: [] // 当前选中的keys
     };
   }
 
@@ -33,7 +33,7 @@ export default class RoleTreeComponent extends React.PureComponent {
     }
     if (this.props.defaultKeys !== prevP.defaultKeys) {
       this.setState({
-        nowKeys: this.props.defaultKeys.map(item => `${item}`),
+        nowKeys: this.props.defaultKeys.map(item => `${item}`)
       });
     }
   }
@@ -48,7 +48,7 @@ export default class RoleTreeComponent extends React.PureComponent {
     const sourceData = this.dataToJson(null, d) || [];
     console.log("处理后的数据：", sourceData);
     this.setState({
-      sourceData,
+      sourceData
     });
   }
 
@@ -70,12 +70,24 @@ export default class RoleTreeComponent extends React.PureComponent {
     return data.map((item, index) => {
       if (item.children) {
         return (
-          <TreeNode title={item.title} key={item.id} data={item} selectable={false}>
+          <TreeNode
+            title={item.title}
+            key={item.id}
+            data={item}
+            selectable={false}
+          >
             {this.makeTreeDom(item.children)}
           </TreeNode>
         );
       } else {
-        return <TreeNode title={item.title} key={item.id} data={item} selectable={false} />;
+        return (
+          <TreeNode
+            title={item.title}
+            key={item.id}
+            data={item}
+            selectable={false}
+          />
+        );
       }
     });
   }
@@ -99,7 +111,7 @@ export default class RoleTreeComponent extends React.PureComponent {
   onCheck = keys => {
     console.log("onCheck", keys);
     this.setState({
-      nowKeys: keys,
+      nowKeys: keys
     });
   };
 
@@ -111,13 +123,15 @@ export default class RoleTreeComponent extends React.PureComponent {
         wrapClassName="menuTreeModal"
         confirmLoading={this.props.loading}
         onOk={this.onOk}
-        onCancel={this.onClose}>
+        onCancel={this.onClose}
+      >
         <Tree
           checkable
           selectable={false}
           checkedKeys={this.state.nowKeys}
           onCheck={keys => this.onCheck(keys)}
-          treeData={this.state.sourceData}></Tree>
+          treeData={this.state.sourceData}
+        ></Tree>
       </Modal>
     );
   }

@@ -33,6 +33,7 @@ export default class MenuCom extends React.PureComponent {
   }
 
   componentDidUpdate(prevP, prevS, snapshot) {
+    console.log("数据不变的？", this.props.data, prevP.data);
     if (this.props.data !== prevP.data) {
       this.makeSourceData(this.props.data);
     }

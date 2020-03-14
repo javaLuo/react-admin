@@ -24,8 +24,8 @@ import LogoImg from "@/assets/logo.png";
     setUserInfo: dispatch.app.setUserInfo,
     getRoleById: dispatch.sys.getRoleById,
     getPowerById: dispatch.sys.getPowerById,
-    getMenusById: dispatch.sys.getMenusById,
-  }),
+    getMenusById: dispatch.sys.getMenusById
+  })
 )
 export default class LoginContainer extends React.Component {
   constructor(props) {
@@ -35,7 +35,7 @@ export default class LoginContainer extends React.Component {
       loading: false, // 是否正在登录中
       rememberPassword: false, // 是否记住密码
       codeValue: "00000", // 当前验证码的值
-      show: false, // 加载完毕时触发动画
+      show: false // 加载完毕时触发动画
     };
   }
 
@@ -45,13 +45,13 @@ export default class LoginContainer extends React.Component {
     if (userLoginInfo) {
       userLoginInfo = JSON.parse(userLoginInfo);
       this.setState({
-        rememberPassword: true,
+        rememberPassword: true
       });
 
       console.log("what:", this.form);
       this.form.current.setFieldsValue({
         username: userLoginInfo.username,
-        password: tools.uncompile(userLoginInfo.password),
+        password: tools.uncompile(userLoginInfo.password)
       });
     }
     if (!userLoginInfo) {
@@ -60,7 +60,7 @@ export default class LoginContainer extends React.Component {
       document.getElementById("vcode").focus();
     }
     this.setState({
-      show: true,
+      show: true
     });
   }
 
@@ -79,14 +79,18 @@ export default class LoginContainer extends React.Component {
                 "userLoginInfo",
                 JSON.stringify({
                   username: values.username,
-                  password: tools.compile(values.password), // 密码简单加密一下再存到localStorage
-                }),
+                  password: tools.compile(values.password) // 密码简单加密一下再存到localStorage
+                })
               ); // 保存用户名和密码
             } else {
               localStorage.removeItem("userLoginInfo");
             }
             /** 将这些信息加密后存入sessionStorage,并存入store **/
-            sessionStorage.setItem("userinfo", tools.compile(JSON.stringify(res.data)));
+            console.log("准备存：", res.data);
+            sessionStorage.setItem(
+              "userinfo",
+              tools.compile(JSON.stringify(res.data))
+            );
             this.props.setUserInfo(res.data);
             setTimeout(() => this.props.history.replace("/")); // 跳转到主页,用setTimeout是为了等待上一句设置用户信息完成
           } else {
@@ -111,59 +115,63 @@ export default class LoginContainer extends React.Component {
    * 3.通过角色信息获取其拥有的所有权限信息
    * **/
   async loginIn(username, password) {
-    let userInfo = null;
+    let userBasicInfo = null;
     let roles = [];
     let menus = [];
     let powers = [];
+
     /** 1.登录 （返回信息中有该用户拥有的角色id） **/
-    console.log("lo1:", username, password);
     const res1 = await this.props.onLogin({ username, password });
     if (!res1 || res1.status !== 200) {
       // 登录失败
       return res1;
     }
 
-    userInfo = res1.data;
+    userBasicInfo = res1.data;
 
     /** 2.根据角色id获取角色信息 (角色信息中有该角色拥有的菜单id和权限id) **/
-    const res2 = await this.props.getRoleById({ id: userInfo.roles });
-    console.log("获取角色：", res2);
+    const res2 = await this.props.getRoleById({ id: userBasicInfo.roles });
     if (!res2 || res2.status !== 200) {
       // 角色查询失败
       return res2;
     }
 
-    roles = res2.data;
+    roles = res2.data.filter(item => item.conditions === 1); // conditions: 1启用 -1禁用
 
     /** 3.根据菜单id 获取菜单信息 **/
-    const menusIds = roles.reduce((a, b) => [...a, ...b.powers], []);
+    const menuAndPowers = roles.reduce(
+      (a, b) => [...a, ...b.menuAndPowers],
+      []
+    );
     const res3 = await this.props.getMenusById({
-      id: Array.from(new Set(menusIds.map(item => item.menuId))),
+      id: Array.from(new Set(menuAndPowers.map(item => item.menuId)))
     });
     if (!res3 || res3.status !== 200) {
       // 查询菜单信息失败
       return res3;
     }
 
-    menus = res3.data;
+    menus = res3.data.filter(item => item.conditions === 1);
 
-    /** 4.获取权限信息 **/
+    /** 4.根据权限id，获取权限信息 **/
     const res4 = await this.props.getPowerById({
-      id: Array.from(new Set(menusIds.reduce((a, b) => [...a, ...b.powers], []))),
+      id: Array.from(
+        new Set(menuAndPowers.reduce((a, b) => [...a, ...b.powers], []))
+      )
     });
     if (!res4 || res4.status !== 200) {
       // 权限查询失败
       return res4;
     }
-    powers = res4.data;
+    powers = res4.data.filter(item => item.conditions === 1);
 
-    return { status: 200, data: { userInfo, roles, menus, powers } };
+    return { status: 200, data: { userBasicInfo, roles, menus, powers } };
   }
 
   // 记住密码按钮点击
   onRemember(e) {
     this.setState({
-      rememberPassword: e.target.checked,
+      rememberPassword: e.target.checked
     });
   }
 
@@ -172,10 +180,10 @@ export default class LoginContainer extends React.Component {
     console.log("why:", this.form);
     setTimeout(() => {
       this.form.current.setFieldsValue({
-        vcode: code, // 开发模式自动赋值验证码，正式环境，这里应该赋值''
+        vcode: code // 开发模式自动赋值验证码，正式环境，这里应该赋值''
       });
       this.setState({
-        codeValue: code,
+        codeValue: code
       });
     });
   }
@@ -186,7 +194,11 @@ export default class LoginContainer extends React.Component {
         <div className="canvasBox">
           <CanvasBack row={12} col={8} />
         </div>
-        <div className={this.state.show ? "loginBox all_trans5 show" : "loginBox all_trans5"}>
+        <div
+          className={
+            this.state.show ? "loginBox all_trans5 show" : "loginBox all_trans5"
+          }
+        >
           <Form ref={this.form}>
             <div className="title">
               <img src={LogoImg} alt="logo" />
@@ -200,9 +212,10 @@ export default class LoginContainer extends React.Component {
                   {
                     required: true,
                     whitespace: true,
-                    message: "请输入用户名",
-                  },
-                ]}>
+                    message: "请输入用户名"
+                  }
+                ]}
+              >
                 <Input
                   prefix={<UserOutlined style={{ fontSize: 13 }} />}
                   size="large"
@@ -215,8 +228,9 @@ export default class LoginContainer extends React.Component {
                 name="password"
                 rules={[
                   { required: true, message: "请输入密码" },
-                  { max: 18, message: "最大长度18个字符" },
-                ]}>
+                  { max: 18, message: "最大长度18个字符" }
+                ]}
+              >
                 <Input
                   prefix={<KeyOutlined style={{ fontSize: 13 }} />}
                   size="large"
@@ -236,7 +250,10 @@ export default class LoginContainer extends React.Component {
                         if (v) {
                           if (v.length > 4) {
                             return Promise.reject("验证码为4位字符");
-                          } else if (v.toLowerCase() !== this.state.codeValue.toLowerCase()) {
+                          } else if (
+                            v.toLowerCase() !==
+                            this.state.codeValue.toLowerCase()
+                          ) {
                             return Promise.reject("验证码错误");
                           } else {
                             return Promise.resolve();
@@ -244,9 +261,10 @@ export default class LoginContainer extends React.Component {
                         } else {
                           return Promise.reject("请输入验证码");
                         }
-                      },
-                    }),
-                  ]}>
+                      }
+                    })
+                  ]}
+                >
                   <Input
                     style={{ width: "200px" }}
                     size="large"
@@ -261,15 +279,25 @@ export default class LoginContainer extends React.Component {
                   onChange={code => this.onVcodeChange(code)}
                   className="vcode"
                   options={{
-                    lines: 16,
+                    lines: 16
                   }}
                 />
               </Form.Item>
               <div style={{ lineHeight: "40px" }}>
-                <Checkbox className="remember" checked={this.state.rememberPassword} onChange={e => this.onRemember(e)}>
+                <Checkbox
+                  className="remember"
+                  checked={this.state.rememberPassword}
+                  onChange={e => this.onRemember(e)}
+                >
                   记住密码
                 </Checkbox>
-                <Button className="submit-btn" size="large" type="primary" loading={this.state.loading} onClick={() => this.onSubmit()}>
+                <Button
+                  className="submit-btn"
+                  size="large"
+                  type="primary"
+                  loading={this.state.loading}
+                  onClick={() => this.onSubmit()}
+                >
                   {this.state.loading ? "请稍后" : "登录"}
                 </Button>
               </div>
