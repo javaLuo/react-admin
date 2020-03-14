@@ -1,7 +1,7 @@
 /* Footer 页面底部 */
 import React from "react";
 import { Layout } from "antd";
-import "./index.scss";
+import "./index.less";
 
 const { Footer } = Layout;
 export default class Com extends React.PureComponent {
@@ -12,8 +12,8 @@ export default class Com extends React.PureComponent {
 
   render() {
     return (
-      <Footer className="footer">
-        © 2018-2019{" "}
+      <Footer className={`footer ${this.props.className}`}>
+        © 2018-2020{" "}
         <a
           href="https://blog.isluo.com"
           target="_blank"

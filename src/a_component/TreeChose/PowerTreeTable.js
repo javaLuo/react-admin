@@ -1,21 +1,19 @@
 /** PowerTreeTable 用于角色授权的树形表格 **/
 import React from "react";
-import P from "prop-types";
 import { Modal, Table, Checkbox, Spin } from "antd";
-import "./PowerTreeTable.scss";
 import _ from "lodash";
 
 export default class TreeTable extends React.PureComponent {
-  static propTypes = {
-    title: P.string, // 指定模态框标题
-    data: P.any, // 所有的菜单&权限原始数据
-    defaultChecked: P.object, // 需要默认选中的项
-    modalShow: P.any, // 是否显示
-    initloading: P.bool, // 初始化时，树是否处于加载中状态
-    loading: P.bool, // 提交表单时，树的确定按钮是否处于等待状态
-    onClose: P.any, // 关闭模态框
-    onOk: P.any // 确定选择，将所选项信息返回上级
-  };
+  // static propTypes = {
+  //   title: P.string, // 指定模态框标题
+  //   data: P.any, // 所有的菜单&权限原始数据
+  //   defaultChecked: P.object, // 需要默认选中的项
+  //   modalShow: P.any, // 是否显示
+  //   initloading: P.bool, // 初始化时，树是否处于加载中状态
+  //   loading: P.bool, // 提交表单时，树的确定按钮是否处于等待状态
+  //   onClose: P.any, // 关闭模态框
+  //   onOk: P.any // 确定选择，将所选项信息返回上级
+  // };
 
   constructor(props) {
     super(props);
@@ -31,16 +29,15 @@ export default class TreeTable extends React.PureComponent {
     this.makeSourceData(this.props.data || [], {});
   }
 
-  UNSAFE_componentWillReceiveProps(nextProps) {
+  componentDidUpdate(prevP) {
     // allMenu变化后，重新处理原始数据; 所选择的项变化，需要隐藏所选择的项
     if (
-      nextProps.data !== this.props.data ||
-      nextProps.defaultChecked !== this.props.defaultChecked
+      prevP.data !== this.props.data ||
+      prevP.defaultChecked !== this.props.defaultChecked
     ) {
-      this.makeSourceData(nextProps.data, nextProps.defaultChecked);
+      this.makeSourceData(this.props.data, this.props.defaultChecked);
     }
   }
-
   // 提交
   onOk() {
     this.props.onOk &&
@@ -60,7 +57,8 @@ export default class TreeTable extends React.PureComponent {
 
   // 处理原始数据，将原始数据处理为层级关系(菜单的层级关系)
   makeSourceData(data, defaultChecked) {
-    let d = _.cloneDeep(data);
+    console.log("重新渲染？");
+    let d = [...data];
     // 按照sort排序
     d.sort((a, b) => {
       return a.sorts - b.sorts;
@@ -191,14 +189,15 @@ export default class TreeTable extends React.PureComponent {
 
   // TABLE btn权限选中和取消选中，需要记录哪些被选中
   onBtnDtoChange(e, id, record) {
-    const old = _.cloneDeep(this.state.btnDtoChecked);
-    let treeChecked = _.cloneDeep(this.state.treeChecked);
+    const old = [...this.state.btnDtoChecked];
+    let treeChecked = [...this.state.treeChecked];
     if (e.target.checked) {
       // 选中
       old.push(id);
       treeChecked = Array.from(new Set([record.id, ...this.state.treeChecked]));
     } else {
       // 取消选中
+      console.log("取消啊兄弟", old, id);
       old.splice(old.indexOf(id), 1);
       // 判断当前这一行的权限中是否还有被选中的，如果全都没有选中，那当前菜单也要取消选中
       const tempMap = record.powers.map(item => item.id);
@@ -217,7 +216,6 @@ export default class TreeTable extends React.PureComponent {
   }
 
   render() {
-    const me = this;
     return (
       <Modal
         className="menu-tree-table"

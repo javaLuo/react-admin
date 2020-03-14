@@ -1,21 +1,22 @@
 /** 左侧导航 **/
-import React from "react";
-import P from "prop-types";
-import { Layout, Icon, Menu } from "antd";
-import { Link } from "react-router-dom";
-import "./index.scss";
-import ImgLogo from "../../assets/logo.png";
-import _ from "lodash";
-
-const { Sider } = Layout;
-const { SubMenu, Item } = Menu;
-export default class Com extends React.PureComponent {
-  static propTypes = {
+/**
+ * static propTypes = {
     data: P.array, // 所有的菜单数据
     collapsed: P.bool, // 菜单咱开还是收起
     location: P.any
   };
+ * */
+import React from "react";
+import { Layout, Menu } from "antd";
+import { Link } from "react-router-dom";
+import "./index.less";
+import ImgLogo from "@/assets/logo.png";
+import Icon from "@/a_component/Icon";
+import _ from "lodash";
 
+const { Sider } = Layout;
+const { SubMenu, Item } = Menu;
+export default class MenuCom extends React.PureComponent {
   constructor(props) {
     super(props);
     this.state = {
@@ -31,12 +32,13 @@ export default class Com extends React.PureComponent {
     this.nowChosed(this.props.location);
   }
 
-  UNSAFE_componentWillReceiveProps(nextP) {
-    if (this.props.data !== nextP.data) {
-      this.makeSourceData(nextP.data);
+  componentDidUpdate(prevP, prevS, snapshot) {
+    console.log("数据不变的？", this.props.data, prevP.data);
+    if (this.props.data !== prevP.data) {
+      this.makeSourceData(this.props.data);
     }
-    if (this.props.location !== nextP.location) {
-      this.nowChosed(nextP.location);
+    if (this.props.location !== prevP.location) {
+      this.nowChosed(this.props.location);
     }
   }
 
@@ -55,6 +57,10 @@ export default class Com extends React.PureComponent {
       openKeys: keys
     });
   }
+  onSelect = e => {
+    console.log("被选中：", e);
+    this.props.history.push(e.key);
+  };
 
   /** 处理原始数据，将原始数据处理为层级关系 **/
   makeSourceData(data) {
@@ -109,10 +115,8 @@ export default class Com extends React.PureComponent {
       } else {
         return (
           <Item key={newKey}>
-            <Link to={newKey}>
-              {!item.parent && item.icon ? <Icon type={item.icon} /> : null}
-              <span>{item.title}</span>
-            </Link>
+            {!item.parent && item.icon ? <Icon type={item.icon} /> : null}
+            <span>{item.title}</span>
           </Item>
         );
       }
@@ -140,6 +144,7 @@ export default class Com extends React.PureComponent {
           selectedKeys={this.state.chosedKey}
           {...(this.props.collapsed ? {} : { openKeys: this.state.openKeys })}
           onOpenChange={e => this.onOpenChange(e)}
+          onSelect={this.onSelect}
         >
           {this.state.treeDom}
         </Menu>

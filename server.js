@@ -8,7 +8,7 @@ const webpackDevMiddleware = require("webpack-dev-middleware"); // webpack服务
 const webpackHotMiddleware = require("webpack-hot-middleware"); // HMR热更新中间件
 const webpackConfig = require("./webpack.dev.config.js"); // webpack开发环境的配置文件
 
-const mock = require("./mock/app-data"); // mock模拟数据，模拟后台业务
+//const mock = require("./mock/app-data"); // mock模拟数据，模拟后台业务
 
 const app = express(); // 实例化express服务
 const DIST_DIR = webpackConfig.output.path; // webpack配置中设置的文件输出路径，所有文件存放在内存中
@@ -33,12 +33,23 @@ if (env === "production") {
       quiet: true, // 是否不输出启动时的相关信息
       stats: {
         colors: true, // 不同信息不同颜色
-        timings: true // 输出各步骤消耗的时间
-      }
-    })
+        timings: true, // 输出各步骤消耗的时间
+      },
+    }),
   );
   // 挂载HMR热更新中间件
   app.use(webpackHotMiddleware(compiler));
+
+  /** 监听POST请求，返回MOCK模拟数据 **/
+  // app.post(/\/api.*/, (req, res, next) => {
+  //   const result = mock.mockApi({url:req.originalUrl, body: req.body});
+  //   res.send(result);
+  // });
+  // app.get(/\/api.*/, (req, res, next) => {
+  //   const result = mock.mockApi({url:req.originalUrl, body:req.body});
+  //   res.send(result);
+  // });
+
   // 所有请求都返回index.html
   app.get("*", (req, res, next) => {
     const filename = path.join(DIST_DIR, "index.html");
@@ -54,12 +65,6 @@ if (env === "production") {
     });
   });
 }
-
-/** 监听POST请求，返回MOCK模拟数据 **/
-app.post("*", (req, res, next) => {
-  const result = mock.mockApi(req.originalUrl, req.body);
-  res.send(result);
-});
 
 /** 启动服务 **/
 app.listen(PORT, () => {

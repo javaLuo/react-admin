@@ -1,21 +1,19 @@
 /* Tree选择 - 角色选择 - 多选 */
 import React from "react";
 import { Tree, Modal } from "antd";
-import P from "prop-types";
 import _ from "lodash";
-import "./RoleTree.scss";
 
 const { TreeNode } = Tree;
 export default class RoleTreeComponent extends React.PureComponent {
-  static propTypes = {
-    data: P.array, // 原始数据
-    title: P.string, // 标题
-    visible: P.bool, // 是否显示
-    defaultKeys: P.array, // 当前默认选中的key们
-    loading: P.bool, // 确定按钮是否在等待中状态
-    onOk: P.func, // 确定
-    onClose: P.func // 关闭
-  };
+  // static propTypes = {
+  //   data: P.array, // 原始数据
+  //   title: P.string, // 标题
+  //   visible: P.bool, // 是否显示
+  //   defaultKeys: P.array, // 当前默认选中的key们
+  //   loading: P.bool, // 确定按钮是否在等待中状态
+  //   onOk: P.func, // 确定
+  //   onClose: P.func // 关闭
+  // };
 
   constructor(props) {
     super(props);
@@ -29,13 +27,13 @@ export default class RoleTreeComponent extends React.PureComponent {
     this.makeSourceData(this.props.data);
   }
 
-  UNSAFE_componentWillReceiveProps(nextP) {
-    if (this.props.data !== nextP.data) {
-      this.makeSourceData(nextP.data);
+  componentDidUpdate(prevP) {
+    if (this.props.data !== prevP.data) {
+      this.makeSourceData(this.props.data);
     }
-    if (this.props.defaultKeys !== nextP.defaultKeys) {
+    if (this.props.defaultKeys !== prevP.defaultKeys) {
       this.setState({
-        nowKeys: nextP.defaultKeys.map(item => `${item}`)
+        nowKeys: this.props.defaultKeys.map(item => `${item}`)
       });
     }
   }
@@ -43,8 +41,12 @@ export default class RoleTreeComponent extends React.PureComponent {
   /** 处理原始数据，将原始数据处理为层级关系 **/
   makeSourceData(data) {
     const d = _.cloneDeep(data);
+    d.forEach(item => {
+      item.key = String(item.id);
+    });
     // 按照sort排序
     const sourceData = this.dataToJson(null, d) || [];
+    console.log("处理后的数据：", sourceData);
     this.setState({
       sourceData
     });
@@ -90,20 +92,6 @@ export default class RoleTreeComponent extends React.PureComponent {
     });
   }
 
-  /** 树节点选中时触发 **/
-  onTreeSelect = (keys, e) => {
-    if (e.selected) {
-      // 选中
-      this.setState({
-        nowData: e.node.props.data
-      });
-    } else {
-      this.setState({
-        nowData: undefined
-      });
-    }
-  };
-
   /** 点击确定时触发 **/
   onOk = () => {
     // 通过key返回指定的数据
@@ -121,6 +109,7 @@ export default class RoleTreeComponent extends React.PureComponent {
 
   /** 选中或取消选中时触发 **/
   onCheck = keys => {
+    console.log("onCheck", keys);
     this.setState({
       nowKeys: keys
     });
@@ -138,12 +127,11 @@ export default class RoleTreeComponent extends React.PureComponent {
       >
         <Tree
           checkable
+          selectable={false}
           checkedKeys={this.state.nowKeys}
           onCheck={keys => this.onCheck(keys)}
-          onSelect={this.onTreeSelect}
-        >
-          {this.makeTreeDom(this.state.sourceData)}
-        </Tree>
+          treeData={this.state.sourceData}
+        ></Tree>
       </Modal>
     );
   }

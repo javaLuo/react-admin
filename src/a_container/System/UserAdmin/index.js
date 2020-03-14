@@ -6,12 +6,9 @@
 
 import React from "react";
 import { connect } from "react-redux";
-import { bindActionCreators } from "redux";
-import P from "prop-types";
 import {
   Form,
   Button,
-  Icon,
   Input,
   Table,
   message,
@@ -21,73 +18,52 @@ import {
   Divider,
   Select
 } from "antd";
-import "./index.scss";
-import tools from "../../../util/tools"; // 工具
+import {
+  EyeOutlined,
+  EditOutlined,
+  ToolOutlined,
+  DeleteOutlined,
+  PlusCircleOutlined,
+  SearchOutlined
+} from "@ant-design/icons";
+import "./index.less";
+import tools from "@/util/tools"; // 工具
 
 // ==================
 // 所需的所有组件
 // ==================
 
-import RoleTree from "../../../a_component/TreeChose/RoleTree";
+import RoleTree from "@/a_component/TreeChose/RoleTree";
 
-// ==================
-// 本页面所需action
-// ==================
-
-import {
-  getAllRoles,
-  getRoles,
-  addUser,
-  upUser,
-  delUser,
-  setPowersByRoleId,
-  findAllPowerByRoleId,
-  getUserList,
-  setUserRoles
-} from "../../../a_action/sys-action";
-
-// ==================
-// Definition
-// ==================
-const FormItem = Form.Item;
 const { TextArea } = Input;
 const { Option } = Select;
 @connect(
   state => ({
     powerTreeData: state.sys.powerTreeData, // 权限树所需数据
     userinfo: state.app.userinfo, // 用户信息
-    powers: state.app.powers // 所有的权限code
+    powersCode: state.app.powersCode // 所有的权限code
   }),
   dispatch => ({
-    actions: bindActionCreators(
-      {
-        getAllRoles,
-        getRoles,
-        addUser,
-        upUser,
-        delUser,
-        setPowersByRoleId,
-        findAllPowerByRoleId,
-        getUserList,
-        setUserRoles
-      },
-      dispatch
-    )
+    getAllRoles: dispatch.sys.getAllRoles,
+    addUser: dispatch.sys.addUser,
+    upUser: dispatch.sys.upUser,
+    delUser: dispatch.sys.delUser,
+    getUserList: dispatch.sys.getUserList
   })
 )
-@Form.create()
 export default class RoleAdminContainer extends React.Component {
-  static propTypes = {
-    location: P.any,
-    history: P.any,
-    actions: P.any,
-    userinfo: P.any,
-    powers: P.array,
-    form: P.any
-  };
+  // static propTypes = {
+  //   location: P.any,
+  //   history: P.any,
+  //   actions: P.any,
+  //   userinfo: P.any,
+  //   powers: P.array,
+  //   form: P.any
+  // };
 
   constructor(props) {
     super(props);
+    this.form = React.createRef();
     this.state = {
       data: [], // 当前页面全部数据
       roleData: [], // 所有的角色数据
@@ -100,7 +76,7 @@ export default class RoleAdminContainer extends React.Component {
       nowData: null, // 当前选中用户的信息，用于查看详情、修改、分配菜单
       roleTreeShow: false, // 角色树是否显示
       roleTreeDefault: [], // 用于菜单树，默认需要选中的项
-      pageNum: 0, // 当前第几页
+      pageNum: 1, // 当前第几页,接口从第1页开始，Table组件也是从第1页开始。没有第0页
       pageSize: 10, // 每页多少条
       total: 0, // 数据库总共多少条数据
       treeLoading: false, // 控制树的loading状态，因为要先加载当前role的菜单，才能显示树
@@ -115,7 +91,7 @@ export default class RoleAdminContainer extends React.Component {
 
   // 获取所有的角色数据 - 用于分配角色控件的原始数据
   onGetRoleTreeData() {
-    this.props.actions.getAllRoles().then(res => {
+    this.props.getAllRoles().then(res => {
       if (res.status === 200) {
         this.setState({
           roleData: res.data
@@ -126,7 +102,7 @@ export default class RoleAdminContainer extends React.Component {
 
   // 查询当前页面所需列表数据
   onGetData(pageNum, pageSize) {
-    const p = this.props.powers;
+    const p = this.props.powersCode;
     if (!p.includes("user:query")) {
       return;
     }
@@ -138,7 +114,7 @@ export default class RoleAdminContainer extends React.Component {
       conditions: this.state.searchConditions
     };
     this.setState({ loading: true });
-    this.props.actions
+    this.props
       .getUserList(tools.clearNull(params))
       .then(res => {
         if (res.status === 200) {
@@ -181,110 +157,100 @@ export default class RoleAdminContainer extends React.Component {
 
   /**
    * 添加/修改/查看 模态框出现
-   * @item: 当前选中的那条数据
-   * @type: add添加/up修改/see查看
+   * @param data 当前选中的那条数据
+   * @param type add添加/up修改/see查看
    * **/
   onModalShow(data, type) {
-    const { form } = this.props;
-
-    if (type === "add") {
-      // 新增，需重置表单各控件的值
-      form.resetFields();
-    } else {
-      // 查看或修改，需设置表单各控件的值为当前所选中行的数据
-      form.setFieldsValue({
-        formConditions: data.conditions,
-        formDesc: data.desc,
-        formUsername: data.username,
-        formPhone: data.phone,
-        formEmail: data.email,
-        formPassword: data.password
-      });
-    }
     this.setState({
       modalShow: true,
       nowData: data,
       operateType: type
     });
+    setTimeout(() => {
+      if (type === "add") {
+        // 新增，需重置表单各控件的值
+        this.form.current.resetFields();
+      } else {
+        // 查看或修改，需设置表单各控件的值为当前所选中行的数据
+        // 加setTimeout是因为：首次Model没加载，this.form.current不存在
+        setTimeout(() => {
+          this.form.current.setFieldsValue({
+            formConditions: data.conditions,
+            formDesc: data.desc,
+            formUsername: data.username,
+            formPhone: data.phone,
+            formEmail: data.email,
+            formPassword: data.password
+          });
+        });
+      }
+    });
   }
 
   /** 模态框确定 **/
-  onOk() {
-    const me = this;
-    const { form } = me.props;
-
+  async onOk() {
+    // 是查看
     if (this.state.operateType === "see") {
-      // 是查看
       this.onClose();
       return;
     }
-
-    form.validateFields(
-      [
-        "formUsername",
-        "formPassword",
-        "formPhone",
-        "formEmail",
-        "formDesc",
-        "formConditions"
-      ],
-      (err, values) => {
-        if (err) {
-          return false;
-        }
-        me.setState({ modalLoading: true });
-        const params = {
-          username: values.formUsername,
-          password: values.formPassword,
-          phone: values.formPhone,
-          email: values.formEmail,
-          desc: values.formDesc,
-          conditions: values.formConditions
-        };
-        if (this.state.operateType === "add") {
-          // 新增
-          me.props.actions
-            .addUser(params)
-            .then(res => {
-              if (res.status === 200) {
-                message.success("添加成功");
-                this.onGetData(this.state.pageNum, this.state.pageSize);
-                this.onClose();
-              } else {
-                message.error(res.message);
-              }
-              me.setState({ modalLoading: false });
-            })
-            .catch(() => {
-              me.setState({ modalLoading: false });
-            });
-        } else {
-          // 修改
-          params.id = this.state.nowData.id;
-          me.props.actions
-            .upUser(params)
-            .then(res => {
-              if (res.status === 200) {
-                message.success("修改成功");
-                this.onGetData(this.state.pageNum, this.state.pageSize);
-                this.onClose();
-              } else {
-                message.error(res.message);
-              }
-              me.setState({ modalLoading: false });
-            })
-            .catch(() => {
-              me.setState({ modalLoading: false });
-            });
-        }
+    try {
+      const me = this;
+      const values = await this.form.current.validateFields();
+      me.setState({ modalLoading: true });
+      const params = {
+        username: values.formUsername,
+        password: values.formPassword,
+        phone: values.formPhone,
+        email: values.formEmail,
+        desc: values.formDesc,
+        conditions: values.formConditions
+      };
+      if (this.state.operateType === "add") {
+        // 新增
+        me.props
+          .addUser(params)
+          .then(res => {
+            if (res.status === 200) {
+              message.success("添加成功");
+              this.onGetData(this.state.pageNum, this.state.pageSize);
+              this.onClose();
+            } else {
+              message.error(res.message);
+            }
+            me.setState({ modalLoading: false });
+          })
+          .catch(() => {
+            me.setState({ modalLoading: false });
+          });
+      } else {
+        // 修改
+        params.id = this.state.nowData.id;
+        me.props
+          .upUser(params)
+          .then(res => {
+            if (res.status === 200) {
+              message.success("修改成功");
+              this.onGetData(this.state.pageNum, this.state.pageSize);
+              this.onClose();
+            } else {
+              message.error(res.message);
+            }
+            me.setState({ modalLoading: false });
+          })
+          .catch(() => {
+            me.setState({ modalLoading: false });
+          });
       }
-    );
+    } catch {
+      // 未通过校验
+    }
   }
 
   // 删除某一条数据
   onDel(id) {
     this.setState({ loading: true });
-    this.props.actions
+    this.props
       .delUser({ id })
       .then(res => {
         if (res.status === 200) {
@@ -312,7 +278,7 @@ export default class RoleAdminContainer extends React.Component {
     this.setState({
       nowData: record,
       roleTreeShow: true,
-      roleTreeDefault: record.roles
+      roleTreeDefault: record.roles || []
     });
   }
 
@@ -367,7 +333,7 @@ export default class RoleAdminContainer extends React.Component {
         render: (text, record) => {
           const controls = [];
           const u = this.props.userinfo || {};
-          const p = this.props.powers;
+          const p = this.props.powersCode;
 
           p.includes("user:query") &&
             controls.push(
@@ -377,7 +343,7 @@ export default class RoleAdminContainer extends React.Component {
                 onClick={() => this.onModalShow(record, "see")}
               >
                 <Tooltip placement="top" title="查看">
-                  <Icon type="eye" />
+                  <EyeOutlined />
                 </Tooltip>
               </span>
             );
@@ -389,7 +355,7 @@ export default class RoleAdminContainer extends React.Component {
                 onClick={() => this.onModalShow(record, "up")}
               >
                 <Tooltip placement="top" title="修改">
-                  <Icon type="edit" />
+                  <ToolOutlined />
                 </Tooltip>
               </span>
             );
@@ -401,7 +367,7 @@ export default class RoleAdminContainer extends React.Component {
                 onClick={() => this.onTreeShowClick(record)}
               >
                 <Tooltip placement="top" title="分配角色">
-                  <Icon type="tool" />
+                  <EditOutlined />
                 </Tooltip>
               </span>
             );
@@ -418,7 +384,7 @@ export default class RoleAdminContainer extends React.Component {
               >
                 <span className="control-btn red">
                   <Tooltip placement="top" title="删除">
-                    <Icon type="delete" />
+                    <DeleteOutlined />
                   </Tooltip>
                 </span>
               </Popconfirm>
@@ -444,7 +410,7 @@ export default class RoleAdminContainer extends React.Component {
       return {
         key: index,
         id: item.id,
-        serial: index + 1 + this.state.pageNum * this.state.pageSize,
+        serial: index + 1 + (this.state.pageNum - 1) * this.state.pageSize,
         username: item.username,
         password: item.password,
         phone: item.phone,
@@ -466,7 +432,7 @@ export default class RoleAdminContainer extends React.Component {
     this.setState({
       roleTreeLoading: true
     });
-    this.props.actions
+    this.props
       .upUser(params)
       .then(res => {
         if (res.status === 200) {
@@ -494,9 +460,7 @@ export default class RoleAdminContainer extends React.Component {
   }
   render() {
     const me = this;
-    const p = this.props.powers;
-    const { form } = me.props;
-    const { getFieldDecorator } = form;
+    const p = this.props.powersCode;
     const formItemLayout = {
       labelCol: {
         xs: { span: 24 },
@@ -515,10 +479,10 @@ export default class RoleAdminContainer extends React.Component {
             <li>
               <Button
                 type="primary"
+                icon={<PlusCircleOutlined />}
                 disabled={!p.includes("user:add")}
                 onClick={() => this.onModalShow(null, "add")}
               >
-                <Icon type="plus-circle-o" />
                 添加用户
               </Button>
             </li>
@@ -547,8 +511,8 @@ export default class RoleAdminContainer extends React.Component {
               </li>
               <li>
                 <Button
-                  icon="search"
                   type="primary"
+                  icon={<SearchOutlined />}
                   onClick={() => this.onSearch()}
                 >
                   搜索
@@ -583,111 +547,116 @@ export default class RoleAdminContainer extends React.Component {
           onCancel={() => this.onClose()}
           confirmLoading={this.state.modalLoading}
         >
-          <Form>
-            <FormItem label="用户名" {...formItemLayout}>
-              {getFieldDecorator("formUsername", {
-                initialValue: undefined,
-                rules: [
-                  { required: true, whitespace: true, message: "必填" },
-                  { max: 12, message: "最多输入12位字符" }
-                ]
-              })(
-                <Input
-                  placeholder="请输入用户名"
-                  disabled={this.state.operateType === "see"}
-                />
-              )}
-            </FormItem>
-            <FormItem label="密码" {...formItemLayout}>
-              {getFieldDecorator("formPassword", {
-                initialValue: undefined,
-                rules: [
-                  { required: true, whitespace: true, message: "必填" },
-                  { min: 6, message: "最少输入6位字符" },
-                  { max: 18, message: "最多输入18位字符" }
-                ]
-              })(
-                <Input
-                  type="password"
-                  placeholder="请输入密码"
-                  disabled={this.state.operateType === "see"}
-                />
-              )}
-            </FormItem>
-            <FormItem label="电话" {...formItemLayout}>
-              {getFieldDecorator("formPhone", {
-                initialValue: undefined,
-                rules: [
-                  {
-                    validator: (rule, value, callback) => {
-                      const v = value;
-                      if (v) {
-                        if (!tools.checkPhone(v)) {
-                          callback("请输入有效的手机号码");
-                        }
+          <Form
+            ref={this.form}
+            initialValues={{
+              formConditions: 1
+            }}
+          >
+            <Form.Item
+              label="用户名"
+              name="formUsername"
+              {...formItemLayout}
+              rules={[
+                { required: true, whitespace: true, message: "必填" },
+                { max: 12, message: "最多输入12位字符" }
+              ]}
+            >
+              <Input
+                placeholder="请输入用户名"
+                disabled={this.state.operateType === "see"}
+              />
+            </Form.Item>
+            <Form.Item
+              label="密码"
+              name="formPassword"
+              {...formItemLayout}
+              rules={[
+                { required: true, whitespace: true, message: "必填" },
+                { min: 6, message: "最少输入6位字符" },
+                { max: 18, message: "最多输入18位字符" }
+              ]}
+            >
+              <Input
+                type="password"
+                placeholder="请输入密码"
+                disabled={this.state.operateType === "see"}
+              />
+            </Form.Item>
+            <Form.Item
+              label="电话"
+              name="formPhone"
+              {...formItemLayout}
+              rules={[
+                () => ({
+                  validator: (rule, value) => {
+                    const v = value;
+                    if (v) {
+                      if (!tools.checkPhone(v)) {
+                        return Promise.reject("请输入有效的手机号码");
                       }
-                      callback();
                     }
+                    return Promise.resolve();
                   }
-                ]
-              })(
-                <Input
-                  placeholder="请输入手机号"
-                  disabled={this.state.operateType === "see"}
-                />
-              )}
-            </FormItem>
-            <FormItem label="邮箱" {...formItemLayout}>
-              {getFieldDecorator("formEmail", {
-                initialValue: undefined,
-                rules: [
-                  {
-                    validator: (rule, value, callback) => {
-                      const v = value;
-                      if (v) {
-                        if (!tools.checkEmail(v)) {
-                          callback("请输入有效的邮箱地址");
-                        }
+                })
+              ]}
+            >
+              <Input
+                placeholder="请输入手机号"
+                disabled={this.state.operateType === "see"}
+              />
+            </Form.Item>
+            <Form.Item
+              label="邮箱"
+              name="formEmail"
+              {...formItemLayout}
+              rules={[
+                () => ({
+                  validator: (rule, value) => {
+                    const v = value;
+                    if (v) {
+                      if (!tools.checkEmail(v)) {
+                        return Promise.reject("请输入有效的邮箱地址");
                       }
-                      callback();
                     }
+                    return Promise.resolve();
                   }
-                ]
-              })(
-                <Input
-                  placeholder="请输入邮箱地址"
-                  disabled={this.state.operateType === "see"}
-                />
-              )}
-            </FormItem>
-            <FormItem label="描述" {...formItemLayout}>
-              {getFieldDecorator("formDesc", {
-                initialValue: undefined,
-                rules: [{ max: 100, message: "最多输入100个字符" }]
-              })(
-                <TextArea
-                  rows={4}
-                  disabled={this.state.operateType === "see"}
-                  placeholoder="请输入描述"
-                  autosize={{ minRows: 2, maxRows: 6 }}
-                />
-              )}
-            </FormItem>
-            <FormItem label="状态" {...formItemLayout}>
-              {getFieldDecorator("formConditions", {
-                initialValue: 1,
-                rules: [{ required: true, message: "请选择状态" }]
-              })(
-                <Select disabled={this.state.operateType === "see"}>
-                  <Option key={1} value={1}>
-                    启用
-                  </Option>
-                  <Option key={-1} value={-1}>
-                    禁用
-                  </Option>
-                </Select>
-              )}
-            </FormItem>
+                })
+              ]}
+            >
+              <Input
+                placeholder="请输入邮箱地址"
+                disabled={this.state.operateType === "see"}
+              />
+            </Form.Item>
+            <Form.Item
+              label="描述"
+              name="formDesc"
+              {...formItemLayout}
+              rules={[{ max: 100, message: "最多输入100个字符" }]}
+            >
+              <TextArea
+                rows={4}
+                disabled={this.state.operateType === "see"}
+                placeholoder="请输入描述"
+                autosize={{ minRows: 2, maxRows: 6 }}
+              />
+            </Form.Item>
+            <Form.Item
+              label="状态"
+              name="formConditions"
+              {...formItemLayout}
+              rules={[{ required: true, message: "请选择状态" }]}
+            >
+              <Select disabled={this.state.operateType === "see"}>
+                <Option key={1} value={1}>
+                  启用
+                </Option>
+                <Option key={-1} value={-1}>
+                  禁用
+                </Option>
+              </Select>
+            </Form.Item>
           </Form>
         </Modal>
         <RoleTree

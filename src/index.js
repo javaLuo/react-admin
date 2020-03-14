@@ -9,15 +9,16 @@ import * as serviceWorker from "./serviceWorker";
 import Router from "./router";
 
 /** 公共样式 **/
-import "./styles/css.css";
-import "./styles/scss.scss";
+import "normalize.css";
+import "@/assets/styles/default.less";
+import "@/assets/styles/global.less";
 
-ReactDOM.render(
+const Root = () => (
   <Provider store={store}>
     <Router />
-  </Provider>,
-  document.getElementById("app-root")
+  </Provider>
 );
+ReactDOM.render(<Root />, document.getElementById("root"));
 
 serviceWorker.register();
 

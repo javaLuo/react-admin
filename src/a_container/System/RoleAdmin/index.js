@@ -6,86 +6,58 @@
 
 import React from "react";
 import { connect } from "react-redux";
-import { bindActionCreators } from "redux";
-import P from "prop-types";
 import {
   Form,
   Button,
-  Icon,
   Input,
   Table,
   message,
   Popconfirm,
   Modal,
-  Radio,
   Tooltip,
   Divider,
   Select,
   InputNumber
 } from "antd";
-import "./index.scss";
-import tools from "../../../util/tools"; // 工具
+import {
+  EyeOutlined,
+  EditOutlined,
+  ToolOutlined,
+  DeleteOutlined,
+  PlusCircleOutlined,
+  SearchOutlined
+} from "@ant-design/icons";
+import "./index.less";
+import tools from "@/util/tools"; // 工具
 
 // ==================
 // 所需的所有组件
 // ==================
 
-import TreeTable from "../../../a_component/TreeChose/PowerTreeTable";
+import TreeTable from "@/a_component/TreeChose/PowerTreeTable";
 
-// ==================
-// 本页面所需action
-// ==================
-
-import {
-  getAllPowers,
-  getRoles,
-  addRole,
-  upRole,
-  delRole,
-  setPowersByRoleId,
-  findAllPowerByRoleId
-} from "../../../a_action/sys-action";
-
-// ==================
-// Definition
-// ==================
-const FormItem = Form.Item;
-const RadioGroup = Radio.Group;
 const { TextArea } = Input;
 const { Option } = Select;
 @connect(
   state => ({
-    powerTreeData: state.sys.powerTreeData,
-    powers: state.app.powers
+    powersCode: state.app.powersCode,
+    powerTreeData: state.sys.powerTreeData
   }),
   dispatch => ({
-    actions: bindActionCreators(
-      {
-        getAllPowers,
-        getRoles,
-        addRole,
-        upRole,
-        delRole,
-        setPowersByRoleId,
-        findAllPowerByRoleId
-      },
-      dispatch
-    )
+    getAllPowers: dispatch.sys.getAllPowers,
+    getRoles: dispatch.sys.getRoles,
+    addRole: dispatch.sys.addRole,
+    upRole: dispatch.sys.upRole,
+    delRole: dispatch.sys.delRole,
+    setPowersByRoleId: dispatch.sys.setPowersByRoleId,
+    findAllPowerByRoleId: dispatch.sys.findAllPowerByRoleId,
+    updateUserInfo: dispatch.app.updateUserInfo
   })
 )
-@Form.create()
 export default class RoleAdminContainer extends React.Component {
-  static propTypes = {
-    location: P.any,
-    history: P.any,
-    actions: P.any,
-    powers: P.array,
-    form: P.any,
-    powerTreeData: P.array
-  };
-
   constructor(props) {
     super(props);
+    this.form = React.createRef();
     this.state = {
       data: [], // 当前页面全部数据
       operateType: "add", // 操作类型 add新增，up修改, see查看
@@ -97,7 +69,7 @@ export default class RoleAdminContainer extends React.Component {
       nowData: null, // 当前选中用户的信息，用于查看详情、修改、分配菜单
       powerTreeShow: false, // 菜单树是否显示
       powerTreeDefault: { menus: [], powers: [] }, // 用于菜单树，默认需要选中的项
-      pageNum: 0, // 当前第几页
+      pageNum: 1, // 当前第几页
       pageSize: 10, // 每页多少条
       total: 0, // 数据库总共多少条数据
       treeLoading: false, // 控制树的loading状态，因为要先加载当前role的菜单，才能显示树
@@ -112,12 +84,12 @@ export default class RoleAdminContainer extends React.Component {
 
   // 获取所有的菜单权限数据 - 用于分配权限控件的原始数据
   onGetPowerTreeData() {
-    this.props.actions.getAllPowers();
+    this.props.getAllPowers();
   }
 
   // 查询当前页面所需列表数据
   onGetData(pageNum, pageSize) {
-    const p = this.props.powers;
+    const p = this.props.powersCode;
     if (!p.includes("role:query")) {
       return;
     }
@@ -129,7 +101,7 @@ export default class RoleAdminContainer extends React.Component {
       conditions: this.state.searchConditions
     };
     this.setState({ loading: true });
-    this.props.actions
+    this.props
       .getRoles(tools.clearNull(params))
       .then(res => {
         if (res.status === 200) {
@@ -143,25 +115,6 @@ export default class RoleAdminContainer extends React.Component {
           message.error(res.message);
         }
         this.setState({ loading: false });
-      })
-      .catch(() => {
-        this.setState({ loading: false });
-      });
-  }
-
-  // 删除某一条数据
-  onDel(id) {
-    this.setState({ loading: true });
-    this.props.actions
-      .delRole({ id })
-      .then(res => {
-        if (res.status === 200) {
-          message.success("删除成功");
-          this.onGetData(this.state.pageNum, this.state.pageSize);
-        } else {
-          message.error(res.message);
-          this.setState({ loading: false });
-        }
       })
       .catch(() => {
         this.setState({ loading: false });
@@ -195,82 +148,105 @@ export default class RoleAdminContainer extends React.Component {
    * @type: add添加/up修改/see查看
    * **/
   onModalShow(data, type) {
-    const { form } = this.props;
-
-    if (type === "add") {
-      // 新增，需重置表单各控件的值
-      form.resetFields();
-    } else {
-      // 查看或修改，需设置表单各控件的值为当前所选中行的数据
-      form.setFieldsValue({
-        formConditions: data.conditions,
-        formDesc: data.desc,
-        formSorts: data.sorts,
-        formTitle: data.title
-      });
-    }
     this.setState({
       modalShow: true,
       nowData: data,
       operateType: type
     });
+    setTimeout(() => {
+      if (type === "add") {
+        // 新增，需重置表单各控件的值
+        this.form.current.resetFields();
+      } else {
+        // 查看或修改，需设置表单各控件的值为当前所选中行的数据
+        this.form.current.setFieldsValue({
+          formConditions: data.conditions,
+          formDesc: data.desc,
+          formSorts: data.sorts,
+          formTitle: data.title
+        });
+      }
+    });
   }
 
   /** 模态框确定 **/
-  onOk() {
-    const me = this;
-    const { form } = me.props;
-    form.validateFields(
-      ["formTitle", "formDesc", "formSorts", "formConditions"],
-      (err, values) => {
-        if (err) {
-          return false;
-        }
-        me.setState({ modalLoading: true });
-        const params = {
-          title: values.formTitle,
-          desc: values.formDesc,
-          sorts: values.formSorts,
-          conditions: values.formConditions
-        };
-        if (this.state.operateType === "add") {
-          // 新增
-          me.props.actions
-            .addRole(params)
-            .then(res => {
-              if (res.status === 200) {
-                message.success("添加成功");
-                this.onGetData(this.state.pageNum, this.state.pageSize);
-                this.onClose();
-              } else {
-                message.error(res.message);
-              }
-              me.setState({ modalLoading: false });
-            })
-            .catch(() => {
-              me.setState({ modalLoading: false });
-            });
-        } else {
-          // 修改
-          params.id = this.state.nowData.id;
-          me.props.actions
-            .upRole(params)
-            .then(res => {
-              if (res.status === 200) {
-                message.success("修改成功");
-                this.onGetData(this.state.pageNum, this.state.pageSize);
-                this.onClose();
-              } else {
-                message.error(res.message);
-              }
-              me.setState({ modalLoading: false });
-            })
-            .catch(() => {
-              me.setState({ modalLoading: false });
-            });
-        }
+  async onOk() {
+    if (this.state.operateType === "see") {
+      this.onClose();
+      return;
+    }
+
+    try {
+      const me = this;
+      const values = await this.form.current.validateFields();
+      me.setState({ modalLoading: true });
+      const params = {
+        title: values.formTitle,
+        desc: values.formDesc,
+        sorts: values.formSorts,
+        conditions: values.formConditions
+      };
+      if (this.state.operateType === "add") {
+        // 新增
+        me.props
+          .addRole(params)
+          .then(res => {
+            if (res.status === 200) {
+              message.success("添加成功");
+              this.onGetData(this.state.pageNum, this.state.pageSize);
+              this.props.updateUserInfo();
+              this.onClose();
+            } else {
+              message.error(res.message);
+            }
+            me.setState({ modalLoading: false });
+          })
+          .catch(() => {
+            me.setState({ modalLoading: false });
+          });
+      } else {
+        // 修改
+        params.id = this.state.nowData.id;
+        me.props
+          .upRole(params)
+          .then(res => {
+            if (res.status === 200) {
+              message.success("修改成功");
+              this.onGetData(this.state.pageNum, this.state.pageSize);
+              this.props.updateUserInfo();
+              this.onClose();
+            } else {
+              message.error(res.message);
+            }
+            me.setState({ modalLoading: false });
+          })
+          .catch(() => {
+            me.setState({ modalLoading: false });
+          });
       }
-    );
+    } catch {
+      // 未通过校验
+    }
+  }
+
+  // 删除某一条数据
+  onDel(id) {
+    this.setState({ loading: true });
+    this.props
+      .delRole({ id })
+      .then(res => {
+        if (res.status === 200) {
+          message.success("删除成功");
+          this.onGetData(this.state.pageNum, this.state.pageSize);
+          this.props.updateUserInfo();
+        } else {
+          message.error(res.message);
+          this.setState({ loading: false });
+        }
+      })
+      .catch(() => {
+        this.setState({ loading: false });
+      });
   }
 
   /** 模态框关闭 **/
@@ -282,8 +258,12 @@ export default class RoleAdminContainer extends React.Component {
 
   /** 分配权限按钮点击，权限控件出现 **/
   onAllotPowerClick(record) {
-    const menus = record.powers.map(item => item.menuId); // 需默认选中的菜单项ID
-    const powers = record.powers.reduce((v1, v2) => [...v1, ...v2.powers], []); // 需默认选中的权限ID
+    console.log("record:", record);
+    const menus = record.menuAndPowers.map(item => item.menuId); // 需默认选中的菜单项ID
+    const powers = record.menuAndPowers.reduce(
+      (v1, v2) => [...v1, ...v2.powers],
+      []
+    ); // 需默认选中的权限ID
     this.setState({
       nowData: record,
       powerTreeShow: true,
@@ -298,7 +278,7 @@ export default class RoleAdminContainer extends React.Component {
     });
   }
 
-  // 菜单树确定 给角色分配菜单
+  // 菜单树确定 给角色分配菜单和权限
   onMenuTreeOk(arr) {
     const params = {
       id: this.state.nowData.id,
@@ -308,11 +288,12 @@ export default class RoleAdminContainer extends React.Component {
     this.setState({
       treeOnOkLoading: true
     });
-    this.props.actions
+    this.props
       .setPowersByRoleId(params)
       .then(res => {
         if (res.status === 200) {
           this.onGetData(this.state.pageNum, this.state.pageSize);
+          this.props.updateUserInfo();
           this.onMenuTreeClose();
         } else {
           message.error(res.message || "权限分配失败");
@@ -373,7 +354,7 @@ export default class RoleAdminContainer extends React.Component {
         width: 200,
         render: (text, record) => {
           const controls = [];
-          const p = this.props.powers;
+          const p = this.props.powersCode;
           p.includes("role:query") &&
             controls.push(
               <span
@@ -382,7 +363,7 @@ export default class RoleAdminContainer extends React.Component {
                 onClick={() => this.onModalShow(record, "see")}
               >
                 <Tooltip placement="top" title="查看">
-                  <Icon type="eye" />
+                  <EyeOutlined />
                 </Tooltip>
               </span>
             );
@@ -394,7 +375,7 @@ export default class RoleAdminContainer extends React.Component {
                 onClick={() => this.onModalShow(record, "up")}
               >
                 <Tooltip placement="top" title="修改">
-                  <Icon type="edit" />
+                  <ToolOutlined />
                 </Tooltip>
               </span>
             );
@@ -406,7 +387,7 @@ export default class RoleAdminContainer extends React.Component {
                 onClick={() => this.onAllotPowerClick(record)}
               >
                 <Tooltip placement="top" title="分配权限">
-                  <Icon type="tool" />
+                  <EditOutlined />
                 </Tooltip>
               </span>
             );
@@ -421,7 +402,7 @@ export default class RoleAdminContainer extends React.Component {
               >
                 <span className="control-btn red">
                   <Tooltip placement="top" title="删除">
-                    <Icon type="delete" />
+                    <DeleteOutlined />
                   </Tooltip>
                 </span>
               </Popconfirm>
@@ -447,22 +428,19 @@ export default class RoleAdminContainer extends React.Component {
       return {
         key: index,
         id: item.id,
-        serial: index + 1 + this.state.pageNum * this.state.pageSize,
+        serial: index + 1 + (this.state.pageNum - 1) * this.state.pageSize,
         title: item.title,
         desc: item.desc,
         sorts: item.sorts,
         conditions: item.conditions,
         control: item.id,
-        powers: item.powers
+        menuAndPowers: item.menuAndPowers
       };
     });
   }
 
   render() {
-    const me = this;
-    const { form } = me.props;
-    const p = this.props.powers;
-    const { getFieldDecorator } = form;
+    const p = this.props.powersCode;
     const formItemLayout = {
       labelCol: {
         xs: { span: 24 },
@@ -481,10 +459,10 @@ export default class RoleAdminContainer extends React.Component {
             <li>
               <Button
                 type="primary"
+                icon={<PlusCircleOutlined />}
                 disabled={!p.includes("role:add")}
                 onClick={() => this.onModalShow(null, "add")}
               >
-                <Icon type="plus-circle-o" />
                 添加角色
               </Button>
             </li>
@@ -513,8 +491,8 @@ export default class RoleAdminContainer extends React.Component {
               </li>
               <li>
                 <Button
-                  icon="search"
                   type="primary"
+                  icon={<SearchOutlined />}
                   onClick={() => this.onSearch()}
                 >
                   搜索
@@ -549,57 +527,67 @@ export default class RoleAdminContainer extends React.Component {
           onCancel={() => this.onClose()}
           confirmLoading={this.state.modalLoading}
         >
-          <Form>
-            <FormItem label="角色名" {...formItemLayout}>
-              {getFieldDecorator("formTitle", {
-                initialValue: undefined,
-                rules: [
-                  { required: true, whitespace: true, message: "必填" },
-                  { max: 12, message: "最多输入12位字符" }
-                ]
-              })(<Input placeholder="请输入角色名" />)}
-            </FormItem>
-            <FormItem label="描述" {...formItemLayout}>
-              {getFieldDecorator("formDesc", {
-                initialValue: undefined,
-                rules: [{ max: 100, message: "最多输入100个字符" }]
-              })(
-                <TextArea
-                  rows={4}
-                  disabled={this.state.operateType === "see"}
-                  placeholoder="请输入描述"
-                  autosize={{ minRows: 2, maxRows: 6 }}
-                />
-              )}
-            </FormItem>
-            <FormItem label="排序" {...formItemLayout}>
-              {getFieldDecorator("formSorts", {
-                initialValue: 0,
-                rules: [{ required: true, message: "请输入排序号" }]
-              })(
-                <InputNumber
-                  min={0}
-                  max={99999}
-                  style={{ width: "100%" }}
-                  disabled={this.state.operateType === "see"}
-                />
-              )}
-            </FormItem>
-            <FormItem label="状态" {...formItemLayout}>
-              {getFieldDecorator("formConditions", {
-                initialValue: 1,
-                rules: [{ required: true, message: "请选择状态" }]
-              })(
-                <Select disabled={this.state.operateType === "see"}>
-                  <Option key={1} value={1}>
-                    启用
-                  </Option>
-                  <Option key={-1} value={-1}>
-                    禁用
-                  </Option>
-                </Select>
-              )}
-            </FormItem>
+          <Form
+            ref={this.form}
+            initialValues={{
+              formConditions: 1
+            }}
+          >
+            <Form.Item
+              label="角色名"
+              name="formTitle"
+              {...formItemLayout}
+              rules={[
+                { required: true, whitespace: true, message: "必填" },
+                { max: 12, message: "最多输入12位字符" }
+              ]}
+            >
+              <Input
+                placeholder="请输入角色名"
+                disabled={this.state.operateType === "see"}
+              />
+            </Form.Item>
+            <Form.Item
+              label="描述"
+              name="formDesc"
+              {...formItemLayout}
+              rules={[{ max: 100, message: "最多输入100个字符" }]}
+            >
+              <TextArea
+                rows={4}
+                disabled={this.state.operateType === "see"}
+                placeholoder="请输入描述"
+                autosize={{ minRows: 2, maxRows: 6 }}
+              />
+            </Form.Item>
+            <Form.Item
+              label="排序"
+              name="formSorts"
+              {...formItemLayout}
+              rules={[{ required: true, message: "请输入排序号" }]}
+            >
+              <InputNumber
+                min={0}
+                max={99999}
+                style={{ width: "100%" }}
+                disabled={this.state.operateType === "see"}
+              />
+            </Form.Item>
+            <Form.Item
+              label="状态"
+              name="formConditions"
+              {...formItemLayout}
+              rules={[{ required: true, message: "请选择状态" }]}
+            >
+              <Select disabled={this.state.operateType === "see"}>
+                <Option key={1} value={1}>
+                  启用
+                </Option>
+                <Option key={-1} value={-1}>
+                  禁用
+                </Option>
+              </Select>
+            </Form.Item>
           </Form>
         </Modal>
         <TreeTable

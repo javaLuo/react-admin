@@ -1,15 +1,10 @@
 /** 通用动态面包屑 **/
 import React from "react";
-import P from "prop-types";
-import { Breadcrumb, Icon } from "antd";
-import "./index.scss";
+import { Breadcrumb } from "antd";
+import { EnvironmentOutlined } from "@ant-design/icons";
+import "./index.less";
 
 export default class Com extends React.PureComponent {
-  static propTypes = {
-    location: P.any,
-    menus: P.array
-  };
-
   /** 根据当前location动态生成对应的面包屑 **/
   makeBread(location, menus) {
     const paths = location.pathname.split("/").filter(item => !!item);
@@ -33,7 +28,7 @@ export default class Com extends React.PureComponent {
   render() {
     return (
       <div className="bread">
-        <Icon className="icon" type="environment-o" />
+        <EnvironmentOutlined className="icon" />
         <Breadcrumb>
           {this.makeBread(this.props.location, this.props.menus)}
         </Breadcrumb>

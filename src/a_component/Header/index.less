@@ -1,4 +1,4 @@
-$backColor: #d1e3fa;
+@backColor: #d1e3fa;
 .header {
   background-color: #fff;
   padding: 0;
@@ -16,10 +16,13 @@ $backColor: #d1e3fa;
       transform: rotate(180deg);
     }
     &:hover {
-      background-color: $backColor;
+      background-color: @backColor;
     }
   }
   .rightBox {
+    flex: auto;
+    display: flex;
+    justify-content: flex-end;
     .userhead {
       padding: 0 20px;
       margin-right: 4px;
@@ -30,14 +33,13 @@ $backColor: #d1e3fa;
         margin-left: 4px;
       }
       &:hover {
-        background-color: $backColor;
+        background-color: @backColor;
       }
     }
   }
   .full {
     padding: 0 24px;
     cursor: pointer;
-    line-height: 64px;
     transition: all 0.3s;
     .ant-badge {
       display: inline !important;
@@ -50,7 +52,7 @@ $backColor: #d1e3fa;
       padding: 4px;
     }
     &:hover {
-      background-color: $backColor;
+      background-color: @backColor;
     }
     a {
       display: block;
@@ -97,7 +99,7 @@ $backColor: #d1e3fa;
       border-top: solid 1px #f0f0f0;
     }
     &:hover {
-      background-color: $backColor;
+      background-color: @backColor;
     }
   }
   .clear {
@@ -109,7 +111,7 @@ $backColor: #d1e3fa;
     border-top: solid 1px #f0f0f0;
     &:hover {
       color: red;
-      background-color: $backColor;
+      background-color: @backColor;
     }
   }
 }

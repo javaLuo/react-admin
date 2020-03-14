@@ -1,9 +1,8 @@
 /* Nothing 没有数据时的通用填充 */
 
 import React from "react";
-import P from "prop-types";
-import "./index.scss";
-import Img from "../../assets/nothing.png";
+import "./index.less";
+import Img from "@/assets/nothing.png";
 
 export default class Com extends React.PureComponent {
   constructor(props) {
@@ -21,6 +20,6 @@ export default class Com extends React.PureComponent {
   }
 }
 
-Com.propTypes = {
-  message: P.any
-};
+// Com.propTypes = {
+//   message: P.any
+// };
