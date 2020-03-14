@@ -2,7 +2,13 @@
 
 import { baseUrl } from "../config";
 import axios from "axios"; // 封装了fetch请求的库
-import { message } from "antd";
+
+import Mock from "mockjs";
+const mock = require("../../mock/app-data");
+Mock.mock(/\/api.*/, options => {
+  const res = mock.mockApi(options);
+  return res;
+});
 
 // 请求是否带上cookie
 axios.defaults.withCredentials = false;

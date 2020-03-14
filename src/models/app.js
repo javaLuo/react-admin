@@ -41,9 +41,8 @@ export default {
      * @param { username, password } params
      * */
     async onLogin(params = {}) {
-      console.log("lo22222:", params);
       try {
-        const res = await axios.post("api/login", params);
+        const res = await axios.post("/api/login", params);
         console.log("lo3:", res);
         return res;
       } catch (err) {

@@ -203,19 +203,6 @@ export default class PowerAdminContainer extends React.Component {
 
   /** 新增&修改 模态框出现 **/
   onModalShow = (data, type) => {
-    console.log(
-      "data:",
-      data,
-      this.props.userinfo.roles.filter(item => {
-        const theMenuPower = item.menuAndPowers.find(
-          item2 => item2.menuId === data.menu
-        );
-        if (theMenuPower) {
-          return theMenuPower.powers.includes(data.id);
-        }
-        return false;
-      })
-    );
     this.setState({
       modalShow: true,
       nowData: data,
@@ -226,12 +213,13 @@ export default class PowerAdminContainer extends React.Component {
           : { label: this.getNameByParentId(data.parent), value: data.parent },
       rolesCheckboxChose:
         data && data.id
-          ? this.props.userinfo.roles
+          ? this.props.roles
               .filter(item => {
                 const theMenuPower = item.menuAndPowers.find(
                   item2 => item2.menuId === data.menu
                 );
                 if (theMenuPower) {
+                  console.log(theMenuPower, data.id);
                   return theMenuPower.powers.includes(data.id);
                 }
                 return false;
@@ -291,8 +279,13 @@ export default class PowerAdminContainer extends React.Component {
             message.success("添加成功");
             this.getData(this.state.treeSelect.id);
             this.onClose();
+
+            await this.setPowersByRoleIds(
+              res.data.id,
+              this.state.rolesCheckboxChose
+            );
             this.props.updateUserInfo();
-            this.setPowersByRoleIds(res.data.id, this.state.rolesCheckboxChose);
+            this.props.getAllRoles();
           } else {
             message.error("添加失败");
           }
@@ -301,15 +294,20 @@ export default class PowerAdminContainer extends React.Component {
         }
       } else {
         // 修改
-        params.id = this.state.nowData.id;
         try {
+          params.id = this.state.nowData.id;
           const res = await this.props.upPower(params);
           if (res.status === 200) {
             message.success("修改成功");
             this.getData(this.state.treeSelect.id);
             this.onClose();
+
+            await this.setPowersByRoleIds(
+              params.id,
+              this.state.rolesCheckboxChose
+            );
+            this.props.getAllRoles();
             this.props.updateUserInfo();
-            this.setPowersByRoleIds(params.id, this.state.rolesCheckboxChose);
           } else {
             message.error("修改失败");
           }
@@ -630,13 +628,11 @@ export default class PowerAdminContainer extends React.Component {
               </Select>
             </Form.Item>
             <Form.Item label="赋予" {...formItemLayout}>
-              <div>
-                <Checkbox.Group
-                  options={this.makeRolesCheckbox()}
-                  value={this.state.rolesCheckboxChose}
-                  onChange={this.onRolesCheckboxChange}
-                />
-              </div>
+              <Checkbox.Group
+                options={this.makeRolesCheckbox()}
+                value={this.state.rolesCheckboxChose}
+                onChange={this.onRolesCheckboxChange}
+              />
             </Form.Item>
           </Form>
         </Modal>

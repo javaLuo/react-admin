@@ -41,6 +41,7 @@ const { TextArea } = Input;
 
 @connect(
   state => ({
+    roles: state.sys.roles,
     powersCode: state.app.powersCode
   }),
   dispatch => ({
@@ -63,7 +64,8 @@ export default class MenuAdminContainer extends React.Component {
       nowData: null, // 当前选中的那条数据
       operateType: "add", // 操作类型 add新增，up修改, see查看
       modalShow: false, // 新增&修改 模态框是否显示
-      modalLoading: false // 新增&修改 模态框是否正在执行请求
+      modalLoading: false, // 新增&修改 模态框是否正在执行请求
+      rolesCheckboxChose: [] // 表单 - 赋予项选中的值
     };
   }
 
@@ -226,41 +228,35 @@ export default class MenuAdminContainer extends React.Component {
       this.setState({ modalLoading: true });
       if (this.state.operateType === "add") {
         // 新增
-        this.props
-          .addMenu(tools.clearNull(params))
-          .then(res => {
-            if (res.status === 200) {
-              message.success("添加成功");
-              this.getData();
-              this.onClose();
-            } else {
-              message.error("添加失败");
-            }
-            this.setState({ modalLoading: false });
+        try {
+          const res = await this.props.addMenu(tools.clearNull(params));
+          if (res.status === 200) {
+            message.success("添加成功");
+            this.getData();
+            this.onClose();
             this.props.updateUserInfo();
-          })
-          .catch(() => {
-            this.setState({ modalLoading: false });
-          });
+          } else {
+            message.error("添加失败");
+          }
+        } finally {
+          this.setState({ modalLoading: false });
+        }
       } else {
         // 修改
-        params.id = this.state.nowData.id;
-        this.props
-          .upMenu(params)
-          .then(res => {
-            if (res.status === 200) {
-              message.success("修改成功");
-              this.getData();
-              this.onClose();
-            } else {
-              message.error("修改失败");
-            }
-            this.setState({ modalLoading: false });
+        try {
+          params.id = this.state.nowData.id;
+          const res = await this.props.upMenu(params);
+          if (res.status === 200) {
+            message.success("修改成功");
+            this.getData();
+            this.onClose();
             this.props.updateUserInfo();
-          })
-          .catch(() => {
-            this.setState({ modalLoading: false });
-          });
+          } else {
+            message.error("修改失败");
+          }
+        } finally {
+          this.setState({ modalLoading: false });
+        }
       }
     } catch {
       // 未通过校验
@@ -560,6 +556,13 @@ export default class MenuAdminContainer extends React.Component {
                 </Option>
               </Select>
             </Form.Item>
+            {this.state.operateType === "add" ? (
+              <Form.Item label="赋予" {...formItemLayout}>
+                <span style={{ color: "green" }}>
+                  新增菜单后请前往角色管理将菜单授权给相关角色
+                </span>
+              </Form.Item>
+            ) : null}
           </Form>
         </Modal>
       </div>

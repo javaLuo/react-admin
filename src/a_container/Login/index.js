@@ -122,6 +122,7 @@ export default class LoginContainer extends React.Component {
 
     /** 1.登录 （返回信息中有该用户拥有的角色id） **/
     const res1 = await this.props.onLogin({ username, password });
+    console.log("userBasicInfo", res1);
     if (!res1 || res1.status !== 200) {
       // 登录失败
       return res1;
@@ -164,7 +165,7 @@ export default class LoginContainer extends React.Component {
       return res4;
     }
     powers = res4.data.filter(item => item.conditions === 1);
-
+    console.log("搞笑？");
     return { status: 200, data: { userBasicInfo, roles, menus, powers } };
   }
 
