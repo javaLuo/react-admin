@@ -4,12 +4,12 @@ import { baseUrl } from "../config";
 import axios from "axios";
 
 // 不需要下面这些mock配置，仅本地测试用
-import Mock from "mockjs";
-const mock = require("../../mock/app-data");
-Mock.mock(/\/api.*/, options => {
-  const res = mock.mockApi(options);
-  return res;
-});
+// import Mock from "mockjs";
+// const mock = require("../../mock/app-data");
+// Mock.mock(/\/api.*/, options => {
+//   const res = mock.mockApi(options);
+//   return res;
+// });
 
 // 请求是否带上cookie
 axios.defaults.withCredentials = false;
