@@ -494,10 +494,8 @@ export default class PowerAdminContainer extends React.Component {
               name="formTitle"
               {...formItemLayout}
               rules={[
-                [
-                  { required: true, whitespace: true, message: "必填" },
-                  { max: 12, message: "最多输入12位字符" },
-                ],
+                { required: true, whitespace: true, message: "必填" },
+                { max: 12, message: "最多输入12位字符" },
               ]}>
               <Input placeholder="请输入权限名" disabled={this.state.operateType === "see"} />
             </Form.Item>
