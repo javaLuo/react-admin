@@ -13,8 +13,26 @@ import "./index.less";
 // ==================
 // 所需的所有组件
 // ==================
-import { Tree, Button, Table, Tooltip, Popconfirm, Modal, Form, Select, Input, InputNumber, message, Divider } from "antd";
-import { EyeOutlined, ToolOutlined, DeleteOutlined, PlusCircleOutlined } from "@ant-design/icons";
+import {
+  Tree,
+  Button,
+  Table,
+  Tooltip,
+  Popconfirm,
+  Modal,
+  Form,
+  Select,
+  Input,
+  InputNumber,
+  message,
+  Divider
+} from "antd";
+import {
+  EyeOutlined,
+  ToolOutlined,
+  DeleteOutlined,
+  PlusCircleOutlined
+} from "@ant-design/icons";
 import { IconsData } from "@/util/json";
 import Icon from "@/a_component/Icon";
 const { TreeNode } = Tree;
@@ -24,14 +42,14 @@ const { TextArea } = Input;
 @connect(
   state => ({
     roles: state.sys.roles,
-    powersCode: state.app.powersCode,
+    powersCode: state.app.powersCode
   }),
   dispatch => ({
     addMenu: dispatch.sys.addMenu,
     getMenus: dispatch.sys.getMenus,
     upMenu: dispatch.sys.upMenu,
-    delMenu: dispatch.sys.delMenu,
-  }),
+    delMenu: dispatch.sys.delMenu
+  })
 )
 export default class MenuAdminContainer extends React.Component {
   constructor(props) {
@@ -47,7 +65,7 @@ export default class MenuAdminContainer extends React.Component {
       operateType: "add", // 操作类型 add新增，up修改, see查看
       modalShow: false, // 新增&修改 模态框是否显示
       modalLoading: false, // 新增&修改 模态框是否正在执行请求
-      rolesCheckboxChose: [], // 表单 - 赋予项选中的值
+      rolesCheckboxChose: [] // 表单 - 赋予项选中的值
     };
   }
 
@@ -62,7 +80,7 @@ export default class MenuAdminContainer extends React.Component {
       return;
     }
     this.setState({
-      loading: true,
+      loading: true
     });
     this.props
       .getMenus()
@@ -70,17 +88,19 @@ export default class MenuAdminContainer extends React.Component {
         if (res.status === 200) {
           this.setState({
             data: res.data,
-            tableData: res.data.filter(item => item.parent === (Number(this.state.treeSelect.id) || null)),
+            tableData: res.data.filter(
+              item => item.parent === (Number(this.state.treeSelect.id) || null)
+            )
           });
           this.makeSourceData(res.data);
         }
         this.setState({
-          loading: false,
+          loading: false
         });
       })
       .catch(() => {
         this.setState({
-          loading: false,
+          loading: false
         });
       });
   }
@@ -97,7 +117,7 @@ export default class MenuAdminContainer extends React.Component {
     });
     const sourceData = this.dataToJson(null, d) || [];
     this.setState({
-      sourceData,
+      sourceData
     });
   }
 
@@ -138,7 +158,9 @@ export default class MenuAdminContainer extends React.Component {
     }
     this.setState({
       treeSelect,
-      tableData: this.state.data.filter(item => item.parent === (Number(treeSelect.id) || null)),
+      tableData: this.state.data.filter(
+        item => item.parent === (Number(treeSelect.id) || null)
+      )
     });
   };
 
@@ -154,7 +176,10 @@ export default class MenuAdminContainer extends React.Component {
       modalShow: true,
       nowData: data,
       operateType: type,
-      formParent: type === "add" ? { label: undefined, value: undefined } : { label: this.getNameByParentId(data.parent), value: data.parent },
+      formParent:
+        type === "add"
+          ? { label: undefined, value: undefined }
+          : { label: this.getNameByParentId(data.parent), value: data.parent }
     });
     setTimeout(() => {
       if (type === "add") {
@@ -169,7 +194,7 @@ export default class MenuAdminContainer extends React.Component {
           formIcon: data.icon,
           formSorts: data.sorts,
           formTitle: data.title,
-          formUrl: data.url,
+          formUrl: data.url
         });
       }
     });
@@ -178,7 +203,7 @@ export default class MenuAdminContainer extends React.Component {
   /** 新增&修改 模态框关闭 **/
   onClose = () => {
     this.setState({
-      modalShow: false,
+      modalShow: false
     });
   };
 
@@ -198,7 +223,7 @@ export default class MenuAdminContainer extends React.Component {
         parent: Number(this.state.treeSelect.id) || null,
         sorts: values.formSorts,
         desc: values.formDesc,
-        conditions: values.formConditions,
+        conditions: values.formConditions
       };
       this.setState({ modalLoading: true });
       if (this.state.operateType === "add") {
@@ -258,7 +283,7 @@ export default class MenuAdminContainer extends React.Component {
       {
         title: "序号",
         dataIndex: "serial",
-        key: "serial",
+        key: "serial"
       },
       {
         title: "图标",
@@ -266,12 +291,12 @@ export default class MenuAdminContainer extends React.Component {
         key: "icon",
         render: text => {
           return text ? <Icon type={text} /> : "";
-        },
+        }
       },
       {
         title: "菜单名称",
         dataIndex: "title",
-        key: "title",
+        key: "title"
       },
       {
         title: "路径",
@@ -279,24 +304,29 @@ export default class MenuAdminContainer extends React.Component {
         key: "url",
         render: (text, record) => {
           return text ? `/${text.replace(/^\//, "")}` : "";
-        },
+        }
       },
       {
         title: "描述",
         dataIndex: "desc",
-        key: "desc",
+        key: "desc"
       },
       {
         title: "父级",
         dataIndex: "parent",
         key: "parent",
-        render: text => this.getNameByParentId(text),
+        render: text => this.getNameByParentId(text)
       },
       {
         title: "状态",
         dataIndex: "conditions",
         key: "conditions",
-        render: (text, record) => (text === 1 ? <span style={{ color: "green" }}>启用</span> : <span style={{ color: "red" }}>禁用</span>),
+        render: (text, record) =>
+          text === 1 ? (
+            <span style={{ color: "green" }}>启用</span>
+          ) : (
+            <span style={{ color: "red" }}>禁用</span>
+          )
       },
       {
         title: "操作",
@@ -308,29 +338,43 @@ export default class MenuAdminContainer extends React.Component {
 
           p.includes("menu:query") &&
             controls.push(
-              <span key="0" className="control-btn green" onClick={() => this.onModalShow(record, "see")}>
+              <span
+                key="0"
+                className="control-btn green"
+                onClick={() => this.onModalShow(record, "see")}
+              >
                 <Tooltip placement="top" title="查看">
                   <EyeOutlined />
                 </Tooltip>
-              </span>,
+              </span>
             );
           p.includes("menu:up") &&
             controls.push(
-              <span key="1" className="control-btn blue" onClick={() => this.onModalShow(record, "up")}>
+              <span
+                key="1"
+                className="control-btn blue"
+                onClick={() => this.onModalShow(record, "up")}
+              >
                 <Tooltip placement="top" title="修改">
                   <ToolOutlined />
                 </Tooltip>
-              </span>,
+              </span>
             );
           p.includes("menu:del") &&
             controls.push(
-              <Popconfirm key="2" title="确定删除吗?" okText="确定" cancelText="取消" onConfirm={() => this.onDel(record)}>
+              <Popconfirm
+                key="2"
+                title="确定删除吗?"
+                okText="确定"
+                cancelText="取消"
+                onConfirm={() => this.onDel(record)}
+              >
                 <span className="control-btn red">
                   <Tooltip placement="top" title="删除">
                     <DeleteOutlined />
                   </Tooltip>
                 </span>
-              </Popconfirm>,
+              </Popconfirm>
             );
           const result = [];
           controls.forEach((item, index) => {
@@ -340,8 +384,8 @@ export default class MenuAdminContainer extends React.Component {
             result.push(item);
           });
           return result;
-        },
-      },
+        }
+      }
     ];
     return columns;
   };
@@ -362,7 +406,7 @@ export default class MenuAdminContainer extends React.Component {
         desc: item.desc,
         sorts: item.sorts,
         conditions: item.conditions,
-        serial: index + 1,
+        serial: index + 1
       };
     });
   }
@@ -373,12 +417,12 @@ export default class MenuAdminContainer extends React.Component {
       // 表单布局
       labelCol: {
         xs: { span: 24 },
-        sm: { span: 4 },
+        sm: { span: 4 }
       },
       wrapperCol: {
         xs: { span: 24 },
-        sm: { span: 19 },
-      },
+        sm: { span: 19 }
+      }
     };
     return (
       <div className="page-menu-admin">
@@ -389,14 +433,20 @@ export default class MenuAdminContainer extends React.Component {
               defaultExpandedKeys={["0"]}
               onSelect={this.onTreeSelect}
               selectedKeys={[String(this.state.treeSelect.id)]}
-              treeData={this.state.sourceData}></Tree>
+              treeData={this.state.sourceData}
+            ></Tree>
           </div>
         </div>
         <div className="r">
           <div className="searchBox">
             <ul>
               <li>
-                <Button type="primary" icon={<PlusCircleOutlined />} onClick={() => this.onModalShow(null, "add")} disabled={!p.includes("menu:add")}>
+                <Button
+                  type="primary"
+                  icon={<PlusCircleOutlined />}
+                  onClick={() => this.onModalShow(null, "add")}
+                  disabled={!p.includes("menu:add")}
+                >
                   {`添加${this.state.treeSelect.title || "根级"}子菜单`}
                 </Button>
               </li>
@@ -409,17 +459,20 @@ export default class MenuAdminContainer extends React.Component {
             dataSource={this.makeData(this.state.tableData)}
             pagination={{
               showQuickJumper: true,
-              showTotal: (total, range) => `共 ${total} 条数据`,
+              showTotal: (total, range) => `共 ${total} 条数据`
             }}
           />
         </div>
         {/** 查看&新增&修改用户模态框 **/}
         <Modal
-          title={`${{ add: "新增", up: "修改", see: "查看" }[this.state.operateType]}`}
+          title={`${
+            { add: "新增", up: "修改", see: "查看" }[this.state.operateType]
+          }`}
           visible={this.state.modalShow}
           onOk={() => this.onOk()}
           onCancel={this.onClose}
-          confirmLoading={this.state.modalLoading}>
+          confirmLoading={this.state.modalLoading}
+        >
           <Form ref={this.form} initialValues={{ formConditions: 1 }}>
             <Form.Item
               label="菜单名"
@@ -427,15 +480,30 @@ export default class MenuAdminContainer extends React.Component {
               {...formItemLayout}
               rules={[
                 { required: true, whitespace: true, message: "必填" },
-                { max: 12, message: "最多输入12位字符" },
-              ]}>
-              <Input placeholder="请输入菜单名" disabled={this.state.operateType === "see"} />
+                { max: 12, message: "最多输入12位字符" }
+              ]}
+            >
+              <Input
+                placeholder="请输入菜单名"
+                disabled={this.state.operateType === "see"}
+              />
             </Form.Item>
-            <Form.Item label="菜单链接" name="formUrl" {...formItemLayout} rules={[{ required: true, whitespace: true, message: "必填" }]}>
-              <Input placeholder="请输入菜单链接" disabled={this.state.operateType === "see"} />
+            <Form.Item
+              label="菜单链接"
+              name="formUrl"
+              {...formItemLayout}
+              rules={[{ required: true, whitespace: true, message: "必填" }]}
+            >
+              <Input
+                placeholder="请输入菜单链接"
+                disabled={this.state.operateType === "see"}
+              />
             </Form.Item>
             <Form.Item label="图标" name="formIcon" {...formItemLayout}>
-              <Select dropdownClassName="iconSelect" disabled={this.state.operateType === "see"}>
+              <Select
+                dropdownClassName="iconSelect"
+                disabled={this.state.operateType === "see"}
+              >
                 {IconsData.map((item, index) => {
                   return (
                     <Option key={index} value={item}>
@@ -445,13 +513,38 @@ export default class MenuAdminContainer extends React.Component {
                 })}
               </Select>
             </Form.Item>
-            <Form.Item label="描述" name="formDesc" {...formItemLayout} rules={[{ max: 100, message: "最多输入100位字符" }]}>
-              <TextArea rows={4} disabled={this.state.operateType === "see"} placeholoder="请输入描述" autosize={{ minRows: 2, maxRows: 6 }} />
+            <Form.Item
+              label="描述"
+              name="formDesc"
+              {...formItemLayout}
+              rules={[{ max: 100, message: "最多输入100位字符" }]}
+            >
+              <TextArea
+                rows={4}
+                disabled={this.state.operateType === "see"}
+                placeholoder="请输入描述"
+                autosize={{ minRows: 2, maxRows: 6 }}
+              />
             </Form.Item>
-            <Form.Item label="排序" name="formSorts" {...formItemLayout} rules={[{ required: true, message: "请输入排序号" }]}>
-              <InputNumber min={0} max={99999} style={{ width: "100%" }} disabled={this.state.operateType === "see"} />
+            <Form.Item
+              label="排序"
+              name="formSorts"
+              {...formItemLayout}
+              rules={[{ required: true, message: "请输入排序号" }]}
+            >
+              <InputNumber
+                min={0}
+                max={99999}
+                style={{ width: "100%" }}
+                disabled={this.state.operateType === "see"}
+              />
             </Form.Item>
-            <Form.Item label="状态" name="formConditions" {...formItemLayout} rules={[{ required: true, message: "请选择状态" }]}>
+            <Form.Item
+              label="状态"
+              name="formConditions"
+              {...formItemLayout}
+              rules={[{ required: true, message: "请选择状态" }]}
+            >
               <Select disabled={this.state.operateType === "see"}>
                 <Option key={1} value={1}>
                   启用
@@ -463,7 +556,9 @@ export default class MenuAdminContainer extends React.Component {
             </Form.Item>
             {this.state.operateType === "add" ? (
               <Form.Item label="赋予" {...formItemLayout}>
-                <span style={{ color: "green" }}>新增菜单后请前往角色管理将菜单授权给相关角色</span>
+                <span style={{ color: "green" }}>
+                  新增菜单后请前往角色管理将菜单授权给相关角色
+                </span>
               </Form.Item>
             ) : null}
           </Form>

@@ -3,14 +3,14 @@
 // ==================
 // 必需的各种插件
 // ==================
-import React from "react";
+import React, { useState } from "react";
 import { connect } from "react-redux";
 import { Route, Switch, Redirect } from "react-router-dom";
 import Loadable from "react-loadable";
 import tools from "../util/tools";
 
 // ==================
-// 所需的所有普通组件
+// 所需的所有组件
 // ==================
 import { Layout, message } from "antd";
 import Header from "../a_component/Header";
@@ -21,7 +21,7 @@ import Loading from "../a_component/loading";
 import "./BasicLayout.less";
 
 // ==================
-// 路由
+// 异步加载各路由模块
 // ==================
 const [NotFound, NoPower, Home, MenuAdmin, PowerAdmin, RoleAdmin, UserAdmin] = [
   () => import(`../a_container/ErrorPages/404`),
@@ -42,47 +42,31 @@ const [NotFound, NoPower, Home, MenuAdmin, PowerAdmin, RoleAdmin, UserAdmin] = [
 // Class
 // ==================
 const { Content } = Layout;
-@connect(
-  state => ({
-    userinfo: state.app.userinfo
-  }),
-  dispatch => ({
-    onLogout: dispatch.app.onLogout
-  })
-)
-export default class AppContainer extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      collapsed: false // 侧边栏是否收起
-    };
-  }
+
+function BasicLayoutCom(props) {
+  const [collapsed, setCollapsed] = useState(false); // 菜单栏是否收起
 
   /** 点击切换菜单状态 **/
-  onToggle = () => {
-    this.setState({
-      collapsed: !this.state.collapsed
-    });
-  };
+  function onToggle() {
+    setCollapsed(!collapsed);
+  }
 
-  /**
-   * 退出登录
-   * **/
-  onLogout = () => {
-    this.props.onLogout().then(() => {
+  /** 退出登录 **/
+  function onLogout() {
+    props.onLogout().then(() => {
       message.success("退出成功");
-      this.props.history.push("/user/login");
+      props.history.push("/user/login");
     });
-  };
+  }
 
   /**
    * 工具 - 判断当前用户是否有该路由权限，如果没有就跳转至401页
-   * @pathname: 路由路径
+   * @param pathname 路由路径
    * **/
-  checkRouterPower(pathname) {
+  function checkRouterPower(pathname) {
     let menus;
-    if (this.props.userinfo.menus && this.props.userinfo.menus.length) {
-      menus = this.props.userinfo.menus;
+    if (props.userinfo.menus && props.userinfo.menus.length) {
+      menus = props.userinfo.menus;
     } else if (sessionStorage.getItem("userinfo")) {
       menus = JSON.parse(tools.uncompile(sessionStorage.getItem("userinfo")))
         .menus;
@@ -98,78 +82,73 @@ export default class AppContainer extends React.Component {
   }
 
   /** 切换路由时触发 **/
-  onEnter(Component, props) {
+  function onEnter(Component, props) {
     /**
      * 检查当前用户是否有该路由页面的权限
      * 没有则跳转至401页
      * **/
-    if (this.checkRouterPower(props.location.pathname)) {
+    if (checkRouterPower(props.location.pathname)) {
       return <Component {...props} />;
     }
     return <Redirect to="/nopower" />;
   }
 
-  render() {
-    console.log("smqk:", this.props.userinfo);
-    return (
-      <Layout className="page-basic">
-        <Menu
-          data={this.props.userinfo.menus}
-          collapsed={this.state.collapsed}
-          location={this.props.location}
-          history={this.props.history}
+  return (
+    <Layout className="page-basic">
+      <Menu
+        data={props.userinfo.menus}
+        collapsed={collapsed}
+        location={props.location}
+        history={props.history}
+      />
+      <Layout>
+        <Header
+          collapsed={collapsed}
+          userinfo={props.userinfo}
+          onToggle={onToggle}
+          onLogout={onLogout}
         />
-        <Layout>
-          <Header
-            collapsed={this.state.collapsed}
-            userinfo={this.props.userinfo}
-            onToggle={this.onToggle}
-            onLogout={this.onLogout}
-            getNews={this.getNews}
-            clearNews={this.clearNews}
-            newsData={this.state.newsData}
-            newsTotal={this.state.newsTotal}
-          />
-          <Bread
-            menus={this.props.userinfo.menus}
-            location={this.props.location}
-          />
-          <Content className="content">
-            <Switch>
-              <Redirect exact from="/" to="/home" />
-              <Route
-                exact
-                path="/home"
-                render={props => this.onEnter(Home, props)}
-              />
+        <Bread menus={props.userinfo.menus} location={props.location} />
+        <Content className="content">
+          <Switch>
+            <Redirect exact from="/" to="/home" />
+            <Route exact path="/home" render={props => onEnter(Home, props)} />
 
-              <Route
-                exact
-                path="/system/menuadmin"
-                render={props => this.onEnter(MenuAdmin, props)}
-              />
-              <Route
-                exact
-                path="/system/poweradmin"
-                render={props => this.onEnter(PowerAdmin, props)}
-              />
-              <Route
-                exact
-                path="/system/roleadmin"
-                render={props => this.onEnter(RoleAdmin, props)}
-              />
-              <Route
-                exact
-                path="/system/useradmin"
-                render={props => this.onEnter(UserAdmin, props)}
-              />
-              <Route exact path="/nopower" component={NoPower} />
-              <Route component={NotFound} />
-            </Switch>
-          </Content>
-          <Footer />
-        </Layout>
+            <Route
+              exact
+              path="/system/menuadmin"
+              render={props => onEnter(MenuAdmin, props)}
+            />
+            <Route
+              exact
+              path="/system/poweradmin"
+              render={props => onEnter(PowerAdmin, props)}
+            />
+            <Route
+              exact
+              path="/system/roleadmin"
+              render={props => onEnter(RoleAdmin, props)}
+            />
+            <Route
+              exact
+              path="/system/useradmin"
+              render={props => onEnter(UserAdmin, props)}
+            />
+            <Route exact path="/nopower" component={NoPower} />
+            <Route component={NotFound} />
+          </Switch>
+        </Content>
+        <Footer />
       </Layout>
-    );
-  }
+    </Layout>
+  );
 }
+
+export default connect(
+  state => ({
+    userinfo: state.app.userinfo
+  }),
+  dispatch => ({
+    onLogout: dispatch.app.onLogout
+  })
+)(BasicLayoutCom);
