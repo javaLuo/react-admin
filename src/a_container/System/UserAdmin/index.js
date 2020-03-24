@@ -63,70 +63,69 @@ function RoleAdminContainer(props) {
     searchConditions: undefined, // 搜索 - 状态
   });
 
-  useEffect(
-    function () {
-      onGetDataCallback(pageInfo.pageNum, pageInfo.pageSize);
-      onGetRoleTreeDataCallback();
+  // 副作用 - 首次进入，分页改变时 触发更新列表数据
+  useEffect(() => {
+    onGetData(pageInfo.pageNum, pageInfo.pageSize);
+  }, [pageInfo, onGetData]);
 
-      const arr = ["a", "b", "c"];
-      const arr1 = [1, 2, 3];
-      const b = arr.reduce((res, item, index) => {
-        return [...res, { [item]: arr1[index] }];
-      }, []);
-    },
-    [onGetDataCallback, onGetRoleTreeDataCallback, pageInfo],
-  );
+  // 副作用 - 首次进入时触发获取角色树原始数据
+  useEffect(() => {
+    onGetRoleTreeData();
+  }, [onGetRoleTreeData]);
 
   // 获取所有的角色数据 - 用于分配角色控件的原始数据
-  const onGetRoleTreeDataCallback = useCallback(onGetRoleTreeData);
-  async function onGetRoleTreeData() {
+  const onGetRoleTreeData = useCallback(async () => {
     try {
       const res = await props.getAllRoles();
       if (res.status === 200) {
         setRoleData(res.data);
       }
     } catch {}
-  }
+  }, [props]);
 
   // 查询当前页面所需列表数据
-  const onGetDataCallback = useCallback(onGetData);
-  async function onGetData(pageNum, pageSize) {
-    const p = props.powersCode;
-    if (!p.includes("user:query")) {
-      return;
-    }
-
-    const params = {
-      pageNum,
-      pageSize,
-      username: searchInfo.searchUsername,
-      conditions: searchInfo.searchConditions,
-    };
-    setLoading(true);
-    try {
-      const res = await props.getUserList(tools.clearNull(params));
-      console.log("there?", res);
-      if (res.status === 200) {
-        setData(res.data.list);
-        setPageInfo({
-          pageNum,
-          pageSize,
-          total: res.data.total,
-        });
-      } else {
-        message.error(res.message);
+  const onGetData = useCallback(
+    async (pageNum, pageSize) => {
+      const p = props.powersCode;
+      if (!p.includes("user:query")) {
+        return;
       }
-    } finally {
-      setLoading(false);
-    }
-  }
+
+      const params = {
+        pageNum,
+        pageSize,
+        username: searchInfo.searchUsername,
+        conditions: searchInfo.searchConditions,
+      };
+      setLoading(true);
+      try {
+        const res = await props.getUserList(tools.clearNull(params));
+        if (res.status === 200) {
+          setData(res.data.list);
+          setPageInfo({
+            pageNum,
+            pageSize,
+            total: res.data.total,
+          });
+        } else {
+          message.error(res.message);
+        }
+      } finally {
+        setLoading(false);
+      }
+    },
+    [props, searchInfo],
+  );
 
   // 搜索 - 名称输入框值改变时触发
-  function searchUsernameChange(e) {
-    if (e.target.value.length < 20) {
-      setSearchInfo({ ...searchInfo, searchUsername: e.target.value });
-    }
-  }
+  const searchUsernameChange = useCallback(
+    e => {
+      if (e.target.value.length < 20) {
+        setSearchInfo({ ...searchInfo, searchUsername: e.target.value });
+      }
+    },
+    [searchInfo],
+  );
 
   // 搜索 - 状态下拉框选择时触发
   function searchConditionsChange(v) {
@@ -402,7 +401,6 @@ function RoleAdminContainer(props) {
 
   // 分配角色树关闭
   function onRoleClose() {
-    console.log("111");
     setTreeInfo({
       ...treeInfo,
       roleTreeShow: false,
@@ -423,14 +421,14 @@ function RoleAdminContainer(props) {
         {p.includes("user:query") && (
           <ul className="search-ul">
             <li>
-              <Input placeholder="请输入用户名" onChange={e => searchUsernameChange(e)} value={searchInfo.searchUsername} />
+              <Input placeholder="请输入用户名" onChange={searchUsernameChange} value={searchInfo.searchUsername} />
             </li>
             <li>
               <Select
                 placeholder="请选择状态"
                 allowClear
                 style={{ width: "200px" }}
-                onChange={e => searchConditionsChange(e)}
+                onChange={searchConditionsChange}
                 value={searchInfo.searchConditions}>
                 <Option value={1}>启用</Option>
                 <Option value={-1}>禁用</Option>
