@@ -25,13 +25,13 @@ import {
   Input,
   InputNumber,
   message,
-  Divider
+  Divider,
 } from "antd";
 import {
   EyeOutlined,
   ToolOutlined,
   DeleteOutlined,
-  PlusCircleOutlined
+  PlusCircleOutlined,
 } from "@ant-design/icons";
 import { IconsData } from "@/util/json";
 import Icon from "@/a_component/Icon";
@@ -40,15 +40,15 @@ const { Option } = Select;
 const { TextArea } = Input;
 
 @connect(
-  state => ({
+  (state) => ({
     roles: state.sys.roles,
-    powersCode: state.app.powersCode
+    powersCode: state.app.powersCode,
   }),
-  dispatch => ({
+  (dispatch) => ({
     addMenu: dispatch.sys.addMenu,
     getMenus: dispatch.sys.getMenus,
     upMenu: dispatch.sys.upMenu,
-    delMenu: dispatch.sys.delMenu
+    delMenu: dispatch.sys.delMenu,
   })
 )
 export default class MenuAdminContainer extends React.Component {
@@ -65,7 +65,7 @@ export default class MenuAdminContainer extends React.Component {
       operateType: "add", // 操作类型 add新增，up修改, see查看
       modalShow: false, // 新增&修改 模态框是否显示
       modalLoading: false, // 新增&修改 模态框是否正在执行请求
-      rolesCheckboxChose: [] // 表单 - 赋予项选中的值
+      rolesCheckboxChose: [], // 表单 - 赋予项选中的值
     };
   }
 
@@ -80,27 +80,28 @@ export default class MenuAdminContainer extends React.Component {
       return;
     }
     this.setState({
-      loading: true
+      loading: true,
     });
     this.props
       .getMenus()
-      .then(res => {
+      .then((res) => {
         if (res.status === 200) {
           this.setState({
             data: res.data,
             tableData: res.data.filter(
-              item => item.parent === (Number(this.state.treeSelect.id) || null)
-            )
+              (item) =>
+                item.parent === (Number(this.state.treeSelect.id) || null)
+            ),
           });
           this.makeSourceData(res.data);
         }
         this.setState({
-          loading: false
+          loading: false,
         });
       })
       .catch(() => {
         this.setState({
-          loading: false
+          loading: false,
         });
       });
   }
@@ -108,7 +109,7 @@ export default class MenuAdminContainer extends React.Component {
   /** 处理原始数据，将原始数据处理为层级关系 **/
   makeSourceData(data) {
     const d = _.cloneDeep(data);
-    d.forEach(item => {
+    d.forEach((item) => {
       item.key = String(item.id);
     });
     // 按照sort排序
@@ -117,7 +118,7 @@ export default class MenuAdminContainer extends React.Component {
     });
     const sourceData = this.dataToJson(null, d) || [];
     this.setState({
-      sourceData
+      sourceData,
     });
   }
 
@@ -126,17 +127,17 @@ export default class MenuAdminContainer extends React.Component {
     let kids;
     if (!one) {
       // 第1次递归
-      kids = data.filter(item => !item.parent);
+      kids = data.filter((item) => !item.parent);
     } else {
-      kids = data.filter(item => item.parent === one.id);
+      kids = data.filter((item) => item.parent === one.id);
     }
-    kids.forEach(item => (item.children = this.dataToJson(item, data)));
+    kids.forEach((item) => (item.children = this.dataToJson(item, data)));
     return kids.length ? kids : null;
   }
 
   /** 递归构建树结构 **/
   makeTreeDom(data) {
-    return data.map(item => {
+    return data.map((item) => {
       if (item.children) {
         return (
           <TreeNode title={item.title} key={`${item.id}`}>
@@ -159,14 +160,14 @@ export default class MenuAdminContainer extends React.Component {
     this.setState({
       treeSelect,
       tableData: this.state.data.filter(
-        item => item.parent === (Number(treeSelect.id) || null)
-      )
+        (item) => item.parent === (Number(treeSelect.id) || null)
+      ),
     });
   };
 
   /** 工具 - 根据parentID返回parentName **/
-  getNameByParentId = id => {
-    const p = this.state.data.find(item => item.id === id);
+  getNameByParentId = (id) => {
+    const p = this.state.data.find((item) => item.id === id);
     return p ? p.title : undefined;
   };
 
@@ -179,7 +180,7 @@ export default class MenuAdminContainer extends React.Component {
       formParent:
         type === "add"
           ? { label: undefined, value: undefined }
-          : { label: this.getNameByParentId(data.parent), value: data.parent }
+          : { label: this.getNameByParentId(data.parent), value: data.parent },
     });
     setTimeout(() => {
       if (type === "add") {
@@ -194,7 +195,7 @@ export default class MenuAdminContainer extends React.Component {
           formIcon: data.icon,
           formSorts: data.sorts,
           formTitle: data.title,
-          formUrl: data.url
+          formUrl: data.url,
         });
       }
     });
@@ -203,7 +204,7 @@ export default class MenuAdminContainer extends React.Component {
   /** 新增&修改 模态框关闭 **/
   onClose = () => {
     this.setState({
-      modalShow: false
+      modalShow: false,
     });
   };
 
@@ -223,7 +224,7 @@ export default class MenuAdminContainer extends React.Component {
         parent: Number(this.state.treeSelect.id) || null,
         sorts: values.formSorts,
         desc: values.formDesc,
-        conditions: values.formConditions
+        conditions: values.formConditions,
       };
       this.setState({ modalLoading: true });
       if (this.state.operateType === "add") {
@@ -264,9 +265,9 @@ export default class MenuAdminContainer extends React.Component {
   }
 
   /** 删除一条数据 **/
-  onDel = record => {
+  onDel = (record) => {
     const params = { id: record.id };
-    this.props.delMenu(params).then(res => {
+    this.props.delMenu(params).then((res) => {
       if (res.status === 200) {
         this.getData();
         this.props.updateUserInfo();
@@ -283,20 +284,20 @@ export default class MenuAdminContainer extends React.Component {
       {
         title: "序号",
         dataIndex: "serial",
-        key: "serial"
+        key: "serial",
       },
       {
         title: "图标",
         dataIndex: "icon",
         key: "icon",
-        render: text => {
+        render: (text) => {
           return text ? <Icon type={text} /> : "";
-        }
+        },
       },
       {
         title: "菜单名称",
         dataIndex: "title",
-        key: "title"
+        key: "title",
       },
       {
         title: "路径",
@@ -304,18 +305,18 @@ export default class MenuAdminContainer extends React.Component {
         key: "url",
         render: (text, record) => {
           return text ? `/${text.replace(/^\//, "")}` : "";
-        }
+        },
       },
       {
         title: "描述",
         dataIndex: "desc",
-        key: "desc"
+        key: "desc",
       },
       {
         title: "父级",
         dataIndex: "parent",
         key: "parent",
-        render: text => this.getNameByParentId(text)
+        render: (text) => this.getNameByParentId(text),
       },
       {
         title: "状态",
@@ -326,7 +327,7 @@ export default class MenuAdminContainer extends React.Component {
             <span style={{ color: "green" }}>启用</span>
           ) : (
             <span style={{ color: "red" }}>禁用</span>
-          )
+          ),
       },
       {
         title: "操作",
@@ -384,8 +385,8 @@ export default class MenuAdminContainer extends React.Component {
             result.push(item);
           });
           return result;
-        }
-      }
+        },
+      },
     ];
     return columns;
   };
@@ -406,7 +407,7 @@ export default class MenuAdminContainer extends React.Component {
         desc: item.desc,
         sorts: item.sorts,
         conditions: item.conditions,
-        serial: index + 1
+        serial: index + 1,
       };
     });
   }
@@ -417,12 +418,12 @@ export default class MenuAdminContainer extends React.Component {
       // 表单布局
       labelCol: {
         xs: { span: 24 },
-        sm: { span: 4 }
+        sm: { span: 4 },
       },
       wrapperCol: {
         xs: { span: 24 },
-        sm: { span: 19 }
-      }
+        sm: { span: 19 },
+      },
     };
     return (
       <div className="page-menu-admin">
@@ -459,7 +460,7 @@ export default class MenuAdminContainer extends React.Component {
             dataSource={this.makeData(this.state.tableData)}
             pagination={{
               showQuickJumper: true,
-              showTotal: (total, range) => `共 ${total} 条数据`
+              showTotal: (total, range) => `共 ${total} 条数据`,
             }}
           />
         </div>
@@ -480,7 +481,7 @@ export default class MenuAdminContainer extends React.Component {
               {...formItemLayout}
               rules={[
                 { required: true, whitespace: true, message: "必填" },
-                { max: 12, message: "最多输入12位字符" }
+                { max: 12, message: "最多输入12位字符" },
               ]}
             >
               <Input

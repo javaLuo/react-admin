@@ -11,16 +11,16 @@ export default {
     userinfo: {
       roles: [], // 当前用户拥有的角色
       menus: [], // 当前用户拥有的已授权的菜单
-      powers: [] // 当前用户拥有的权限数据
+      powers: [], // 当前用户拥有的权限数据
     }, // 当前用户基本信息
-    powersCode: [] // 当前用户拥有的权限code列表(仅保留了code)，页面中的按钮的权限控制将根据此数据源判断
+    powersCode: [], // 当前用户拥有的权限code列表(仅保留了code)，页面中的按钮的权限控制将根据此数据源判断
   },
   reducers: {
     reducerUserInfo(state, payload) {
       return {
         ...state,
         userinfo: payload,
-        powersCode: payload.powers.map(item => item.code)
+        powersCode: payload.powers.map((item) => item.code),
       };
     },
     reducerLogout(state, payload) {
@@ -29,13 +29,13 @@ export default {
         userinfo: {
           menus: [],
           roles: [],
-          powers: []
-        }
+          powers: [],
+        },
       };
-    }
+    },
   },
 
-  effects: dispatch => ({
+  effects: (dispatch) => ({
     /**
      * 登录
      * @param { username, password } params
@@ -79,14 +79,14 @@ export default {
       const userinfo = rootState.app.userinfo;
 
       const res2 = await dispatch.sys.getRoleById({
-        id: userinfo.roles.map(item => item.id)
+        id: userinfo.roles.map((item) => item.id),
       });
       if (!res2 || res2.status !== 200) {
         // 角色查询失败
         return res2;
       }
 
-      const roles = res2.data.filter(item => item.conditions === 1);
+      const roles = res2.data.filter((item) => item.conditions === 1);
 
       /** 3.根据菜单id 获取菜单信息 **/
       const menuAndPowers = roles.reduce(
@@ -94,31 +94,31 @@ export default {
         []
       );
       const res3 = await dispatch.sys.getMenusById({
-        id: Array.from(new Set(menuAndPowers.map(item => item.menuId)))
+        id: Array.from(new Set(menuAndPowers.map((item) => item.menuId))),
       });
       if (!res3 || res3.status !== 200) {
         // 查询菜单信息失败
         return res3;
       }
-      const menus = res3.data.filter(item => item.conditions === 1);
+      const menus = res3.data.filter((item) => item.conditions === 1);
 
       /** 4.根据权限id，获取权限信息 **/
       const res4 = await dispatch.sys.getPowerById({
         id: Array.from(
           new Set(menuAndPowers.reduce((a, b) => [...a, ...b.powers], []))
-        )
+        ),
       });
       if (!res4 || res4.status !== 200) {
         // 权限查询失败
         return res4;
       }
-      const powers = res4.data.filter(item => item.conditions === 1);
+      const powers = res4.data.filter((item) => item.conditions === 1);
       this.setUserInfo({
         ...userinfo,
         roles,
         menus,
-        powers
+        powers,
       });
-    }
-  })
+    },
+  }),
 };

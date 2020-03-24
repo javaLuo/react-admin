@@ -18,7 +18,7 @@ import {
   GithubOutlined,
   ChromeOutlined,
   LogoutOutlined,
-  SmileOutlined
+  SmileOutlined,
 } from "@ant-design/icons";
 import "./index.less";
 const { Header } = Layout;
@@ -26,7 +26,7 @@ export default class HeaderCom extends React.PureComponent {
   constructor(props) {
     super(props);
     this.state = {
-      fullScreen: false // 当前是否是全屏状态
+      fullScreen: false, // 当前是否是全屏状态
     };
   }
 
@@ -56,7 +56,7 @@ export default class HeaderCom extends React.PureComponent {
       }
     }
     this.setState({
-      fullScreen: true
+      fullScreen: true,
     });
   };
 
@@ -79,14 +79,14 @@ export default class HeaderCom extends React.PureComponent {
       }
     }
     this.setState({
-      fullScreen: false
+      fullScreen: false,
     });
   };
 
   /**
    * 退出登录
    * **/
-  onMenuClick = e => {
+  onMenuClick = (e) => {
     if (e.key === "logout") {
       // 退出按钮被点击
       this.props.onLogout();

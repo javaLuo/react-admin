@@ -16,7 +16,7 @@ axios.defaults.withCredentials = false;
 // 默认基础请求地址
 axios.defaults.baseUrl = baseUrl;
 // 对返回的结果做处理
-axios.interceptors.response.use(response => {
+axios.interceptors.response.use((response) => {
   // const code = response && response.data ? response.data.code : 200;
   // 没有权限，登录超时，登出，跳转登录
   // if (code === 3) {

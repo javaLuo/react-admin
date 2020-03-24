@@ -25,6 +25,7 @@ function LoginContainer(props) {
   const [show, setShow] = useState(false); // 加载完毕时触发动画
 
   useEffect(() => {
+    console.log("触发useEffect:");
     // 进入登陆页时，判断之前是否保存了用户名和密码
     let userLoginInfo = localStorage.getItem("userLoginInfo");
     if (userLoginInfo) {
@@ -33,7 +34,7 @@ function LoginContainer(props) {
 
       form.setFieldsValue({
         username: userLoginInfo.username,
-        password: tools.uncompile(userLoginInfo.password)
+        password: tools.uncompile(userLoginInfo.password),
       });
     }
     if (!userLoginInfo) {
@@ -42,42 +43,38 @@ function LoginContainer(props) {
       document.getElementById("vcode").focus();
     }
     setShow(true);
-  }, []);
+  }, [form]);
 
   // 用户提交登录
   async function onSubmit() {
     try {
       const values = await form.validateFields();
       setLoading(true);
-      loginIn(values.username, values.password)
-        .then(res => {
-          if (res.status === 200) {
-            message.success("登录成功");
-            if (rememberPassword) {
-              localStorage.setItem(
-                "userLoginInfo",
-                JSON.stringify({
-                  username: values.username,
-                  password: tools.compile(values.password) // 密码简单加密一下再存到localStorage
-                })
-              ); // 保存用户名和密码
-            } else {
-              localStorage.removeItem("userLoginInfo");
-            }
-            /** 将这些信息加密后存入sessionStorage,并存入store **/
-            sessionStorage.setItem(
-              "userinfo",
-              tools.compile(JSON.stringify(res.data))
-            );
-            props.setUserInfo(res.data);
-            setTimeout(() => props.history.replace("/")); // 跳转到主页,用setTimeout是为了等待上一句设置用户信息完成
-          } else {
-            message.error(res.message);
-          }
-        })
-        .finally(err => {
-          setLoading(false);
-        });
+      const res = await loginIn(values.username, values.password);
+      if (res.status === 200) {
+        message.success("登录成功");
+        if (rememberPassword) {
+          localStorage.setItem(
+            "userLoginInfo",
+            JSON.stringify({
+              username: values.username,
+              password: tools.compile(values.password), // 密码简单加密一下再存到localStorage
+            })
+          ); // 保存用户名和密码
+        } else {
+          localStorage.removeItem("userLoginInfo");
+        }
+        /** 将这些信息加密后存入sessionStorage,并存入store **/
+        sessionStorage.setItem(
+          "userinfo",
+          tools.compile(JSON.stringify(res.data))
+        );
+        await props.setUserInfo(res.data);
+        props.history.replace("/"); // 跳转到主页
+      } else {
+        message.error(res.message);
+        setLoading(false);
+      }
     } catch (e) {
       // 验证未通过
     }
@@ -114,7 +111,7 @@ function LoginContainer(props) {
       return res2;
     }
 
-    roles = res2.data.filter(item => item.conditions === 1); // conditions: 1启用 -1禁用
+    roles = res2.data.filter((item) => item.conditions === 1); // conditions: 1启用 -1禁用
 
     /** 3.根据菜单id 获取菜单信息 **/
     const menuAndPowers = roles.reduce(
@@ -122,26 +119,26 @@ function LoginContainer(props) {
       []
     );
     const res3 = await props.getMenusById({
-      id: Array.from(new Set(menuAndPowers.map(item => item.menuId)))
+      id: Array.from(new Set(menuAndPowers.map((item) => item.menuId))),
     });
     if (!res3 || res3.status !== 200) {
       // 查询菜单信息失败
       return res3;
     }
 
-    menus = res3.data.filter(item => item.conditions === 1);
+    menus = res3.data.filter((item) => item.conditions === 1);
 
     /** 4.根据权限id，获取权限信息 **/
     const res4 = await props.getPowerById({
       id: Array.from(
         new Set(menuAndPowers.reduce((a, b) => [...a, ...b.powers], []))
-      )
+      ),
     });
     if (!res4 || res4.status !== 200) {
       // 权限查询失败
       return res4;
     }
-    powers = res4.data.filter(item => item.conditions === 1);
+    powers = res4.data.filter((item) => item.conditions === 1);
     return { status: 200, data: { userBasicInfo, roles, menus, powers } };
   }
 
@@ -154,7 +151,7 @@ function LoginContainer(props) {
   function onVcodeChange(code) {
     setTimeout(() => {
       form.setFieldsValue({
-        vcode: code // 开发模式自动赋值验证码，正式环境，这里应该赋值''
+        vcode: code, // 开发模式自动赋值验证码，正式环境，这里应该赋值''
       });
       setCodeValue(code);
     });
@@ -179,8 +176,8 @@ function LoginContainer(props) {
                 {
                   required: true,
                   whitespace: true,
-                  message: "请输入用户名"
-                }
+                  message: "请输入用户名",
+                },
               ]}
             >
               <Input
@@ -195,7 +192,7 @@ function LoginContainer(props) {
               name="password"
               rules={[
                 { required: true, message: "请输入密码" },
-                { max: 18, message: "最大长度18个字符" }
+                { max: 18, message: "最大长度18个字符" },
               ]}
             >
               <Input
@@ -227,8 +224,8 @@ function LoginContainer(props) {
                       } else {
                         return Promise.reject("请输入验证码");
                       }
-                    }
-                  })
+                    },
+                  }),
                 ]}
               >
                 <Input
@@ -242,10 +239,10 @@ function LoginContainer(props) {
               <Vcode
                 height={40}
                 width={150}
-                onChange={code => onVcodeChange(code)}
+                onChange={(code) => onVcodeChange(code)}
                 className="vcode"
                 options={{
-                  lines: 16
+                  lines: 16,
                 }}
               />
             </Form.Item>
@@ -253,7 +250,7 @@ function LoginContainer(props) {
               <Checkbox
                 className="remember"
                 checked={rememberPassword}
-                onChange={e => onRemember(e)}
+                onChange={(e) => onRemember(e)}
               >
                 记住密码
               </Checkbox>
@@ -262,7 +259,7 @@ function LoginContainer(props) {
                 size="large"
                 type="primary"
                 loading={loading}
-                onClick={onSubmit}
+                onClick={() => onSubmit()}
               >
                 {loading ? "请稍后" : "登录"}
               </Button>
@@ -275,12 +272,12 @@ function LoginContainer(props) {
 }
 
 export default connect(
-  state => ({}),
-  dispatch => ({
+  (state) => ({}),
+  (dispatch) => ({
     onLogin: dispatch.app.onLogin,
     setUserInfo: dispatch.app.setUserInfo,
     getRoleById: dispatch.sys.getRoleById,
     getPowerById: dispatch.sys.getPowerById,
-    getMenusById: dispatch.sys.getMenusById
+    getMenusById: dispatch.sys.getMenusById,
   })
 )(LoginContainer);

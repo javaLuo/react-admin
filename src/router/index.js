@@ -13,7 +13,7 @@ import UserLayout from "@/layouts/UserLayout";
 import { message } from "antd";
 message.config({
   // 全局提示只显示2秒
-  duration: 2
+  duration: 2,
 });
 
 const history = createHistory();
@@ -28,7 +28,7 @@ function RouterCom(props) {
     if (userinfo && !props.userinfo.userBasicInfo) {
       props.setUserInfo(JSON.parse(tools.uncompile(userinfo)));
     }
-  }, []);
+  }, [props]);
 
   /** 跳转到某个路由之前触发 **/
   function onEnter(Component, props) {
@@ -46,11 +46,11 @@ function RouterCom(props) {
   return (
     <Router history={history}>
       <Route
-        render={props => {
+        render={(props) => {
           return (
             <Switch>
               <Route path="/user" component={UserLayout} />
-              <Route path="/" render={props => onEnter(BasicLayout, props)} />
+              <Route path="/" render={(props) => onEnter(BasicLayout, props)} />
             </Switch>
           );
         }}
@@ -60,8 +60,8 @@ function RouterCom(props) {
 }
 
 export default connect(
-  state => ({ userinfo: state.app.userinfo }),
-  dispatch => ({
-    setUserInfo: dispatch.app.setUserInfo
+  (state) => ({ userinfo: state.app.userinfo }),
+  (dispatch) => ({
+    setUserInfo: dispatch.app.setUserInfo,
   })
 )(RouterCom);

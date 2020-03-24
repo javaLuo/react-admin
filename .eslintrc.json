@@ -29,6 +29,7 @@
     "no-catch-shadow": "error",
     "react/no-unescaped-entities": "off",
     "react-hooks/rules-of-hooks": "error",
+    "react-hooks/exhaustive-deps": "warn",
     "prettier/prettier": "warn"
   }
 }

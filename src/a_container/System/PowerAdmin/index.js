@@ -25,13 +25,13 @@ import {
   InputNumber,
   message,
   Divider,
-  Checkbox
+  Checkbox,
 } from "antd";
 import {
   EyeOutlined,
   ToolOutlined,
   DeleteOutlined,
-  PlusCircleOutlined
+  PlusCircleOutlined,
 } from "@ant-design/icons";
 
 const { TreeNode } = Tree;
@@ -39,12 +39,12 @@ const { Option } = Select;
 const { TextArea } = Input;
 
 @connect(
-  state => ({
+  (state) => ({
     userinfo: state.app.userinfo,
     powersCode: state.app.powersCode,
-    roles: state.sys.roles
+    roles: state.sys.roles,
   }),
-  dispatch => ({
+  (dispatch) => ({
     addPower: dispatch.sys.addPower,
     getMenus: dispatch.sys.getMenus,
     upPower: dispatch.sys.upPower,
@@ -52,7 +52,7 @@ const { TextArea } = Input;
     getPowerDataByMenuId: dispatch.sys.getPowerDataByMenuId,
     updateUserInfo: dispatch.app.updateUserInfo,
     setPowersByRoleIds: dispatch.sys.setPowersByRoleIds,
-    getAllRoles: dispatch.sys.getAllRoles
+    getAllRoles: dispatch.sys.getAllRoles,
   })
 )
 export default class PowerAdminContainer extends React.Component {
@@ -70,7 +70,7 @@ export default class PowerAdminContainer extends React.Component {
       modalLoading: false, // 新增&修改 模态框是否正在执行请求
       menuChoseShow: false, // 菜单选择树是否出现
       formParent: { label: undefined, value: undefined }, // 表单 - 当前所选菜单的值 { label, value }
-      rolesCheckboxChose: [] // 表单 - 赋予项选中的值
+      rolesCheckboxChose: [], // 表单 - 赋予项选中的值
     };
   }
 
@@ -98,26 +98,26 @@ export default class PowerAdminContainer extends React.Component {
     }
 
     this.setState({
-      loading: true
+      loading: true,
     });
     const params = {
-      menuId: Number(menuId) || null
+      menuId: Number(menuId) || null,
     };
     this.props
       .getPowerDataByMenuId(params)
-      .then(res => {
+      .then((res) => {
         if (res.status === 200) {
           this.setState({
-            data: res.data
+            data: res.data,
           });
         }
         this.setState({
-          loading: false
+          loading: false,
         });
       })
       .catch(() => {
         this.setState({
-          loading: false
+          loading: false,
         });
       });
   }
@@ -130,7 +130,7 @@ export default class PowerAdminContainer extends React.Component {
   /** 处理原始数据，将原始数据处理为层级关系 **/
   makeSourceData(data) {
     const d = _.cloneDeep(data);
-    d.forEach(item => {
+    d.forEach((item) => {
       item.key = String(item.id);
     });
     // 按照sort排序
@@ -139,7 +139,7 @@ export default class PowerAdminContainer extends React.Component {
     });
     const sourceData = this.dataToJson(null, d) || [];
     this.setState({
-      sourceData
+      sourceData,
     });
   }
 
@@ -148,17 +148,17 @@ export default class PowerAdminContainer extends React.Component {
     let kids;
     if (!one) {
       // 第1次递归
-      kids = data.filter(item => !item.parent);
+      kids = data.filter((item) => !item.parent);
     } else {
-      kids = data.filter(item => item.parent === one.id);
+      kids = data.filter((item) => item.parent === one.id);
     }
-    kids.forEach(item => (item.children = this.dataToJson(item, data)));
+    kids.forEach((item) => (item.children = this.dataToJson(item, data)));
     return kids.length ? kids : null;
   }
 
   /** 递归构建树结构 **/
   makeTreeDom(data) {
-    return data.map(item => {
+    return data.map((item) => {
       if (item.children) {
         return (
           <TreeNode title={item.title} key={`${item.id}`} p={item.parent}>
@@ -185,19 +185,19 @@ export default class PowerAdminContainer extends React.Component {
       // 选中时才触发
       this.getData(keys[0]);
       this.setState({
-        treeSelect: { title: e.node.title, id: e.node.id }
+        treeSelect: { title: e.node.title, id: e.node.id },
       });
     } else {
       this.setState({
         treeSelect: {},
-        data: []
+        data: [],
       });
     }
   };
 
   /** 工具 - 根据parentID返回parentName **/
-  getNameByParentId = id => {
-    const p = this.state.data.find(item => item.id === id);
+  getNameByParentId = (id) => {
+    const p = this.state.data.find((item) => item.id === id);
     return p ? p.title : undefined;
   };
 
@@ -214,9 +214,9 @@ export default class PowerAdminContainer extends React.Component {
       rolesCheckboxChose:
         data && data.id
           ? this.props.roles
-              .filter(item => {
+              .filter((item) => {
                 const theMenuPower = item.menuAndPowers.find(
-                  item2 => item2.menuId === data.menu
+                  (item2) => item2.menuId === data.menu
                 );
                 if (theMenuPower) {
                   console.log(theMenuPower, data.id);
@@ -224,8 +224,8 @@ export default class PowerAdminContainer extends React.Component {
                 }
                 return false;
               })
-              .map(item => item.id)
-          : []
+              .map((item) => item.id)
+          : [],
     });
 
     setTimeout(() => {
@@ -240,7 +240,7 @@ export default class PowerAdminContainer extends React.Component {
           formDesc: data.desc,
           formCode: data.code,
           formSorts: data.sorts,
-          formTitle: data.title
+          formTitle: data.title,
         });
       }
     });
@@ -249,7 +249,7 @@ export default class PowerAdminContainer extends React.Component {
   /** 新增&修改 模态框关闭 **/
   onClose = () => {
     this.setState({
-      modalShow: false
+      modalShow: false,
     });
   };
 
@@ -268,7 +268,7 @@ export default class PowerAdminContainer extends React.Component {
         menu: this.state.treeSelect.id,
         sorts: values.formSorts,
         desc: values.formDesc,
-        conditions: values.formConditions
+        conditions: values.formConditions,
       };
       this.setState({ modalLoading: true });
       if (this.state.operateType === "add") {
@@ -321,10 +321,10 @@ export default class PowerAdminContainer extends React.Component {
   }
 
   /** 删除一条数据 **/
-  onDel = record => {
+  onDel = (record) => {
     const params = { id: record.id };
     this.setState({ loading: true });
-    this.props.delPower(params).then(res => {
+    this.props.delPower(params).then((res) => {
       if (res.status === 200) {
         this.getData(this.state.treeSelect.id);
         this.props.updateUserInfo();
@@ -343,7 +343,7 @@ export default class PowerAdminContainer extends React.Component {
   setPowersByRoleIds(id, roleIds) {
     console.log("come;", id, roleIds, this.props.userinfo);
     const userinfo = this.props.userinfo;
-    const params = this.props.roles.map(item => {
+    const params = this.props.roles.map((item) => {
       const powersTemp = new Set(
         item.menuAndPowers.reduce((a, b) => [...a, ...b.powers], [])
       );
@@ -354,8 +354,8 @@ export default class PowerAdminContainer extends React.Component {
       }
       return {
         id: item.id,
-        menus: item.menuAndPowers.map(item => item.menuId),
-        powers: Array.from(powersTemp)
+        menus: item.menuAndPowers.map((item) => item.menuId),
+        powers: Array.from(powersTemp),
       };
     });
     console.log("come2;", params);
@@ -368,22 +368,22 @@ export default class PowerAdminContainer extends React.Component {
       {
         title: "序号",
         dataIndex: "serial",
-        key: "serial"
+        key: "serial",
       },
       {
         title: "权限名称",
         dataIndex: "title",
-        key: "title"
+        key: "title",
       },
       {
         title: "Code",
         dataIndex: "code",
-        key: "code"
+        key: "code",
       },
       {
         title: "描述",
         dataIndex: "desc",
-        key: "desc"
+        key: "desc",
       },
       {
         title: "状态",
@@ -394,7 +394,7 @@ export default class PowerAdminContainer extends React.Component {
             <span style={{ color: "green" }}>启用</span>
           ) : (
             <span style={{ color: "red" }}>禁用</span>
-          )
+          ),
       },
       {
         title: "操作",
@@ -451,8 +451,8 @@ export default class PowerAdminContainer extends React.Component {
             result.push(item);
           });
           return result;
-        }
-      }
+        },
+      },
     ];
     return columns;
   };
@@ -472,22 +472,22 @@ export default class PowerAdminContainer extends React.Component {
         desc: item.desc,
         sorts: item.sorts,
         conditions: item.conditions,
-        serial: index + 1
+        serial: index + 1,
       };
     });
   }
 
   /** 新增或修改时 构建‘赋予’项数据 **/
   makeRolesCheckbox = () => {
-    return this.props.roles.map(item => ({
+    return this.props.roles.map((item) => ({
       label: item.title,
-      value: item.id
+      value: item.id,
     }));
   };
 
-  onRolesCheckboxChange = values => {
+  onRolesCheckboxChange = (values) => {
     this.setState({
-      rolesCheckboxChose: values
+      rolesCheckboxChose: values,
     });
   };
 
@@ -497,12 +497,12 @@ export default class PowerAdminContainer extends React.Component {
       // 表单布局
       labelCol: {
         xs: { span: 24 },
-        sm: { span: 4 }
+        sm: { span: 4 },
       },
       wrapperCol: {
         xs: { span: 24 },
-        sm: { span: 19 }
-      }
+        sm: { span: 19 },
+      },
     };
 
     return (
@@ -540,7 +540,7 @@ export default class PowerAdminContainer extends React.Component {
             dataSource={this.makeData(this.state.data)}
             pagination={{
               showQuickJumper: true,
-              showTotal: (total, range) => `共 ${total} 条数据`
+              showTotal: (total, range) => `共 ${total} 条数据`,
             }}
           />
         </div>
@@ -548,8 +548,9 @@ export default class PowerAdminContainer extends React.Component {
         <Modal
           title={`${
             { add: "新增", up: "修改", see: "查看" }[this.state.operateType]
-          }权限: ${this.state.treeSelect.title}->${this.state.nowData?.title ??
-            ""}`}
+          }权限: ${this.state.treeSelect.title}->${
+            this.state.nowData?.title ?? ""
+          }`}
           visible={this.state.modalShow}
           onOk={() => this.onOk()}
           onCancel={this.onClose}
@@ -562,7 +563,7 @@ export default class PowerAdminContainer extends React.Component {
               {...formItemLayout}
               rules={[
                 { required: true, whitespace: true, message: "必填" },
-                { max: 12, message: "最多输入12位字符" }
+                { max: 12, message: "最多输入12位字符" },
               ]}
             >
               <Input
@@ -576,7 +577,7 @@ export default class PowerAdminContainer extends React.Component {
               {...formItemLayout}
               rules={[
                 { required: true, whitespace: true, message: "必填" },
-                { max: 12, message: "最多输入12位字符" }
+                { max: 12, message: "最多输入12位字符" },
               ]}
             >
               <Input

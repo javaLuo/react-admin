@@ -9,7 +9,7 @@ export default class MenuChoseComponent extends React.PureComponent {
     super(props);
     this.state = {
       sourceData: [], // 原始数据，有层级关系
-      nowData: undefined // 当前选中的节点信息
+      nowData: undefined, // 当前选中的节点信息
     };
   }
 
@@ -31,7 +31,7 @@ export default class MenuChoseComponent extends React.PureComponent {
     });
     const sourceData = this.dataToJson(null, d) || [];
     this.setState({
-      sourceData
+      sourceData,
     });
   }
 
@@ -40,11 +40,11 @@ export default class MenuChoseComponent extends React.PureComponent {
     let kids;
     if (!one) {
       // 第1次递归
-      kids = data.filter(item => !item.parent);
+      kids = data.filter((item) => !item.parent);
     } else {
-      kids = data.filter(item => item.parent === one.id);
+      kids = data.filter((item) => item.parent === one.id);
     }
-    kids.forEach(item => (item.children = this.dataToJson(item, data)));
+    kids.forEach((item) => (item.children = this.dataToJson(item, data)));
     return kids.length ? kids : null;
   }
 
@@ -68,11 +68,11 @@ export default class MenuChoseComponent extends React.PureComponent {
     if (e.selected) {
       // 选中
       this.setState({
-        nowData: e.node.props.data
+        nowData: e.node.props.data,
       });
     } else {
       this.setState({
-        nowData: undefined
+        nowData: undefined,
       });
     }
   };

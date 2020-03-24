@@ -11,7 +11,7 @@ export default {
   state: {
     menus: [], // 所有的菜单信息（用于菜单管理，无视权限）
     roles: [], // 所有的角色信息（用于Model赋予项，无视权限）
-    powerTreeData: [] // 分配权限treeTable组件所需原始数据
+    powerTreeData: [], // 分配权限treeTable组件所需原始数据
   },
   reducers: {
     // 保存所有菜单数据
@@ -26,10 +26,10 @@ export default {
     // 保存所有权限数据
     reducerSetAllPowers(state, payload) {
       return { ...state, powerTreeData: payload };
-    }
+    },
   },
 
-  effects: dispatch => ({
+  effects: (dispatch) => ({
     /**
      * 获取所有菜单
      * **/
@@ -345,6 +345,6 @@ export default {
       } catch (err) {
         message.error("网络错误，请重试");
       }
-    }
-  })
+    },
+  }),
 };

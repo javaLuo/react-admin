@@ -22,11 +22,11 @@ import "./UserLayout.less";
 // ==================
 const [NotFound, Login] = [
   () => import("../a_container/ErrorPages/404"),
-  () => import("../a_container/Login")
-].map(item => {
+  () => import("../a_container/Login"),
+].map((item) => {
   return Loadable({
     loader: item,
-    loading: Loading
+    loading: Loading,
   });
 });
 
@@ -48,6 +48,6 @@ function AppContainer(props) {
 }
 
 export default connect(
-  state => ({}),
-  dispatch => ({})
+  (state) => ({}),
+  (dispatch) => ({})
 )(AppContainer);

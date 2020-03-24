@@ -30,11 +30,11 @@ const [NotFound, NoPower, Home, MenuAdmin, PowerAdmin, RoleAdmin, UserAdmin] = [
   () => import(`../a_container/System/MenuAdmin`),
   () => import(`../a_container/System/PowerAdmin`),
   () => import(`../a_container/System/RoleAdmin`),
-  () => import(`../a_container/System/UserAdmin`)
-].map(item => {
+  () => import(`../a_container/System/UserAdmin`),
+].map((item) => {
   return Loadable({
     loader: item,
-    loading: Loading
+    loading: Loading,
   });
 });
 
@@ -71,8 +71,8 @@ function BasicLayoutCom(props) {
       menus = JSON.parse(tools.uncompile(sessionStorage.getItem("userinfo")))
         .menus;
     }
-    const m = menus.map(item => item.url.replace(/^\//, "")); // 当前用户拥有的所有菜单
-    const urls = pathname.split("/").filter(item => !!item);
+    const m = menus.map((item) => item.url.replace(/^\//, "")); // 当前用户拥有的所有菜单
+    const urls = pathname.split("/").filter((item) => !!item);
     for (let i = 0; i < urls.length; i++) {
       if (!m.includes(urls[i])) {
         return false;
@@ -112,27 +112,31 @@ function BasicLayoutCom(props) {
         <Content className="content">
           <Switch>
             <Redirect exact from="/" to="/home" />
-            <Route exact path="/home" render={props => onEnter(Home, props)} />
+            <Route
+              exact
+              path="/home"
+              render={(props) => onEnter(Home, props)}
+            />
 
             <Route
               exact
               path="/system/menuadmin"
-              render={props => onEnter(MenuAdmin, props)}
+              render={(props) => onEnter(MenuAdmin, props)}
             />
             <Route
               exact
               path="/system/poweradmin"
-              render={props => onEnter(PowerAdmin, props)}
+              render={(props) => onEnter(PowerAdmin, props)}
             />
             <Route
               exact
               path="/system/roleadmin"
-              render={props => onEnter(RoleAdmin, props)}
+              render={(props) => onEnter(RoleAdmin, props)}
             />
             <Route
               exact
               path="/system/useradmin"
-              render={props => onEnter(UserAdmin, props)}
+              render={(props) => onEnter(UserAdmin, props)}
             />
             <Route exact path="/nopower" component={NoPower} />
             <Route component={NotFound} />
@@ -145,10 +149,10 @@ function BasicLayoutCom(props) {
 }
 
 export default connect(
-  state => ({
-    userinfo: state.app.userinfo
+  (state) => ({
+    userinfo: state.app.userinfo,
   }),
-  dispatch => ({
-    onLogout: dispatch.app.onLogout
+  (dispatch) => ({
+    onLogout: dispatch.app.onLogout,
   })
 )(BasicLayoutCom);

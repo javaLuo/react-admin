@@ -9,7 +9,7 @@ export default class CanvasBack extends React.PureComponent {
   constructor(props) {
     super(props);
     this.state = {
-      context: null
+      context: null,
     };
     this.ctx = null;
     this.dots = []; // 所有的点
@@ -46,7 +46,7 @@ export default class CanvasBack extends React.PureComponent {
           dx: !!Math.round(this.random(0, 1)), // 当前方向x
           dy: !!Math.round(this.random(0, 1)), // 当前方向y
           color: this.random(20, 70), // b通道颜色值
-          dcolor: !!Math.round(this.random(0, 1)) // 颜色改变向量
+          dcolor: !!Math.round(this.random(0, 1)), // 颜色改变向量
         };
         this.dots.push(temp);
       }
@@ -105,7 +105,7 @@ export default class CanvasBack extends React.PureComponent {
     const step_row = height / (row - 2);
     const step_col = width / (col - 2);
 
-    this.dots.forEach(function(item, index) {
+    this.dots.forEach(function (item, index) {
       if (item.dx) {
         // 增
         if (item.sx < step_col / 3) {
@@ -162,7 +162,7 @@ export default class CanvasBack extends React.PureComponent {
   render() {
     return (
       <div className="canvas-back">
-        <canvas ref={c => (this.myCanvas = c)} />
+        <canvas ref={(c) => (this.myCanvas = c)} />
       </div>
     );
   }
