@@ -3,20 +3,21 @@
 // ==================
 // 所需的各种插件
 // ==================
-
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { connect } from "react-redux";
 import tools from "@/util/tools";
 import "./index.less";
+
 // ==================
 // 所需的所有组件
 // ==================
 import Vcode from "react-vcode";
 import { Form, Input, Button, Checkbox, message } from "antd";
 import { UserOutlined, KeyOutlined } from "@ant-design/icons";
-import CanvasBack from "@/a_component/CanvasBack";
+import CanvasBack from "@/components/CanvasBack";
 import LogoImg from "@/assets/logo.png";
 
+/** 函数组件 **/
 function LoginContainer(props) {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false); // 是否正在登录中
@@ -24,9 +25,8 @@ function LoginContainer(props) {
   const [codeValue, setCodeValue] = useState("00000"); // 当前验证码的值
   const [show, setShow] = useState(false); // 加载完毕时触发动画
 
+  // 进入登陆页时，判断之前是否保存了用户名和密码
   useEffect(() => {
-    console.log("触发useEffect:");
-    // 进入登陆页时，判断之前是否保存了用户名和密码
     let userLoginInfo = localStorage.getItem("userLoginInfo");
     if (userLoginInfo) {
       userLoginInfo = JSON.parse(userLoginInfo);
@@ -46,7 +46,7 @@ function LoginContainer(props) {
   }, [form]);
 
   // 用户提交登录
-  async function onSubmit() {
+  const onSubmit = useCallback(async () => {
     try {
       const values = await form.validateFields();
       setLoading(true);
@@ -65,10 +65,7 @@ function LoginContainer(props) {
           localStorage.removeItem("userLoginInfo");
         }
         /** 将这些信息加密后存入sessionStorage,并存入store **/
-        sessionStorage.setItem(
-          "userinfo",
-          tools.compile(JSON.stringify(res.data))
-        );
+        sessionStorage.setItem("userinfo", tools.compile(JSON.stringify(res.data)));
         await props.setUserInfo(res.data);
         props.history.replace("/"); // 跳转到主页
       } else {
@@ -79,7 +76,7 @@ function LoginContainer(props) {
       // 验证未通过
     }
     return;
-  }
+  }, [form, props, rememberPassword, loginIn]);
 
   /**
    * 执行登录
@@ -88,74 +85,73 @@ function LoginContainer(props) {
    * 2.通过用户信息获取其拥有的所有角色信息
    * 3.通过角色信息获取其拥有的所有权限信息
    * **/
-  async function loginIn(username, password) {
-    let userBasicInfo = null;
-    let roles = [];
-    let menus = [];
-    let powers = [];
+  const loginIn = useCallback(
+    async (username, password) => {
+      let userBasicInfo = null;
+      let roles = [];
+      let menus = [];
+      let powers = [];
 
-    /** 1.登录 （返回信息中有该用户拥有的角色id） **/
-    const res1 = await props.onLogin({ username, password });
-    console.log("userBasicInfo", res1);
-    if (!res1 || res1.status !== 200) {
-      // 登录失败
-      return res1;
-    }
+      /** 1.登录 （返回信息中有该用户拥有的角色id） **/
+      const res1 = await props.onLogin({ username, password });
+      console.log("userBasicInfo", res1);
+      if (!res1 || res1.status !== 200) {
+        // 登录失败
+        return res1;
+      }
 
-    userBasicInfo = res1.data;
+      userBasicInfo = res1.data;
 
-    /** 2.根据角色id获取角色信息 (角色信息中有该角色拥有的菜单id和权限id) **/
-    const res2 = await props.getRoleById({ id: userBasicInfo.roles });
-    if (!res2 || res2.status !== 200) {
-      // 角色查询失败
-      return res2;
-    }
+      /** 2.根据角色id获取角色信息 (角色信息中有该角色拥有的菜单id和权限id) **/
+      const res2 = await props.getRoleById({ id: userBasicInfo.roles });
+      if (!res2 || res2.status !== 200) {
+        // 角色查询失败
+        return res2;
+      }
 
-    roles = res2.data.filter((item) => item.conditions === 1); // conditions: 1启用 -1禁用
+      roles = res2.data.filter((item) => item.conditions === 1); // conditions: 1启用 -1禁用
 
-    /** 3.根据菜单id 获取菜单信息 **/
-    const menuAndPowers = roles.reduce(
-      (a, b) => [...a, ...b.menuAndPowers],
-      []
-    );
-    const res3 = await props.getMenusById({
-      id: Array.from(new Set(menuAndPowers.map((item) => item.menuId))),
-    });
-    if (!res3 || res3.status !== 200) {
-      // 查询菜单信息失败
-      return res3;
-    }
+      /** 3.根据菜单id 获取菜单信息 **/
+      const menuAndPowers = roles.reduce((a, b) => [...a, ...b.menuAndPowers], []);
+      const res3 = await props.getMenusById({
+        id: Array.from(new Set(menuAndPowers.map((item) => item.menuId))),
+      });
+      if (!res3 || res3.status !== 200) {
+        // 查询菜单信息失败
+        return res3;
+      }
 
-    menus = res3.data.filter((item) => item.conditions === 1);
+      menus = res3.data.filter((item) => item.conditions === 1);
 
-    /** 4.根据权限id，获取权限信息 **/
-    const res4 = await props.getPowerById({
-      id: Array.from(
-        new Set(menuAndPowers.reduce((a, b) => [...a, ...b.powers], []))
-      ),
-    });
-    if (!res4 || res4.status !== 200) {
-      // 权限查询失败
-      return res4;
-    }
-    powers = res4.data.filter((item) => item.conditions === 1);
-    return { status: 200, data: { userBasicInfo, roles, menus, powers } };
-  }
+      /** 4.根据权限id，获取权限信息 **/
+      const res4 = await props.getPowerById({
+        id: Array.from(new Set(menuAndPowers.reduce((a, b) => [...a, ...b.powers], []))),
+      });
+      if (!res4 || res4.status !== 200) {
+        // 权限查询失败
+        return res4;
+      }
+      powers = res4.data.filter((item) => item.conditions === 1);
+      return { status: 200, data: { userBasicInfo, roles, menus, powers } };
+    },
+    [props]
+  );
 
   // 记住密码按钮点击
-  function onRemember(e) {
+  const onRemember = useCallback((e) => {
     setRememberPassword(e.target.checked);
-  }
+  }, []);
 
   // 验证码改变时触发
-  function onVcodeChange(code) {
-    setTimeout(() => {
+  const onVcodeChange = useCallback(
+    (code) => {
       form.setFieldsValue({
         vcode: code, // 开发模式自动赋值验证码，正式环境，这里应该赋值''
       });
       setCodeValue(code);
-    });
-  }
+    },
+    [form]
+  );
 
   return (
     <div className="page-login">
@@ -178,8 +174,7 @@ function LoginContainer(props) {
                   whitespace: true,
                   message: "请输入用户名",
                 },
-              ]}
-            >
+              ]}>
               <Input
                 prefix={<UserOutlined style={{ fontSize: 13 }} />}
                 size="large"
@@ -193,8 +188,7 @@ function LoginContainer(props) {
               rules={[
                 { required: true, message: "请输入密码" },
                 { max: 18, message: "最大长度18个字符" },
-              ]}
-            >
+              ]}>
               <Input
                 prefix={<KeyOutlined style={{ fontSize: 13 }} />}
                 size="large"
@@ -214,9 +208,7 @@ function LoginContainer(props) {
                       if (v) {
                         if (v.length > 4) {
                           return Promise.reject("验证码为4位字符");
-                        } else if (
-                          v.toLowerCase() !== codeValue.toLowerCase()
-                        ) {
+                        } else if (v.toLowerCase() !== codeValue.toLowerCase()) {
                           return Promise.reject("验证码错误");
                         } else {
                           return Promise.resolve();
@@ -226,8 +218,7 @@ function LoginContainer(props) {
                       }
                     },
                   }),
-                ]}
-              >
+                ]}>
                 <Input
                   style={{ width: "200px" }}
                   size="large"
@@ -247,20 +238,10 @@ function LoginContainer(props) {
               />
             </Form.Item>
             <div style={{ lineHeight: "40px" }}>
-              <Checkbox
-                className="remember"
-                checked={rememberPassword}
-                onChange={(e) => onRemember(e)}
-              >
+              <Checkbox className="remember" checked={rememberPassword} onChange={(e) => onRemember(e)}>
                 记住密码
               </Checkbox>
-              <Button
-                className="submit-btn"
-                size="large"
-                type="primary"
-                loading={loading}
-                onClick={() => onSubmit()}
-              >
+              <Button className="submit-btn" size="large" type="primary" loading={loading} onClick={onSubmit}>
                 {loading ? "请稍后" : "登录"}
               </Button>
             </div>

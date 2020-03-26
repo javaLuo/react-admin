@@ -1,29 +1,29 @@
 /** 基础页面结构 - 有头部，有底部，有侧边导航 **/
 
 // ==================
-// 所需的各种插件
+// 所需的第三方库
 // ==================
-
 import React from "react";
 import { connect } from "react-redux";
 import Loadable from "react-loadable";
 import { Route, Switch, Redirect } from "react-router-dom";
+import { Layout } from "antd";
+
+// ==================
+// 所需的自定义的东西
+// ==================
+import "./UserLayout.less";
 
 // ==================
 // 所需的所有组件
 // ==================
-import { Layout } from "antd";
-import Loading from "../a_component/loading";
-import Footer from "../a_component/Footer";
-import "./UserLayout.less";
+import Loading from "../components/loading";
+import Footer from "../components/Footer";
 
 // ==================
-// 路由
+// 异步加载各路由模块
 // ==================
-const [NotFound, Login] = [
-  () => import("../a_container/ErrorPages/404"),
-  () => import("../a_container/Login"),
-].map((item) => {
+const [NotFound, Login] = [() => import("../pages/ErrorPages/404"), () => import("../pages/Login")].map((item) => {
   return Loadable({
     loader: item,
     loading: Loading,
@@ -32,7 +32,7 @@ const [NotFound, Login] = [
 
 const { Content } = Layout;
 
-function AppContainer(props) {
+function AppContainer() {
   return (
     <Layout className="page-user">
       <Content className="content">

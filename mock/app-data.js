@@ -32,6 +32,36 @@ const users = [
     conditions: 1,
     roles: [2],
   },
+  {
+    id: 3,
+    username: "user",
+    password: "123456",
+    phone: "13600000001",
+    email: "user@react.com",
+    desc: "普通管理员3",
+    conditions: 1,
+    roles: [2],
+  },
+  {
+    id: 4,
+    username: "user",
+    password: "123456",
+    phone: "13600000001",
+    email: "user@react.com",
+    desc: "普通管理员4",
+    conditions: 1,
+    roles: [2],
+  },
+  {
+    id: 5,
+    username: "user",
+    password: "123456",
+    phone: "13600000001",
+    email: "user@react.com",
+    desc: "普通管理员5",
+    conditions: 1,
+    roles: [2],
+  },
 ];
 
 // 头部消息数据

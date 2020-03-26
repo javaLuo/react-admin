@@ -6,12 +6,6 @@ const IconFont = createFromIconfontCN({
   scriptUrl: "//at.alicdn.com/t/font_1688075_vwak21i2wxj.js",
 });
 
-export default class Icon extends React.PureComponent {
-  constructor(props) {
-    super(props);
-  }
-
-  render() {
-    return <IconFont type={this.props.type} />;
-  }
+export default function Icon(props) {
+  return <IconFont type={props.type} />;
 }

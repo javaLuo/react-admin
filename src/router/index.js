@@ -1,5 +1,5 @@
 /** 根路由 **/
-import React, { useEffect } from "react";
+import React, { useEffect, useCallback } from "react";
 import { Router, Route, Switch, Redirect } from "react-router-dom";
 import { connect } from "react-redux";
 // import {createBrowserHistory as createHistory} from "history/"; // URL模式的history
@@ -11,13 +11,16 @@ import BasicLayout from "@/layouts/BasicLayout";
 import UserLayout from "@/layouts/UserLayout";
 /** 普通组件 **/
 import { message } from "antd";
+// 全局提示只显示2秒
 message.config({
-  // 全局提示只显示2秒
   duration: 2,
 });
 
 const history = createHistory();
 
+// ==================
+// 本组件
+// ==================
 function RouterCom(props) {
   useEffect(() => {
     const userinfo = sessionStorage.getItem("userinfo");
@@ -31,7 +34,7 @@ function RouterCom(props) {
   }, [props]);
 
   /** 跳转到某个路由之前触发 **/
-  function onEnter(Component, props) {
+  const onEnter = useCallback((Component, props) => {
     /**
      *  有用户信息，说明已登录
      *  没有，则跳转至登录页
@@ -41,7 +44,7 @@ function RouterCom(props) {
       return <Component {...props} />;
     }
     return <Redirect to="/user/login" />;
-  }
+  }, []);
 
   return (
     <Router history={history}>

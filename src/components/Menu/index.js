@@ -11,7 +11,7 @@ import { Layout, Menu } from "antd";
 import { Link } from "react-router-dom";
 import "./index.less";
 import ImgLogo from "@/assets/logo.png";
-import Icon from "@/a_component/Icon";
+import Icon from "@/components/Icon";
 import _ from "lodash";
 
 const { Sider } = Layout;
@@ -107,8 +107,7 @@ export default class MenuCom extends React.PureComponent {
               ) : (
                 item.title
               )
-            }
-          >
+            }>
             {this.makeTreeDom(item.children, newKey)}
           </SubMenu>
         );
@@ -125,13 +124,7 @@ export default class MenuCom extends React.PureComponent {
 
   render() {
     return (
-      <Sider
-        width={256}
-        className="sider"
-        trigger={null}
-        collapsible
-        collapsed={this.props.collapsed}
-      >
+      <Sider width={256} className="sider" trigger={null} collapsible collapsed={this.props.collapsed}>
         <div className={this.props.collapsed ? "menuLogo hide" : "menuLogo"}>
           <Link to="/">
             <img src={ImgLogo} />
@@ -144,8 +137,7 @@ export default class MenuCom extends React.PureComponent {
           selectedKeys={this.state.chosedKey}
           {...(this.props.collapsed ? {} : { openKeys: this.state.openKeys })}
           onOpenChange={(e) => this.onOpenChange(e)}
-          onSelect={this.onSelect}
-        >
+          onSelect={this.onSelect}>
           {this.state.treeDom}
         </Menu>
       </Sider>

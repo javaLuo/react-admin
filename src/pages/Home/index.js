@@ -1,15 +1,13 @@
 /* 主页 */
 
 // ==================
-// 所需的各种插件
+// 所需的第三方库
 // ==================
-
-import React, { useState, useRef, useCallback } from "react";
+import React from "react";
 
 // ==================
-// 所需的所有组件
+// 所需的自定义的东西
 // ==================
-
 import "./index.less";
 import ImgLogo from "@/assets/react-logo.jpg";
 
