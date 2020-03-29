@@ -12,7 +12,9 @@ export default function BreadCom(props) {
     paths.forEach((item, index) => {
       const temp = props.menus.find((v) => v.url.replace(/^\//, "") === item);
       if (temp) {
-        breads.push(<Breadcrumb.Item key={index}>{temp.title}</Breadcrumb.Item>);
+        breads.push(
+          <Breadcrumb.Item key={index}>{temp.title}</Breadcrumb.Item>
+        );
       }
     });
     return breads;

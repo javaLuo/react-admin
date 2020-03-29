@@ -5,8 +5,27 @@
 // ==================
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { connect } from "react-redux";
-import { Tree, Button, Table, Tooltip, Popconfirm, Modal, Form, Select, Input, InputNumber, message, Divider, Checkbox } from "antd";
-import { EyeOutlined, ToolOutlined, DeleteOutlined, PlusCircleOutlined } from "@ant-design/icons";
+import {
+  Tree,
+  Button,
+  Table,
+  Tooltip,
+  Popconfirm,
+  Modal,
+  Form,
+  Select,
+  Input,
+  InputNumber,
+  message,
+  Divider,
+  Checkbox,
+} from "antd";
+import {
+  EyeOutlined,
+  ToolOutlined,
+  DeleteOutlined,
+  PlusCircleOutlined,
+} from "@ant-design/icons";
 import _ from "lodash";
 
 // ==================
@@ -39,7 +58,13 @@ function PowerAdminContainer(props) {
   const [data, setData] = useState([]); // 当前所选菜单下的权限数据
   const [loading, setLoading] = useState(false); // 数据是否正在加载中
 
-  const { operateType, nowData, modalShow, modalLoading, setModal } = useModal(); // 模态框相关参数控制
+  const {
+    operateType,
+    nowData,
+    modalShow,
+    modalLoading,
+    setModal,
+  } = useModal(); // 模态框相关参数控制
   const [rolesCheckboxChose, setRolesCheckboxChose] = useState([]); // 表单 - 赋予项选中的值
 
   /**
@@ -123,7 +148,9 @@ function PowerAdminContainer(props) {
         data && data.id
           ? props.roles
               .filter((item) => {
-                const theMenuPower = item.menuAndPowers?.find((item2) => item2.menuId === data.menu);
+                const theMenuPower = item.menuAndPowers?.find(
+                  (item2) => item2.menuId === data.menu
+                );
                 if (theMenuPower) {
                   return theMenuPower.powers.includes(data.id);
                 }
@@ -224,7 +251,18 @@ function PowerAdminContainer(props) {
     } catch {
       // 未通过校验
     }
-  }, [form, nowData, operateType, rolesCheckboxChose, props, getData, onClose, treeSelect.id, setModal, setPowersByRoleIds]);
+  }, [
+    form,
+    nowData,
+    operateType,
+    rolesCheckboxChose,
+    props,
+    getData,
+    onClose,
+    treeSelect.id,
+    setModal,
+    setPowersByRoleIds,
+  ]);
 
   /** 删除一条数据 **/
   const onDel = useCallback(
@@ -251,7 +289,9 @@ function PowerAdminContainer(props) {
   const setPowersByRoleIds = useCallback(
     (id, roleIds) => {
       const params = props.roles.map((item) => {
-        const powersTemp = new Set(item.menuAndPowers.reduce((a, b) => [...a, ...b.powers], []));
+        const powersTemp = new Set(
+          item.menuAndPowers.reduce((a, b) => [...a, ...b.powers], [])
+        );
         if (roleIds.includes(item.id)) {
           powersTemp.add(id);
         } else {
@@ -308,7 +348,12 @@ function PowerAdminContainer(props) {
         title: "状态",
         dataIndex: "conditions",
         key: "conditions",
-        render: (text, record) => (text === 1 ? <span style={{ color: "green" }}>启用</span> : <span style={{ color: "red" }}>禁用</span>),
+        render: (text, record) =>
+          text === 1 ? (
+            <span style={{ color: "green" }}>启用</span>
+          ) : (
+            <span style={{ color: "red" }}>禁用</span>
+          ),
       },
       {
         title: "操作",
@@ -319,7 +364,11 @@ function PowerAdminContainer(props) {
           const p = props.powersCode;
           p.includes("power:query") &&
             controls.push(
-              <span key="0" className="control-btn green" onClick={() => onModalShow(record, "see")}>
+              <span
+                key="0"
+                className="control-btn green"
+                onClick={() => onModalShow(record, "see")}
+              >
                 <Tooltip placement="top" title="查看">
                   <EyeOutlined />
                 </Tooltip>
@@ -327,7 +376,11 @@ function PowerAdminContainer(props) {
             );
           p.includes("power:up") &&
             controls.push(
-              <span key="1" className="control-btn blue" onClick={() => onModalShow(record, "up")}>
+              <span
+                key="1"
+                className="control-btn blue"
+                onClick={() => onModalShow(record, "up")}
+              >
                 <Tooltip placement="top" title="修改">
                   <ToolOutlined />
                 </Tooltip>
@@ -335,7 +388,13 @@ function PowerAdminContainer(props) {
             );
           p.includes("power:del") &&
             controls.push(
-              <Popconfirm key="2" title="确定删除吗?" okText="确定" cancelText="取消" onConfirm={() => onDel(record)}>
+              <Popconfirm
+                key="2"
+                title="确定删除吗?"
+                okText="确定"
+                cancelText="取消"
+                onConfirm={() => onDel(record)}
+              >
                 <span className="control-btn red">
                   <Tooltip placement="top" title="删除">
                     <DeleteOutlined />
@@ -402,7 +461,8 @@ function PowerAdminContainer(props) {
                 type="primary"
                 icon={<PlusCircleOutlined />}
                 onClick={() => onModalShow(null, "add")}
-                disabled={!(treeSelect.id && p.includes("power:add"))}>
+                disabled={!(treeSelect.id && p.includes("power:add"))}
+              >
                 {`添加${treeSelect.title || ""}权限`}
               </Button>
             </li>
@@ -421,11 +481,14 @@ function PowerAdminContainer(props) {
       </div>
       {/** 查看&新增&修改用户模态框 **/}
       <Modal
-        title={`${{ add: "新增", up: "修改", see: "查看" }[operateType]}权限: ${treeSelect.title}->${nowData?.title ?? ""}`}
+        title={`${{ add: "新增", up: "修改", see: "查看" }[operateType]}权限: ${
+          treeSelect.title
+        }->${nowData?.title ?? ""}`}
         visible={modalShow}
         onOk={onOk}
         onCancel={onClose}
-        confirmLoading={modalLoading}>
+        confirmLoading={modalLoading}
+      >
         <Form form={form} initialValues={{ formConditions: 1 }}>
           <Form.Item
             label="权限名"
@@ -434,8 +497,12 @@ function PowerAdminContainer(props) {
             rules={[
               { required: true, whitespace: true, message: "必填" },
               { max: 12, message: "最多输入12位字符" },
-            ]}>
-            <Input placeholder="请输入权限名" disabled={operateType === "see"} />
+            ]}
+          >
+            <Input
+              placeholder="请输入权限名"
+              disabled={operateType === "see"}
+            />
           </Form.Item>
           <Form.Item
             label="Code"
@@ -444,16 +511,45 @@ function PowerAdminContainer(props) {
             rules={[
               { required: true, whitespace: true, message: "必填" },
               { max: 12, message: "最多输入12位字符" },
-            ]}>
-            <Input placeholder="请输入权限Code" disabled={operateType === "see"} />
+            ]}
+          >
+            <Input
+              placeholder="请输入权限Code"
+              disabled={operateType === "see"}
+            />
           </Form.Item>
-          <Form.Item label="描述" name="formDesc" {...formItemLayout} rules={[{ max: 100, message: "最多输入100位字符" }]}>
-            <TextArea rows={4} disabled={operateType === "see"} placeholoder="请输入描述" autosize={{ minRows: 2, maxRows: 6 }} />
+          <Form.Item
+            label="描述"
+            name="formDesc"
+            {...formItemLayout}
+            rules={[{ max: 100, message: "最多输入100位字符" }]}
+          >
+            <TextArea
+              rows={4}
+              disabled={operateType === "see"}
+              placeholoder="请输入描述"
+              autosize={{ minRows: 2, maxRows: 6 }}
+            />
           </Form.Item>
-          <Form.Item label="排序" name="formSorts" {...formItemLayout} rules={[{ required: true, message: "请输入排序号" }]}>
-            <InputNumber min={0} max={99999} style={{ width: "100%" }} disabled={operateType === "see"} />
+          <Form.Item
+            label="排序"
+            name="formSorts"
+            {...formItemLayout}
+            rules={[{ required: true, message: "请输入排序号" }]}
+          >
+            <InputNumber
+              min={0}
+              max={99999}
+              style={{ width: "100%" }}
+              disabled={operateType === "see"}
+            />
           </Form.Item>
-          <Form.Item label="状态" name="formConditions" {...formItemLayout} rules={[{ required: true, message: "请选择状态" }]}>
+          <Form.Item
+            label="状态"
+            name="formConditions"
+            {...formItemLayout}
+            rules={[{ required: true, message: "请选择状态" }]}
+          >
             <Select disabled={operateType === "see"}>
               <Option key={1} value={1}>
                 启用

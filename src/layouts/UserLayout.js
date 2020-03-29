@@ -5,7 +5,7 @@
 // ==================
 import React from "react";
 import { connect } from "react-redux";
-import Loadable from "react-loadable";
+import loadable from "@loadable/component";
 import { Route, Switch, Redirect } from "react-router-dom";
 import { Layout } from "antd";
 
@@ -17,16 +17,15 @@ import "./UserLayout.less";
 // ==================
 // 所需的所有组件
 // ==================
-import Loading from "../components/loading";
+import Loading from "../components/Loading";
 import Footer from "../components/Footer";
 
 // ==================
 // 异步加载各路由模块
 // ==================
 const [NotFound, Login] = [() => import("../pages/ErrorPages/404"), () => import("../pages/Login")].map((item) => {
-  return Loadable({
-    loader: item,
-    loading: Loading,
+  return loadable(item, {
+    fallback: <Loading />,
   });
 });
 

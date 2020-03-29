@@ -85,16 +85,28 @@ export default function HeaderCom(props) {
   const u = props.userinfo.userBasicInfo;
   return (
     <Header className="header">
-      <Tooltip placement="bottom" title={props.collapsed ? "展开菜单" : "收起菜单"}>
-        <MenuFoldOutlined className={props.collapsed ? "trigger fold" : "trigger"} onClick={props.onToggle} />
+      <Tooltip
+        placement="bottom"
+        title={props.collapsed ? "展开菜单" : "收起菜单"}
+      >
+        <MenuFoldOutlined
+          className={props.collapsed ? "trigger fold" : "trigger"}
+          onClick={props.onToggle}
+        />
       </Tooltip>
       <div className="rightBox">
         <Tooltip placement="bottom" title={fullScreen ? "退出全屏" : "全屏"}>
           <div className="full all_center">
             {fullScreen ? (
-              <FullscreenExitOutlined className="icon" onClick={exitFullScreen} />
+              <FullscreenExitOutlined
+                className="icon"
+                onClick={exitFullScreen}
+              />
             ) : (
-              <FullscreenOutlined className="icon" onClick={requestFullScreen} />
+              <FullscreenOutlined
+                className="icon"
+                onClick={requestFullScreen}
+              />
             )}
           </div>
         </Tooltip>
@@ -103,13 +115,21 @@ export default function HeaderCom(props) {
             overlay={
               <Menu className="menu" selectedKeys={[]} onClick={onMenuClick}>
                 <Menu.Item>
-                  <a href="https://blog.isluo.com" target="_blank" rel="noopener noreferrer">
+                  <a
+                    href="https://blog.isluo.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
                     <ChromeOutlined />
                     blog.isluo.com
                   </a>
                 </Menu.Item>
                 <Menu.Item>
-                  <a href="https://github.com/javaLuo/react-admin" target="_blank" rel="noopener noreferrer">
+                  <a
+                    href="https://github.com/javaLuo/react-admin"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
                     <GithubOutlined />
                     GitHub
                   </a>
@@ -121,7 +141,8 @@ export default function HeaderCom(props) {
                 </Menu.Item>
               </Menu>
             }
-            placement="bottomRight">
+            placement="bottomRight"
+          >
             <div className="userhead all_center">
               <SmileOutlined />
               <span className="username">{u.username}</span>

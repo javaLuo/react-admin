@@ -5,8 +5,27 @@
 // ==================
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { connect } from "react-redux";
-import { Form, Button, Input, Table, message, Popconfirm, Modal, Tooltip, Divider, Select, InputNumber } from "antd";
-import { EyeOutlined, EditOutlined, ToolOutlined, DeleteOutlined, PlusCircleOutlined, SearchOutlined } from "@ant-design/icons";
+import {
+  Form,
+  Button,
+  Input,
+  Table,
+  message,
+  Popconfirm,
+  Modal,
+  Tooltip,
+  Divider,
+  Select,
+  InputNumber,
+} from "antd";
+import {
+  EyeOutlined,
+  EditOutlined,
+  ToolOutlined,
+  DeleteOutlined,
+  PlusCircleOutlined,
+  SearchOutlined,
+} from "@ant-design/icons";
 
 // ==================
 // 所需的自定义的东西
@@ -44,7 +63,13 @@ function RoleAdminContainer(props) {
   const [loading, setLoading] = useState(false); // 数据是否正在加载中
 
   const { pageNum, pageSize, total, setPage } = usePage(1, 10); // 分页相关参数控制
-  const { operateType, nowData, modalShow, modalLoading, setModal } = useModal(); // 模态框相关参数控制
+  const {
+    operateType,
+    nowData,
+    modalShow,
+    modalLoading,
+    setModal,
+  } = useModal(); // 模态框相关参数控制
 
   // 搜索相关参数
   const [searchInfo, setSearchInfo] = useState({
@@ -215,7 +240,17 @@ function RoleAdminContainer(props) {
     } catch {
       // 未通过校验
     }
-  }, [form, nowData, operateType, pageNum, pageSize, props, setModal, onClose, getData]);
+  }, [
+    form,
+    nowData,
+    operateType,
+    pageNum,
+    pageSize,
+    props,
+    setModal,
+    onClose,
+    getData,
+  ]);
 
   // 删除某一条数据
   const onDel = useCallback(
@@ -246,7 +281,10 @@ function RoleAdminContainer(props) {
   const onAllotPowerClick = useCallback(
     (record) => {
       const menus = record.menuAndPowers.map((item) => item.menuId); // 需默认选中的菜单项ID
-      const powers = record.menuAndPowers.reduce((v1, v2) => [...v1, ...v2.powers], []); // 需默认选中的权限ID
+      const powers = record.menuAndPowers.reduce(
+        (v1, v2) => [...v1, ...v2.powers],
+        []
+      ); // 需默认选中的权限ID
       setModal({ nowData: record });
       setPowerTreeShow(true);
       setPowerTreeDefault({ menus, powers });
@@ -319,7 +357,12 @@ function RoleAdminContainer(props) {
         title: "状态",
         dataIndex: "conditions",
         key: "conditions",
-        render: (text, record) => (text === 1 ? <span style={{ color: "green" }}>启用</span> : <span style={{ color: "red" }}>禁用</span>),
+        render: (text, record) =>
+          text === 1 ? (
+            <span style={{ color: "green" }}>启用</span>
+          ) : (
+            <span style={{ color: "red" }}>禁用</span>
+          ),
       },
       {
         title: "操作",
@@ -329,7 +372,11 @@ function RoleAdminContainer(props) {
           const controls = [];
           p.includes("role:query") &&
             controls.push(
-              <span key="0" className="control-btn green" onClick={() => onModalShow(record, "see")}>
+              <span
+                key="0"
+                className="control-btn green"
+                onClick={() => onModalShow(record, "see")}
+              >
                 <Tooltip placement="top" title="查看">
                   <EyeOutlined />
                 </Tooltip>
@@ -337,7 +384,11 @@ function RoleAdminContainer(props) {
             );
           p.includes("role:up") &&
             controls.push(
-              <span key="1" className="control-btn blue" onClick={() => onModalShow(record, "up")}>
+              <span
+                key="1"
+                className="control-btn blue"
+                onClick={() => onModalShow(record, "up")}
+              >
                 <Tooltip placement="top" title="修改">
                   <ToolOutlined />
                 </Tooltip>
@@ -345,7 +396,11 @@ function RoleAdminContainer(props) {
             );
           p.includes("role:power") &&
             controls.push(
-              <span key="2" className="control-btn blue" onClick={() => onAllotPowerClick(record)}>
+              <span
+                key="2"
+                className="control-btn blue"
+                onClick={() => onAllotPowerClick(record)}
+              >
                 <Tooltip placement="top" title="分配权限">
                   <EditOutlined />
                 </Tooltip>
@@ -353,7 +408,13 @@ function RoleAdminContainer(props) {
             );
           p.includes("role:del") &&
             controls.push(
-              <Popconfirm key="3" title="确定删除吗?" onConfirm={() => onDel(record.id)} okText="确定" cancelText="取消">
+              <Popconfirm
+                key="3"
+                title="确定删除吗?"
+                onConfirm={() => onDel(record.id)}
+                okText="确定"
+                cancelText="取消"
+              >
                 <span className="control-btn red">
                   <Tooltip placement="top" title="删除">
                     <DeleteOutlined />
@@ -397,7 +458,12 @@ function RoleAdminContainer(props) {
       <div className="g-search">
         <ul className="search-func">
           <li>
-            <Button type="primary" icon={<PlusCircleOutlined />} disabled={!p.includes("role:add")} onClick={() => onModalShow(null, "add")}>
+            <Button
+              type="primary"
+              icon={<PlusCircleOutlined />}
+              disabled={!p.includes("role:add")}
+              onClick={() => onModalShow(null, "add")}
+            >
               添加角色
             </Button>
           </li>
@@ -406,7 +472,11 @@ function RoleAdminContainer(props) {
         {p.includes("role:query") && (
           <ul className="search-ul">
             <li>
-              <Input placeholder="请输入角色名" onChange={(e) => searchTitleChange(e)} value={searchInfo.searchTitle} />
+              <Input
+                placeholder="请输入角色名"
+                onChange={(e) => searchTitleChange(e)}
+                value={searchInfo.searchTitle}
+              />
             </li>
             <li>
               <Select
@@ -414,13 +484,18 @@ function RoleAdminContainer(props) {
                 allowClear
                 style={{ width: "200px" }}
                 onChange={(e) => searchConditionsChange(e)}
-                value={searchInfo.searchConditions}>
+                value={searchInfo.searchConditions}
+              >
                 <Option value={1}>启用</Option>
                 <Option value={-1}>禁用</Option>
               </Select>
             </li>
             <li>
-              <Button type="primary" icon={<SearchOutlined />} onClick={() => onSearch()}>
+              <Button
+                type="primary"
+                icon={<SearchOutlined />}
+                onClick={() => onSearch()}
+              >
                 搜索
               </Button>
             </li>
@@ -448,12 +523,14 @@ function RoleAdminContainer(props) {
         visible={modalShow}
         onOk={() => onOk()}
         onCancel={() => onClose()}
-        confirmLoading={modalLoading}>
+        confirmLoading={modalLoading}
+      >
         <Form
           form={form}
           initialValues={{
             formConditions: 1,
-          }}>
+          }}
+        >
           <Form.Item
             label="角色名"
             name="formTitle"
@@ -461,16 +538,45 @@ function RoleAdminContainer(props) {
             rules={[
               { required: true, whitespace: true, message: "必填" },
               { max: 12, message: "最多输入12位字符" },
-            ]}>
-            <Input placeholder="请输入角色名" disabled={operateType === "see"} />
+            ]}
+          >
+            <Input
+              placeholder="请输入角色名"
+              disabled={operateType === "see"}
+            />
           </Form.Item>
-          <Form.Item label="描述" name="formDesc" {...formItemLayout} rules={[{ max: 100, message: "最多输入100个字符" }]}>
-            <TextArea rows={4} disabled={operateType === "see"} placeholoder="请输入描述" autosize={{ minRows: 2, maxRows: 6 }} />
+          <Form.Item
+            label="描述"
+            name="formDesc"
+            {...formItemLayout}
+            rules={[{ max: 100, message: "最多输入100个字符" }]}
+          >
+            <TextArea
+              rows={4}
+              disabled={operateType === "see"}
+              placeholoder="请输入描述"
+              autosize={{ minRows: 2, maxRows: 6 }}
+            />
           </Form.Item>
-          <Form.Item label="排序" name="formSorts" {...formItemLayout} rules={[{ required: true, message: "请输入排序号" }]}>
-            <InputNumber min={0} max={99999} style={{ width: "100%" }} disabled={operateType === "see"} />
+          <Form.Item
+            label="排序"
+            name="formSorts"
+            {...formItemLayout}
+            rules={[{ required: true, message: "请输入排序号" }]}
+          >
+            <InputNumber
+              min={0}
+              max={99999}
+              style={{ width: "100%" }}
+              disabled={operateType === "see"}
+            />
           </Form.Item>
-          <Form.Item label="状态" name="formConditions" {...formItemLayout} rules={[{ required: true, message: "请选择状态" }]}>
+          <Form.Item
+            label="状态"
+            name="formConditions"
+            {...formItemLayout}
+            rules={[{ required: true, message: "请选择状态" }]}
+          >
             <Select disabled={operateType === "see"}>
               <Option key={1} value={1}>
                 启用

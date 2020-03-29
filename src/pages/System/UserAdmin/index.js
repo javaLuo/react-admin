@@ -5,8 +5,26 @@
 // ==================
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { connect } from "react-redux";
-import { Form, Button, Input, Table, message, Popconfirm, Modal, Tooltip, Divider, Select } from "antd";
-import { EyeOutlined, EditOutlined, ToolOutlined, DeleteOutlined, PlusCircleOutlined, SearchOutlined } from "@ant-design/icons";
+import {
+  Form,
+  Button,
+  Input,
+  Table,
+  message,
+  Popconfirm,
+  Modal,
+  Tooltip,
+  Divider,
+  Select,
+} from "antd";
+import {
+  EyeOutlined,
+  EditOutlined,
+  ToolOutlined,
+  DeleteOutlined,
+  PlusCircleOutlined,
+  SearchOutlined,
+} from "@ant-design/icons";
 
 // ==================
 // 所需的自定义的东西
@@ -45,7 +63,13 @@ function RoleAdminContainer(props) {
   const [loading, setLoading] = useState(false); // 数据是否正在加载中
 
   const { pageNum, pageSize, total, setPage } = usePage(1, 10); // 分页相关参数控制
-  const { operateType, nowData, modalShow, modalLoading, setModal } = useModal(); // 模态框相关参数控制
+  const {
+    operateType,
+    nowData,
+    modalShow,
+    modalLoading,
+    setModal,
+  } = useModal(); // 模态框相关参数控制
 
   // 搜索相关参数
   const [searchInfo, setSearchInfo] = useState({
@@ -226,7 +250,17 @@ function RoleAdminContainer(props) {
     } catch {
       // 未通过校验
     }
-  }, [form, nowData, operateType, pageNum, pageSize, props, setModal, onClose, onGetData]);
+  }, [
+    form,
+    nowData,
+    operateType,
+    pageNum,
+    pageSize,
+    props,
+    setModal,
+    onClose,
+    onGetData,
+  ]);
 
   // 删除某一条数据
   const onDel = useCallback(
@@ -335,7 +369,12 @@ function RoleAdminContainer(props) {
         title: "状态",
         dataIndex: "conditions",
         key: "conditions",
-        render: (text, record) => (text === 1 ? <span style={{ color: "green" }}>启用</span> : <span style={{ color: "red" }}>禁用</span>),
+        render: (text, record) =>
+          text === 1 ? (
+            <span style={{ color: "green" }}>启用</span>
+          ) : (
+            <span style={{ color: "red" }}>禁用</span>
+          ),
       },
       {
         title: "操作",
@@ -348,7 +387,11 @@ function RoleAdminContainer(props) {
 
           p.includes("user:query") &&
             controls.push(
-              <span key="0" className="control-btn green" onClick={() => onModalShow(record, "see")}>
+              <span
+                key="0"
+                className="control-btn green"
+                onClick={() => onModalShow(record, "see")}
+              >
                 <Tooltip placement="top" title="查看">
                   <EyeOutlined />
                 </Tooltip>
@@ -356,7 +399,11 @@ function RoleAdminContainer(props) {
             );
           p.includes("user:up") &&
             controls.push(
-              <span key="1" className="control-btn blue" onClick={() => onModalShow(record, "up")}>
+              <span
+                key="1"
+                className="control-btn blue"
+                onClick={() => onModalShow(record, "up")}
+              >
                 <Tooltip placement="top" title="修改">
                   <ToolOutlined />
                 </Tooltip>
@@ -364,7 +411,11 @@ function RoleAdminContainer(props) {
             );
           p.includes("user:role") &&
             controls.push(
-              <span key="2" className="control-btn blue" onClick={() => onTreeShowClick(record)}>
+              <span
+                key="2"
+                className="control-btn blue"
+                onClick={() => onTreeShowClick(record)}
+              >
                 <Tooltip placement="top" title="分配角色">
                   <EditOutlined />
                 </Tooltip>
@@ -374,7 +425,13 @@ function RoleAdminContainer(props) {
           p.includes("user:del") &&
             u.id !== record.id &&
             controls.push(
-              <Popconfirm key="3" title="确定删除吗?" onConfirm={() => onDel(record.id)} okText="确定" cancelText="取消">
+              <Popconfirm
+                key="3"
+                title="确定删除吗?"
+                onConfirm={() => onDel(record.id)}
+                okText="确定"
+                cancelText="取消"
+              >
                 <span className="control-btn red">
                   <Tooltip placement="top" title="删除">
                     <DeleteOutlined />
@@ -420,7 +477,12 @@ function RoleAdminContainer(props) {
       <div className="g-search">
         <ul className="search-func">
           <li>
-            <Button type="primary" icon={<PlusCircleOutlined />} disabled={!p.includes("user:add")} onClick={() => onModalShow(null, "add")}>
+            <Button
+              type="primary"
+              icon={<PlusCircleOutlined />}
+              disabled={!p.includes("user:add")}
+              onClick={() => onModalShow(null, "add")}
+            >
               添加用户
             </Button>
           </li>
@@ -429,16 +491,30 @@ function RoleAdminContainer(props) {
         {p.includes("user:query") && (
           <ul className="search-ul">
             <li>
-              <Input placeholder="请输入用户名" onChange={searchUsernameChange} value={searchInfo.username} />
+              <Input
+                placeholder="请输入用户名"
+                onChange={searchUsernameChange}
+                value={searchInfo.username}
+              />
             </li>
             <li>
-              <Select placeholder="请选择状态" allowClear style={{ width: "200px" }} onChange={searchConditionsChange} value={searchInfo.conditions}>
+              <Select
+                placeholder="请选择状态"
+                allowClear
+                style={{ width: "200px" }}
+                onChange={searchConditionsChange}
+                value={searchInfo.conditions}
+              >
                 <Option value={1}>启用</Option>
                 <Option value={-1}>禁用</Option>
               </Select>
             </li>
             <li>
-              <Button type="primary" icon={<SearchOutlined />} onClick={onSearch}>
+              <Button
+                type="primary"
+                icon={<SearchOutlined />}
+                onClick={onSearch}
+              >
                 搜索
               </Button>
             </li>
@@ -466,12 +542,14 @@ function RoleAdminContainer(props) {
         visible={modalShow}
         onOk={onOk}
         onCancel={onClose}
-        confirmLoading={modalLoading}>
+        confirmLoading={modalLoading}
+      >
         <Form
           form={form}
           initialValues={{
             formConditions: 1,
-          }}>
+          }}
+        >
           <Form.Item
             label="用户名"
             name="formUsername"
@@ -479,8 +557,12 @@ function RoleAdminContainer(props) {
             rules={[
               { required: true, whitespace: true, message: "必填" },
               { max: 12, message: "最多输入12位字符" },
-            ]}>
-            <Input placeholder="请输入用户名" disabled={operateType === "see"} />
+            ]}
+          >
+            <Input
+              placeholder="请输入用户名"
+              disabled={operateType === "see"}
+            />
           </Form.Item>
           <Form.Item
             label="密码"
@@ -490,8 +572,13 @@ function RoleAdminContainer(props) {
               { required: true, whitespace: true, message: "必填" },
               { min: 6, message: "最少输入6位字符" },
               { max: 18, message: "最多输入18位字符" },
-            ]}>
-            <Input type="password" placeholder="请输入密码" disabled={operateType === "see"} />
+            ]}
+          >
+            <Input
+              type="password"
+              placeholder="请输入密码"
+              disabled={operateType === "see"}
+            />
           </Form.Item>
           <Form.Item
             label="电话"
@@ -509,8 +596,12 @@ function RoleAdminContainer(props) {
                   return Promise.resolve();
                 },
               }),
-            ]}>
-            <Input placeholder="请输入手机号" disabled={operateType === "see"} />
+            ]}
+          >
+            <Input
+              placeholder="请输入手机号"
+              disabled={operateType === "see"}
+            />
           </Form.Item>
           <Form.Item
             label="邮箱"
@@ -528,13 +619,32 @@ function RoleAdminContainer(props) {
                   return Promise.resolve();
                 },
               }),
-            ]}>
-            <Input placeholder="请输入邮箱地址" disabled={operateType === "see"} />
+            ]}
+          >
+            <Input
+              placeholder="请输入邮箱地址"
+              disabled={operateType === "see"}
+            />
           </Form.Item>
-          <Form.Item label="描述" name="formDesc" {...formItemLayout} rules={[{ max: 100, message: "最多输入100个字符" }]}>
-            <TextArea rows={4} disabled={operateType === "see"} placeholoder="请输入描述" autosize={{ minRows: 2, maxRows: 6 }} />
+          <Form.Item
+            label="描述"
+            name="formDesc"
+            {...formItemLayout}
+            rules={[{ max: 100, message: "最多输入100个字符" }]}
+          >
+            <TextArea
+              rows={4}
+              disabled={operateType === "see"}
+              placeholoder="请输入描述"
+              autosize={{ minRows: 2, maxRows: 6 }}
+            />
           </Form.Item>
-          <Form.Item label="状态" name="formConditions" {...formItemLayout} rules={[{ required: true, message: "请选择状态" }]}>
+          <Form.Item
+            label="状态"
+            name="formConditions"
+            {...formItemLayout}
+            rules={[{ required: true, message: "请选择状态" }]}
+          >
             <Select disabled={operateType === "see"}>
               <Option key={1} value={1}>
                 启用

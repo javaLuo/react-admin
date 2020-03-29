@@ -5,8 +5,26 @@
 // ==================
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { connect } from "react-redux";
-import { Tree, Button, Table, Tooltip, Popconfirm, Modal, Form, Select, Input, InputNumber, message, Divider } from "antd";
-import { EyeOutlined, ToolOutlined, DeleteOutlined, PlusCircleOutlined } from "@ant-design/icons";
+import {
+  Tree,
+  Button,
+  Table,
+  Tooltip,
+  Popconfirm,
+  Modal,
+  Form,
+  Select,
+  Input,
+  InputNumber,
+  message,
+  Divider,
+} from "antd";
+import {
+  EyeOutlined,
+  ToolOutlined,
+  DeleteOutlined,
+  PlusCircleOutlined,
+} from "@ant-design/icons";
 import _ from "lodash";
 
 // ==================
@@ -45,7 +63,13 @@ function MenuAdminContainer(props) {
   const [data, setData] = useState([]); // 所有的菜单数据（未分层级）
   const [loading, setLoading] = useState(false); // 数据是否正在加载中
 
-  const { operateType, nowData, modalShow, modalLoading, setModal } = useModal(); // 模态框相关参数控制
+  const {
+    operateType,
+    nowData,
+    modalShow,
+    modalLoading,
+    setModal,
+  } = useModal(); // 模态框相关参数控制
 
   const [treeSelect, setTreeSelect] = useState({});
 
@@ -199,7 +223,16 @@ function MenuAdminContainer(props) {
     } catch {
       // 未通过校验
     }
-  }, [form, nowData, operateType, props, treeSelect.id, getData, onClose, setModal]);
+  }, [
+    form,
+    nowData,
+    operateType,
+    props,
+    treeSelect.id,
+    getData,
+    onClose,
+    setModal,
+  ]);
 
   /** 删除一条数据 **/
   const onDel = useCallback(
@@ -275,7 +308,12 @@ function MenuAdminContainer(props) {
         title: "状态",
         dataIndex: "conditions",
         key: "conditions",
-        render: (text, record) => (text === 1 ? <span style={{ color: "green" }}>启用</span> : <span style={{ color: "red" }}>禁用</span>),
+        render: (text, record) =>
+          text === 1 ? (
+            <span style={{ color: "green" }}>启用</span>
+          ) : (
+            <span style={{ color: "red" }}>禁用</span>
+          ),
       },
       {
         title: "操作",
@@ -287,7 +325,11 @@ function MenuAdminContainer(props) {
 
           p.includes("menu:query") &&
             controls.push(
-              <span key="0" className="control-btn green" onClick={() => onModalShow(record, "see")}>
+              <span
+                key="0"
+                className="control-btn green"
+                onClick={() => onModalShow(record, "see")}
+              >
                 <Tooltip placement="top" title="查看">
                   <EyeOutlined />
                 </Tooltip>
@@ -295,7 +337,11 @@ function MenuAdminContainer(props) {
             );
           p.includes("menu:up") &&
             controls.push(
-              <span key="1" className="control-btn blue" onClick={() => onModalShow(record, "up")}>
+              <span
+                key="1"
+                className="control-btn blue"
+                onClick={() => onModalShow(record, "up")}
+              >
                 <Tooltip placement="top" title="修改">
                   <ToolOutlined />
                 </Tooltip>
@@ -303,7 +349,13 @@ function MenuAdminContainer(props) {
             );
           p.includes("menu:del") &&
             controls.push(
-              <Popconfirm key="2" title="确定删除吗?" okText="确定" cancelText="取消" onConfirm={() => onDel(record)}>
+              <Popconfirm
+                key="2"
+                title="确定删除吗?"
+                okText="确定"
+                cancelText="取消"
+                onConfirm={() => onDel(record)}
+              >
                 <span className="control-btn red">
                   <Tooltip placement="top" title="删除">
                     <DeleteOutlined />
@@ -349,14 +401,24 @@ function MenuAdminContainer(props) {
       <div className="l">
         <div className="title">目录结构</div>
         <div>
-          <Tree defaultExpandedKeys={["0"]} onSelect={onTreeSelect} selectedKeys={[String(treeSelect.id)]} treeData={sourceData}></Tree>
+          <Tree
+            defaultExpandedKeys={["0"]}
+            onSelect={onTreeSelect}
+            selectedKeys={[String(treeSelect.id)]}
+            treeData={sourceData}
+          ></Tree>
         </div>
       </div>
       <div className="r">
         <div className="searchBox">
           <ul>
             <li>
-              <Button type="primary" icon={<PlusCircleOutlined />} onClick={() => onModalShow(null, "add")} disabled={!p.includes("menu:add")}>
+              <Button
+                type="primary"
+                icon={<PlusCircleOutlined />}
+                onClick={() => onModalShow(null, "add")}
+                disabled={!p.includes("menu:add")}
+              >
                 {`添加${treeSelect.title || "根级"}子菜单`}
               </Button>
             </li>
@@ -379,7 +441,8 @@ function MenuAdminContainer(props) {
         visible={modalShow}
         onOk={onOk}
         onCancel={onClose}
-        confirmLoading={modalLoading}>
+        confirmLoading={modalLoading}
+      >
         <Form form={form} initialValues={{ formConditions: 1 }}>
           <Form.Item
             label="菜单名"
@@ -388,14 +451,29 @@ function MenuAdminContainer(props) {
             rules={[
               { required: true, whitespace: true, message: "必填" },
               { max: 12, message: "最多输入12位字符" },
-            ]}>
-            <Input placeholder="请输入菜单名" disabled={operateType === "see"} />
+            ]}
+          >
+            <Input
+              placeholder="请输入菜单名"
+              disabled={operateType === "see"}
+            />
           </Form.Item>
-          <Form.Item label="菜单链接" name="formUrl" {...formItemLayout} rules={[{ required: true, whitespace: true, message: "必填" }]}>
-            <Input placeholder="请输入菜单链接" disabled={operateType === "see"} />
+          <Form.Item
+            label="菜单链接"
+            name="formUrl"
+            {...formItemLayout}
+            rules={[{ required: true, whitespace: true, message: "必填" }]}
+          >
+            <Input
+              placeholder="请输入菜单链接"
+              disabled={operateType === "see"}
+            />
           </Form.Item>
           <Form.Item label="图标" name="formIcon" {...formItemLayout}>
-            <Select dropdownClassName="iconSelect" disabled={operateType === "see"}>
+            <Select
+              dropdownClassName="iconSelect"
+              disabled={operateType === "see"}
+            >
               {IconsData.map((item, index) => {
                 return (
                   <Option key={index} value={item}>
@@ -405,13 +483,38 @@ function MenuAdminContainer(props) {
               })}
             </Select>
           </Form.Item>
-          <Form.Item label="描述" name="formDesc" {...formItemLayout} rules={[{ max: 100, message: "最多输入100位字符" }]}>
-            <TextArea rows={4} disabled={operateType === "see"} placeholoder="请输入描述" autosize={{ minRows: 2, maxRows: 6 }} />
+          <Form.Item
+            label="描述"
+            name="formDesc"
+            {...formItemLayout}
+            rules={[{ max: 100, message: "最多输入100位字符" }]}
+          >
+            <TextArea
+              rows={4}
+              disabled={operateType === "see"}
+              placeholoder="请输入描述"
+              autosize={{ minRows: 2, maxRows: 6 }}
+            />
           </Form.Item>
-          <Form.Item label="排序" name="formSorts" {...formItemLayout} rules={[{ required: true, message: "请输入排序号" }]}>
-            <InputNumber min={0} max={99999} style={{ width: "100%" }} disabled={operateType === "see"} />
+          <Form.Item
+            label="排序"
+            name="formSorts"
+            {...formItemLayout}
+            rules={[{ required: true, message: "请输入排序号" }]}
+          >
+            <InputNumber
+              min={0}
+              max={99999}
+              style={{ width: "100%" }}
+              disabled={operateType === "see"}
+            />
           </Form.Item>
-          <Form.Item label="状态" name="formConditions" {...formItemLayout} rules={[{ required: true, message: "请选择状态" }]}>
+          <Form.Item
+            label="状态"
+            name="formConditions"
+            {...formItemLayout}
+            rules={[{ required: true, message: "请选择状态" }]}
+          >
             <Select disabled={operateType === "see"}>
               <Option key={1} value={1}>
                 启用
@@ -423,7 +526,9 @@ function MenuAdminContainer(props) {
           </Form.Item>
           {operateType === "add" ? (
             <Form.Item label="赋予" {...formItemLayout}>
-              <span style={{ color: "green" }}>新增菜单后请前往角色管理将菜单授权给相关角色</span>
+              <span style={{ color: "green" }}>
+                新增菜单后请前往角色管理将菜单授权给相关角色
+              </span>
             </Form.Item>
           ) : null}
         </Form>

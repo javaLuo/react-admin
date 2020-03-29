@@ -74,7 +74,9 @@ export default function CanvasBack(props) {
           ctx.lineTo(dots[k1].x + dots[k1].sx, dots[k1].y + dots[k1].sy);
           ctx.lineTo(dots[k2].x + dots[k2].sx, dots[k2].y + dots[k2].sy);
           ctx.closePath();
-          const c = Math.round((dots[k].color + dots[k1].color + dots[k2].color) / 3);
+          const c = Math.round(
+            (dots[k].color + dots[k1].color + dots[k2].color) / 3
+          );
           ctx.fillStyle = `rgb(6,${Math.round(c / 1.3)},${c})`;
           ctx.fill();
         }
@@ -84,7 +86,9 @@ export default function CanvasBack(props) {
           ctx.lineTo(dots[k1].x + dots[k1].sx, dots[k1].y + dots[k1].sy);
           ctx.lineTo(dots[k3].x + dots[k3].sx, dots[k3].y + dots[k3].sy);
           ctx.closePath();
-          const c = Math.round((dots[k].color + dots[k1].color + dots[k3].color) / 3);
+          const c = Math.round(
+            (dots[k].color + dots[k1].color + dots[k3].color) / 3
+          );
           ctx.fillStyle = `rgb(6, ${Math.round(c / 1.3)},${c})`;
           ctx.fill();
         }

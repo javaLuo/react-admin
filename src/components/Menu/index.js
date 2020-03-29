@@ -6,7 +6,7 @@
     location: P.any
   };
  * */
-import React from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { Layout, Menu } from "antd";
 import { Link } from "react-router-dom";
 import "./index.less";
@@ -16,69 +16,32 @@ import _ from "lodash";
 
 const { Sider } = Layout;
 const { SubMenu, Item } = Menu;
-export default class MenuCom extends React.PureComponent {
-  constructor(props) {
-    super(props);
-    this.state = {
-      sourceData: [], // 菜单数据（层级）
-      treeDom: [], // 生成的菜单结构
-      chosedKey: [], // 当前选中
-      openKeys: [], // 当前需要被展开的项
-    };
-  }
 
-  componentDidMount() {
-    this.makeSourceData(this.props.data);
-    this.nowChosed(this.props.location);
-  }
+export default function MenuCom(props) {
+  const [chosedKey, setChosedKey] = useState([]); // 当前选中
+  const [openKeys, setOpenKeys] = useState([]); // 当前需要被展开的项
 
-  componentDidUpdate(prevP, prevS, snapshot) {
-    console.log("数据不变的？", this.props.data, prevP.data);
-    if (this.props.data !== prevP.data) {
-      this.makeSourceData(this.props.data);
-    }
-    if (this.props.location !== prevP.location) {
-      this.nowChosed(this.props.location);
-    }
-  }
+  // 当页面路由跳转时，即location发生改变，则更新选中项
+  useEffect(() => {
+    const paths = props.location.pathname.split("/").filter((item) => !!item);
+    setChosedKey([props.location.pathname]);
+    setOpenKeys(paths.map((item) => `/${item}`));
+  }, [props.location]);
 
-  /** 处理当前选中 **/
-  nowChosed(location) {
-    const paths = location.pathname.split("/").filter((item) => !!item);
-    this.setState({
-      chosedKey: [location.pathname],
-      openKeys: paths.map((item) => `/${item}`),
-    });
-  }
+  // ==================
+  // 私有方法
+  // ==================
 
-  /** 菜单展开和关闭时触发 **/
-  onOpenChange(keys) {
-    this.setState({
-      openKeys: keys,
-    });
-  }
-  onSelect = (e) => {
-    console.log("被选中：", e);
-    this.props.history.push(e.key);
-  };
+  // 菜单被选择
+  const onSelect = useCallback(
+    (e) => {
+      props.history.push(e.key);
+    },
+    [props.history]
+  );
 
-  /** 处理原始数据，将原始数据处理为层级关系 **/
-  makeSourceData(data) {
-    const d = _.cloneDeep(data);
-    // 按照sort排序
-    d.sort((a, b) => {
-      return a.sorts - b.sorts;
-    });
-    const sourceData = this.dataToJson(null, d) || [];
-    const treeDom = this.makeTreeDom(sourceData, "");
-    this.setState({
-      sourceData,
-      treeDom,
-    });
-  }
-
-  /** 工具 - 递归将扁平数据转换为层级数据 **/
-  dataToJson(one, data) {
+  // 工具 - 递归将扁平数据转换为层级数据
+  const dataToJson = useCallback((one, data) => {
     let kids;
     if (!one) {
       // 第1次递归
@@ -86,12 +49,12 @@ export default class MenuCom extends React.PureComponent {
     } else {
       kids = data.filter((item) => item.parent === one.id);
     }
-    kids.forEach((item) => (item.children = this.dataToJson(item, data)));
+    kids.forEach((item) => (item.children = dataToJson(item, data)));
     return kids.length ? kids : null;
-  }
+  }, []);
 
-  /** 构建树结构 **/
-  makeTreeDom(data, key) {
+  // 构建树结构
+  const makeTreeDom = useCallback((data, key) => {
     return data.map((item, index) => {
       const newKey = `${key}/${item.url.replace(/\//, "")}`;
       if (item.children) {
@@ -107,8 +70,9 @@ export default class MenuCom extends React.PureComponent {
               ) : (
                 item.title
               )
-            }>
-            {this.makeTreeDom(item.children, newKey)}
+            }
+          >
+            {makeTreeDom(item.children, newKey)}
           </SubMenu>
         );
       } else {
@@ -120,27 +84,51 @@ export default class MenuCom extends React.PureComponent {
         );
       }
     });
-  }
+  }, []);
 
-  render() {
-    return (
-      <Sider width={256} className="sider" trigger={null} collapsible collapsed={this.props.collapsed}>
-        <div className={this.props.collapsed ? "menuLogo hide" : "menuLogo"}>
-          <Link to="/">
-            <img src={ImgLogo} />
-            <div>React-Admin</div>
-          </Link>
-        </div>
-        <Menu
-          theme="dark"
-          mode="inline"
-          selectedKeys={this.state.chosedKey}
-          {...(this.props.collapsed ? {} : { openKeys: this.state.openKeys })}
-          onOpenChange={(e) => this.onOpenChange(e)}
-          onSelect={this.onSelect}>
-          {this.state.treeDom}
-        </Menu>
-      </Sider>
-    );
-  }
+  // ==================
+  // 计算属性 memo
+  // ==================
+
+  /** 处理原始数据，将原始数据处理为层级关系 **/
+  const treeDom = useMemo(() => {
+    const d = _.cloneDeep(props.data);
+    // 按照sort排序
+    d.sort((a, b) => {
+      return a.sorts - b.sorts;
+    });
+    const sourceData = dataToJson(null, d) || [];
+    const treeDom = makeTreeDom(sourceData, "");
+    return treeDom;
+  }, [props.data, dataToJson, makeTreeDom]);
+
+  // ==================
+  // 组件DOM渲染
+  // ==================
+  return (
+    <Sider
+      width={256}
+      className="sider"
+      trigger={null}
+      collapsible
+      collapsed={props.collapsed}
+    >
+      <div className={props.collapsed ? "menuLogo hide" : "menuLogo"}>
+        <Link to="/">
+          <img src={ImgLogo} />
+          <div>React-Admin</div>
+        </Link>
+      </div>
+      <Menu
+        theme="dark"
+        mode="inline"
+        selectedKeys={chosedKey}
+        {...(props.collapsed ? {} : { openKeys })}
+        onOpenChange={setOpenKeys}
+        onSelect={onSelect}
+      >
+        {treeDom}
+      </Menu>
+    </Sider>
+  );
 }

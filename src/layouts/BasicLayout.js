@@ -6,23 +6,24 @@
 import React, { useState, useCallback } from "react";
 import { connect } from "react-redux";
 import { Route, Switch, Redirect } from "react-router-dom";
-import Loadable from "react-loadable";
+import loadable from "@loadable/component";
 
 // ==================
 // 所需的自定义的东西
 // ==================
-import tools from "../util/tools";
+import tools from "@/util/tools";
 import "./BasicLayout.less";
 
 // ==================
 // 所需的所有组件
 // ==================
 import { Layout, message } from "antd";
-import Header from "../components/Header";
-import Menu from "../components/Menu";
-import Footer from "../components/Footer";
-import Bread from "../components/Bread";
-import Loading from "../components/loading";
+import Header from "@/components/Header";
+import Menu from "@/components/Menu";
+import Footer from "@/components/Footer";
+import Bread from "@/components/Bread";
+import Loading from "@/components/Loading";
+import ErrorBoundary from "@/components/ErrorBoundary";
 
 // ==================
 // 异步加载各路由模块
@@ -36,9 +37,8 @@ const [NotFound, NoPower, Home, MenuAdmin, PowerAdmin, RoleAdmin, UserAdmin] = [
   () => import(`../pages/System/RoleAdmin`),
   () => import(`../pages/System/UserAdmin`),
 ].map((item) => {
-  return Loadable({
-    loader: item,
-    loading: Loading,
+  return loadable(item, {
+    fallback: <Loading />,
   });
 });
 
@@ -104,17 +104,19 @@ function BasicLayoutCom(props) {
         <Header collapsed={collapsed} userinfo={props.userinfo} onToggle={() => setCollapsed(!collapsed)} onLogout={onLogout} />
         <Bread menus={props.userinfo.menus} location={props.location} />
         <Content className="content">
-          <Switch>
-            <Redirect exact from="/" to="/home" />
-            <Route exact path="/home" render={(props) => onEnter(Home, props)} />
+          <ErrorBoundary location={props.location}>
+            <Switch>
+              <Redirect exact from="/" to="/home" />
+              <Route exact path="/home" render={(props) => onEnter(Home, props)} />
 
-            <Route exact path="/system/menuadmin" render={(props) => onEnter(MenuAdmin, props)} />
-            <Route exact path="/system/poweradmin" render={(props) => onEnter(PowerAdmin, props)} />
-            <Route exact path="/system/roleadmin" render={(props) => onEnter(RoleAdmin, props)} />
-            <Route exact path="/system/useradmin" render={(props) => onEnter(UserAdmin, props)} />
-            <Route exact path="/nopower" component={NoPower} />
-            <Route component={NotFound} />
-          </Switch>
+              <Route exact path="/system/menuadmin" render={(props) => onEnter(MenuAdmin, props)} />
+              <Route exact path="/system/poweradmin" render={(props) => onEnter(PowerAdmin, props)} />
+              <Route exact path="/system/roleadmin" render={(props) => onEnter(RoleAdmin, props)} />
+              <Route exact path="/system/useradmin" render={(props) => onEnter(UserAdmin, props)} />
+              <Route exact path="/nopower" component={NoPower} />
+              <Route component={NotFound} />
+            </Switch>
+          </ErrorBoundary>
         </Content>
         <Footer />
       </Layout>

@@ -65,7 +65,10 @@ function LoginContainer(props) {
           localStorage.removeItem("userLoginInfo");
         }
         /** 将这些信息加密后存入sessionStorage,并存入store **/
-        sessionStorage.setItem("userinfo", tools.compile(JSON.stringify(res.data)));
+        sessionStorage.setItem(
+          "userinfo",
+          tools.compile(JSON.stringify(res.data))
+        );
         await props.setUserInfo(res.data);
         props.history.replace("/"); // 跳转到主页
       } else {
@@ -112,7 +115,10 @@ function LoginContainer(props) {
       roles = res2.data.filter((item) => item.conditions === 1); // conditions: 1启用 -1禁用
 
       /** 3.根据菜单id 获取菜单信息 **/
-      const menuAndPowers = roles.reduce((a, b) => [...a, ...b.menuAndPowers], []);
+      const menuAndPowers = roles.reduce(
+        (a, b) => [...a, ...b.menuAndPowers],
+        []
+      );
       const res3 = await props.getMenusById({
         id: Array.from(new Set(menuAndPowers.map((item) => item.menuId))),
       });
@@ -125,7 +131,9 @@ function LoginContainer(props) {
 
       /** 4.根据权限id，获取权限信息 **/
       const res4 = await props.getPowerById({
-        id: Array.from(new Set(menuAndPowers.reduce((a, b) => [...a, ...b.powers], []))),
+        id: Array.from(
+          new Set(menuAndPowers.reduce((a, b) => [...a, ...b.powers], []))
+        ),
       });
       if (!res4 || res4.status !== 200) {
         // 权限查询失败
@@ -174,7 +182,8 @@ function LoginContainer(props) {
                   whitespace: true,
                   message: "请输入用户名",
                 },
-              ]}>
+              ]}
+            >
               <Input
                 prefix={<UserOutlined style={{ fontSize: 13 }} />}
                 size="large"
@@ -188,7 +197,8 @@ function LoginContainer(props) {
               rules={[
                 { required: true, message: "请输入密码" },
                 { max: 18, message: "最大长度18个字符" },
-              ]}>
+              ]}
+            >
               <Input
                 prefix={<KeyOutlined style={{ fontSize: 13 }} />}
                 size="large"
@@ -208,7 +218,9 @@ function LoginContainer(props) {
                       if (v) {
                         if (v.length > 4) {
                           return Promise.reject("验证码为4位字符");
-                        } else if (v.toLowerCase() !== codeValue.toLowerCase()) {
+                        } else if (
+                          v.toLowerCase() !== codeValue.toLowerCase()
+                        ) {
                           return Promise.reject("验证码错误");
                         } else {
                           return Promise.resolve();
@@ -218,7 +230,8 @@ function LoginContainer(props) {
                       }
                     },
                   }),
-                ]}>
+                ]}
+              >
                 <Input
                   style={{ width: "200px" }}
                   size="large"
@@ -238,10 +251,20 @@ function LoginContainer(props) {
               />
             </Form.Item>
             <div style={{ lineHeight: "40px" }}>
-              <Checkbox className="remember" checked={rememberPassword} onChange={(e) => onRemember(e)}>
+              <Checkbox
+                className="remember"
+                checked={rememberPassword}
+                onChange={(e) => onRemember(e)}
+              >
                 记住密码
               </Checkbox>
-              <Button className="submit-btn" size="large" type="primary" loading={loading} onClick={onSubmit}>
+              <Button
+                className="submit-btn"
+                size="large"
+                type="primary"
+                loading={loading}
+                onClick={onSubmit}
+              >
                 {loading ? "请稍后" : "登录"}
               </Button>
             </div>
