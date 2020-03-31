@@ -1,59 +1,27 @@
 /* Tree选择 - 角色选择 - 多选 */
-import React from "react";
+import React, { useState, useMemo, useEffect, useCallback } from "react";
 import { Tree, Modal } from "antd";
 import _ from "lodash";
 
-const { TreeNode } = Tree;
-export default class RoleTreeComponent extends React.PureComponent {
-  // static propTypes = {
-  //   data: P.array, // 原始数据
-  //   title: P.string, // 标题
-  //   visible: P.bool, // 是否显示
-  //   defaultKeys: P.array, // 当前默认选中的key们
-  //   loading: P.bool, // 确定按钮是否在等待中状态
-  //   onOk: P.func, // 确定
-  //   onClose: P.func // 关闭
-  // };
+/**
+ * 本组件
+ * @param data 原始数据
+ * @param title 标题
+ * @param visible 是否显示
+ * @param defaultKeys 当前默认选中的key们
+ * @param loading 确定按钮是否在等待中状态
+ * @param onOk 确定
+ * @param onClose 关闭
+ */
+export default function RoleTreeComponent(props) {
+  const [nowKeys, setNowKeys] = useState([]);
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      sourceData: [], // 原始数据，有层级关系
-      nowKeys: [], // 当前选中的keys
-    };
-  }
+  useEffect(() => {
+    setNowKeys(props.defaultKeys.map((item) => `${item}`));
+  }, [props.defaultKeys]);
 
-  componentDidMount() {
-    this.makeSourceData(this.props.data);
-  }
-
-  componentDidUpdate(prevP) {
-    if (this.props.data !== prevP.data) {
-      this.makeSourceData(this.props.data);
-    }
-    if (this.props.defaultKeys !== prevP.defaultKeys) {
-      this.setState({
-        nowKeys: this.props.defaultKeys.map((item) => `${item}`),
-      });
-    }
-  }
-
-  /** 处理原始数据，将原始数据处理为层级关系 **/
-  makeSourceData(data) {
-    const d = _.cloneDeep(data);
-    d.forEach((item) => {
-      item.key = String(item.id);
-    });
-    // 按照sort排序
-    const sourceData = this.dataToJson(null, d) || [];
-    console.log("处理后的数据：", sourceData);
-    this.setState({
-      sourceData,
-    });
-  }
-
-  /** 工具 - 递归将扁平数据转换为层级数据 **/
-  dataToJson(one, data) {
+  // 工具 - 递归将扁平数据转换为层级数据
+  const dataToJson = useCallback((one, data) => {
     let kids;
     if (!one) {
       // 第1次递归
@@ -61,78 +29,52 @@ export default class RoleTreeComponent extends React.PureComponent {
     } else {
       kids = data.filter((item) => item.parent === one.id);
     }
-    kids.forEach((item) => (item.children = this.dataToJson(item, data)));
+    kids.forEach((item) => (item.children = dataToJson(item, data)));
     return kids.length ? kids : null;
-  }
+  }, []);
 
-  /** 递归构建树结构 **/
-  makeTreeDom(data) {
-    return data.map((item, index) => {
-      if (item.children) {
-        return (
-          <TreeNode
-            title={item.title}
-            key={item.id}
-            data={item}
-            selectable={false}
-          >
-            {this.makeTreeDom(item.children)}
-          </TreeNode>
-        );
-      } else {
-        return (
-          <TreeNode
-            title={item.title}
-            key={item.id}
-            data={item}
-            selectable={false}
-          />
-        );
-      }
-    });
-  }
-
-  /** 点击确定时触发 **/
-  onOk = () => {
+  // 点击确定时触发
+  const onOk = useCallback(() => {
     // 通过key返回指定的数据
-    const res = this.props.data.filter((item) => {
-      return this.state.nowKeys.includes(`${item.id}`);
+    const res = props.data.filter((item) => {
+      return nowKeys.includes(`${item.id}`);
     });
     // 返回选中的keys和选中的具体数据
-    this.props.onOk && this.props.onOk(this.state.nowKeys, res);
-  };
+    props.onOk && props.onOk(nowKeys, res);
+  }, [props, nowKeys]);
 
-  /** 点击关闭时触发 **/
-  onClose = () => {
-    this.props.onClose();
-  };
+  // 点击关闭时触发
+  const onClose = useCallback(() => {
+    props.onClose();
+  }, [props]);
 
-  /** 选中或取消选中时触发 **/
-  onCheck = (keys) => {
-    console.log("onCheck", keys);
-    this.setState({
-      nowKeys: keys,
+  // 选中或取消选中时触发
+  const onCheck = useCallback((keys) => {
+    setNowKeys(keys);
+  }, []);
+
+  // ==================
+  // 计算属性 memo
+  // ==================
+
+  // 处理原始数据，将原始数据处理为层级关系
+  const sourceData = useMemo(() => {
+    const d = _.cloneDeep(props.data);
+    d.forEach((item) => {
+      item.key = String(item.id);
     });
-  };
+    return dataToJson(null, d) || [];
+  }, [props.data, dataToJson]);
 
-  render() {
-    return (
-      <Modal
-        title={this.props.title || "请选择"}
-        visible={this.props.visible}
-        wrapClassName="menuTreeModal"
-        confirmLoading={this.props.loading}
-        onOk={this.onOk}
-        onCancel={this.onClose}
-      >
-        <Tree
-          checkable
-          selectable={false}
-          checkedKeys={this.state.nowKeys}
-          onCheck={(keys) => this.onCheck(keys)}
-          treeData={this.state.sourceData}
-        ></Tree>
-      </Modal>
-    );
-  }
+  return (
+    <Modal
+      title={props.title || "请选择"}
+      visible={props.visible}
+      wrapClassName="menuTreeModal"
+      confirmLoading={props.loading}
+      onOk={onOk}
+      onCancel={onClose}>
+      <Tree checkable selectable={false} checkedKeys={nowKeys} onCheck={onCheck} treeData={sourceData}></Tree>
+    </Modal>
+  );
 }

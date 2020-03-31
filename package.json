@@ -25,7 +25,7 @@
   "dependencies": {
     "@loadable/component": "^5.12.0",
     "@rematch/core": "^1.4.0",
-    "antd": "^4.0.4",
+    "antd": "^4.1.0",
     "axios": "^0.19.2",
     "core-js": "^3.6.4",
     "history": "^4.10.1",
