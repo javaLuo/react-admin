@@ -73,8 +73,15 @@ export default function RoleTreeComponent(props) {
       wrapClassName="menuTreeModal"
       confirmLoading={props.loading}
       onOk={onOk}
-      onCancel={onClose}>
-      <Tree checkable selectable={false} checkedKeys={nowKeys} onCheck={onCheck} treeData={sourceData}></Tree>
+      onCancel={onClose}
+    >
+      <Tree
+        checkable
+        selectable={false}
+        checkedKeys={nowKeys}
+        onCheck={onCheck}
+        treeData={sourceData}
+      ></Tree>
     </Modal>
   );
 }

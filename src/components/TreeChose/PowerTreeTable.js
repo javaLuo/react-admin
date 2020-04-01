@@ -68,7 +68,11 @@ export default function TreeTable(props) {
         old.splice(old.indexOf(id), 1);
         // 判断当前这一行的权限中是否还有被选中的，如果全都没有选中，那当前菜单也要取消选中
         const tempMap = record.powers.map((item) => item.id);
-        if (!btnDtoChecked.some((item) => item !== id && tempMap.indexOf(item) >= 0)) {
+        if (
+          !btnDtoChecked.some(
+            (item) => item !== id && tempMap.indexOf(item) >= 0
+          )
+        ) {
           treeCheckedTemp.splice(treeCheckedTemp.indexOf(record.id), 1);
         }
       }
@@ -121,14 +125,18 @@ export default function TreeTable(props) {
         if (selected) {
           // 选中，连带其权限全部勾选
           if (t && Array.isArray(t.powers)) {
-            const temp = Array.from(new Set([...t.powers.map((item) => item.id), ...btnDtoChecked]));
+            const temp = Array.from(
+              new Set([...t.powers.map((item) => item.id), ...btnDtoChecked])
+            );
             setBtnDtoChecked(temp);
           }
         } else {
           // 取消选中，连带其权限全部取消勾选
           if (t && Array.isArray(t.powers)) {
             const mapTemp = t.powers.map((item) => item.id);
-            const temp = btnDtoChecked.filter((item) => mapTemp.indexOf(item) < 0);
+            const temp = btnDtoChecked.filter(
+              (item) => mapTemp.indexOf(item) < 0
+            );
             setBtnDtoChecked(temp);
           }
         }
@@ -167,7 +175,11 @@ export default function TreeTable(props) {
           if (value) {
             return value.map((item, index) => {
               return (
-                <Checkbox key={index} checked={() => dtoIsChecked(item.id)} onChange={(e) => onBtnDtoChange(e, item.id, record)}>
+                <Checkbox
+                  key={index}
+                  checked={() => dtoIsChecked(item.id)}
+                  onChange={(e) => onBtnDtoChange(e, item.id, record)}
+                >
                   {item.title}
                 </Checkbox>
               );
@@ -187,13 +199,20 @@ export default function TreeTable(props) {
       visible={props.modalShow}
       onOk={onOk}
       onCancel={onClose}
-      confirmLoading={props.loading}>
+      confirmLoading={props.loading}
+    >
       {props.initloading ? (
         <div style={{ textAlign: "center" }}>
           <Spin tip="加载中…" />
         </div>
       ) : (
-        <Table columns={tableColumns} rowSelection={tableRowSelection} dataSource={sourceData} pagination={false} defaultExpandAllRows />
+        <Table
+          columns={tableColumns}
+          rowSelection={tableRowSelection}
+          dataSource={sourceData}
+          pagination={false}
+          defaultExpandAllRows
+        />
       )}
     </Modal>
   );

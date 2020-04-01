@@ -1,5 +1,6 @@
 /** Canvas背景效果，变化的线条 **/
 import React, { useEffect, useRef, useCallback } from "react";
+import { useMount } from "react-use";
 import "./index.less";
 /**
  * this.props.col 纵向密度
@@ -15,7 +16,7 @@ export default function CanvasBack(props) {
   });
 
   const animateTimer = useRef(null);
-  useEffect(() => {
+  useMount(() => {
     data.current.ctx = myCanvas.current.getContext("2d");
     data.current.ctx.strokeStyle = "rgba(255,255,255,1)";
     data.current.width = myCanvas.current.clientWidth;
@@ -27,7 +28,7 @@ export default function CanvasBack(props) {
     return () => {
       window.cancelAnimationFrame(animateTimer.current);
     };
-  }, []);
+  });
 
   /** 初始化canvas **/
   const init = useCallback(
@@ -74,9 +75,7 @@ export default function CanvasBack(props) {
           ctx.lineTo(dots[k1].x + dots[k1].sx, dots[k1].y + dots[k1].sy);
           ctx.lineTo(dots[k2].x + dots[k2].sx, dots[k2].y + dots[k2].sy);
           ctx.closePath();
-          const c = Math.round(
-            (dots[k].color + dots[k1].color + dots[k2].color) / 3
-          );
+          const c = Math.round((dots[k].color + dots[k1].color + dots[k2].color) / 3);
           ctx.fillStyle = `rgb(6,${Math.round(c / 1.3)},${c})`;
           ctx.fill();
         }
@@ -86,9 +85,7 @@ export default function CanvasBack(props) {
           ctx.lineTo(dots[k1].x + dots[k1].sx, dots[k1].y + dots[k1].sy);
           ctx.lineTo(dots[k3].x + dots[k3].sx, dots[k3].y + dots[k3].sy);
           ctx.closePath();
-          const c = Math.round(
-            (dots[k].color + dots[k1].color + dots[k3].color) / 3
-          );
+          const c = Math.round((dots[k].color + dots[k1].color + dots[k3].color) / 3);
           ctx.fillStyle = `rgb(6, ${Math.round(c / 1.3)},${c})`;
           ctx.fill();
         }

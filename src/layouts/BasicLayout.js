@@ -68,7 +68,8 @@ function BasicLayoutCom(props) {
       if (props.userinfo.menus && props.userinfo.menus.length) {
         menus = props.userinfo.menus;
       } else if (sessionStorage.getItem("userinfo")) {
-        menus = JSON.parse(tools.uncompile(sessionStorage.getItem("userinfo"))).menus;
+        menus = JSON.parse(tools.uncompile(sessionStorage.getItem("userinfo")))
+          .menus;
       }
       const m = menus.map((item) => item.url.replace(/^\//, "")); // 当前用户拥有的所有菜单
       const urls = pathname.split("/").filter((item) => !!item);
@@ -99,20 +100,50 @@ function BasicLayoutCom(props) {
 
   return (
     <Layout className="page-basic">
-      <Menu data={props.userinfo.menus} collapsed={collapsed} location={props.location} history={props.history} />
+      <Menu
+        data={props.userinfo.menus}
+        collapsed={collapsed}
+        location={props.location}
+        history={props.history}
+      />
       <Layout>
-        <Header collapsed={collapsed} userinfo={props.userinfo} onToggle={() => setCollapsed(!collapsed)} onLogout={onLogout} />
+        <Header
+          collapsed={collapsed}
+          userinfo={props.userinfo}
+          onToggle={() => setCollapsed(!collapsed)}
+          onLogout={onLogout}
+        />
         <Bread menus={props.userinfo.menus} location={props.location} />
         <Content className="content">
           <ErrorBoundary location={props.location}>
             <Switch>
               <Redirect exact from="/" to="/home" />
-              <Route exact path="/home" render={(props) => onEnter(Home, props)} />
+              <Route
+                exact
+                path="/home"
+                render={(props) => onEnter(Home, props)}
+              />
 
-              <Route exact path="/system/menuadmin" render={(props) => onEnter(MenuAdmin, props)} />
-              <Route exact path="/system/poweradmin" render={(props) => onEnter(PowerAdmin, props)} />
-              <Route exact path="/system/roleadmin" render={(props) => onEnter(RoleAdmin, props)} />
-              <Route exact path="/system/useradmin" render={(props) => onEnter(UserAdmin, props)} />
+              <Route
+                exact
+                path="/system/menuadmin"
+                render={(props) => onEnter(MenuAdmin, props)}
+              />
+              <Route
+                exact
+                path="/system/poweradmin"
+                render={(props) => onEnter(PowerAdmin, props)}
+              />
+              <Route
+                exact
+                path="/system/roleadmin"
+                render={(props) => onEnter(RoleAdmin, props)}
+              />
+              <Route
+                exact
+                path="/system/useradmin"
+                render={(props) => onEnter(UserAdmin, props)}
+              />
               <Route exact path="/nopower" component={NoPower} />
               <Route component={NotFound} />
             </Switch>

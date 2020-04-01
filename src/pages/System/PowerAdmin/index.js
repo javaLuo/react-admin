@@ -3,7 +3,8 @@
 // ==================
 // 所需的第三方库
 // ==================
-import React, { useState, useEffect, useCallback, useMemo } from "react";
+import React, { useState, useCallback, useMemo } from "react";
+import { useSetState, useMount } from "react-use";
 import { connect } from "react-redux";
 import {
   Tree,
@@ -32,7 +33,6 @@ import _ from "lodash";
 // 所需的自定义的东西
 // ==================
 import "./index.less";
-import { useModal } from "@/hooks"; // 自定义的hooks
 
 const { Option } = Select;
 const { TextArea } = Input;
@@ -58,56 +58,51 @@ function PowerAdminContainer(props) {
   const [data, setData] = useState([]); // 当前所选菜单下的权限数据
   const [loading, setLoading] = useState(false); // 数据是否正在加载中
 
-  const {
-    operateType,
-    nowData,
-    modalShow,
-    modalLoading,
-    setModal,
-  } = useModal(); // 模态框相关参数控制
+  // 模态框相关参数控制
+  const [modal, setModal] = useSetState({
+    operateType: false,
+    nowData: null,
+    modalShow: false,
+    modalLoading: false,
+  });
   const [rolesCheckboxChose, setRolesCheckboxChose] = useState([]); // 表单 - 赋予项选中的值
 
-  /**
-   * 左侧菜单树相关参数
-   * treeSelect 当前Menu树被选中的节点数据
-   */
+  // 左侧菜单树相关参数 当前Menu树被选中的节点数据
   const [treeSelect, setTreeSelect] = useState({});
 
-  useEffect(() => {
+  // 生命周期 - 首次加载组件时触发
+  useMount(() => {
     if (props.userinfo.menus.length === 0) {
       props.getMenus();
     }
     props.getAllRoles();
     getData();
-  }, []);
+  });
 
-  /** 根据所选菜单id获取其下权限数据 **/
-  const getData = useCallback(
-    async (menuId = null) => {
-      const p = props.powersCode;
-      if (!p.includes("power:query")) {
-        return;
+  // 根据所选菜单id获取其下权限数据
+  const getData = async (menuId = null) => {
+    const p = props.powersCode;
+    if (!p.includes("power:query")) {
+      return;
+    }
+
+    setLoading(true);
+    const params = {
+      menuId: Number(menuId) || null,
+    };
+
+    try {
+      const res = await props.getPowerDataByMenuId(params);
+
+      if (res.status === 200) {
+        setData(res.data);
       }
+    } finally {
+      setLoading(false);
+    }
+  };
 
-      setLoading(true);
-      const params = {
-        menuId: Number(menuId) || null,
-      };
-
-      try {
-        const res = await props.getPowerDataByMenuId(params);
-
-        if (res.status === 200) {
-          setData(res.data);
-        }
-      } finally {
-        setLoading(false);
-      }
-    },
-    [props]
-  );
-
-  /** 工具 - 递归将扁平数据转换为层级数据 **/
+  // 工具 - 递归将扁平数据转换为层级数据
   const dataToJson = useCallback((one, data) => {
     let kids;
     if (!one) {
@@ -120,75 +115,67 @@ function PowerAdminContainer(props) {
     return kids.length ? kids : null;
   }, []);
 
-  /** 点击树目录时触发 **/
-  const onTreeSelect = useCallback(
-    (keys, e) => {
-      if (e.selected) {
-        // 选中时才触发
-        getData(keys[0]);
-        setTreeSelect({ title: e.node.title, id: e.node.id });
+  // 点击树目录时触发
+  const onTreeSelect = (keys, e) => {
+    if (e.selected) {
+      // 选中时才触发
+      getData(keys[0]);
+      setTreeSelect({ title: e.node.title, id: e.node.id });
+    } else {
+      setTreeSelect({});
+      setData([]);
+    }
+  };
+
+  // 新增&修改 模态框出现
+  const onModalShow = (data, type) => {
+    setModal({
+      modalShow: true,
+      nowData: data,
+      operateType: type,
+    });
+    setRolesCheckboxChose(
+      data && data.id
+        ? props.roles
+            .filter((item) => {
+              const theMenuPower = item.menuAndPowers?.find(
+                (item2) => item2.menuId === data.menu
+              );
+              if (theMenuPower) {
+                return theMenuPower.powers.includes(data.id);
+              }
+              return false;
+            })
+            .map((item) => item.id)
+        : []
+    );
+    setTimeout(() => {
+      if (type === "add") {
+        // 新增，需重置表单各控件的值
+        form.resetFields();
       } else {
-        setTreeSelect({});
-        setData([]);
+        // 查看或修改，需设置表单各控件的值为当前所选中行的数据
+        form.setFieldsValue({
+          formConditions: data.conditions,
+          formDesc: data.desc,
+          formCode: data.code,
+          formSorts: data.sorts,
+          formTitle: data.title,
+        });
       }
-    },
-    [getData]
-  );
+    });
+  };
 
-  /** 新增&修改 模态框出现 **/
-  const onModalShow = useCallback(
-    (data, type) => {
-      setModal({
-        modalShow: true,
-        nowData: data,
-        operateType: type,
-      });
-      console.log("props:", props.roles);
-      setRolesCheckboxChose(
-        data && data.id
-          ? props.roles
-              .filter((item) => {
-                const theMenuPower = item.menuAndPowers?.find(
-                  (item2) => item2.menuId === data.menu
-                );
-                if (theMenuPower) {
-                  return theMenuPower.powers.includes(data.id);
-                }
-                return false;
-              })
-              .map((item) => item.id)
-          : []
-      );
-      setTimeout(() => {
-        if (type === "add") {
-          // 新增，需重置表单各控件的值
-          form.resetFields();
-        } else {
-          // 查看或修改，需设置表单各控件的值为当前所选中行的数据
-          // const v = form.getFieldsValue();
-          form.setFieldsValue({
-            formConditions: data.conditions,
-            formDesc: data.desc,
-            formCode: data.code,
-            formSorts: data.sorts,
-            formTitle: data.title,
-          });
-        }
-      });
-    },
-    [form, props.roles, setModal]
-  );
-
-  /** 新增&修改 模态框关闭 **/
-  const onClose = useCallback(() => {
+  // 新增&修改 模态框关闭
+  const onClose = () => {
     setModal({
       modalShow: false,
     });
-  }, [setModal]);
+  };
 
-  /** 新增&修改 提交 **/
-  const onOk = useCallback(async () => {
-    if (operateType === "see") {
+  // 新增&修改 提交
+  const onOk = async () => {
+    if (modal.operateType === "see") {
       onClose();
       return;
     }
@@ -206,7 +193,7 @@ function PowerAdminContainer(props) {
       setModal({
         modalLoading: true,
       });
-      if (operateType === "add") {
+      if (modal.operateType === "add") {
         // 新增
         try {
           const res = await props.addPower(params);
@@ -229,7 +216,7 @@ function PowerAdminContainer(props) {
       } else {
         // 修改
         try {
-          params.id = nowData.id;
+          params.id = modal.nowData.id;
           const res = await props.upPower(params);
           if (res.status === 200) {
             message.success("修改成功");
@@ -251,64 +238,51 @@ function PowerAdminContainer(props) {
     } catch {
       // 未通过校验
     }
-  }, [
-    form,
-    nowData,
-    operateType,
-    rolesCheckboxChose,
-    props,
-    getData,
-    onClose,
-    treeSelect.id,
-    setModal,
-    setPowersByRoleIds,
-  ]);
+  };
 
-  /** 删除一条数据 **/
-  const onDel = useCallback(
-    async (record) => {
-      const params = { id: record.id };
-      setLoading(true);
-      const res = await props.delPower(params);
-      if (res.status === 200) {
-        getData(treeSelect.id);
-        props.updateUserInfo();
-        message.success("删除成功");
-      } else {
-        message.error(res.message);
-      }
-    },
-    [props, getData, treeSelect.id]
-  );
+  // 删除一条数据
+  const onDel = async (record) => {
+    const params = { id: record.id };
+    setLoading(true);
+    const res = await props.delPower(params);
+    if (res.status === 200) {
+      getData(treeSelect.id);
+      props.updateUserInfo();
+      message.success("删除成功");
+    } else {
+      message.error(res.message);
+    }
+  };
 
   /**
    * 批量更新roles
    * @param id 当前这个权限的id
    * @param roleIds 选中的角色的id们，要把当前权限赋给这些角色
    *  **/
-  const setPowersByRoleIds = useCallback(
-    (id, roleIds) => {
-      const params = props.roles.map((item) => {
-        const powersTemp = new Set(
-          item.menuAndPowers.reduce((a, b) => [...a, ...b.powers], [])
-        );
-        if (roleIds.includes(item.id)) {
-          powersTemp.add(id);
-        } else {
-          powersTemp.delete(id);
-        }
-        return {
-          id: item.id,
-          menus: item.menuAndPowers.map((item) => item.menuId),
-          powers: Array.from(powersTemp),
-        };
-      });
-      props.setPowersByRoleIds(params);
-    },
-    [props]
-  );
+  const setPowersByRoleIds = (id, roleIds) => {
+    const params = props.roles.map((item) => {
+      const powersTemp = new Set(
+        item.menuAndPowers.reduce((a, b) => [...a, ...b.powers], [])
+      );
+      if (roleIds.includes(item.id)) {
+        powersTemp.add(id);
+      } else {
+        powersTemp.delete(id);
+      }
+      return {
+        id: item.id,
+        menus: item.menuAndPowers.map((item) => item.menuId),
+        powers: Array.from(powersTemp),
+      };
+    });
+    props.setPowersByRoleIds(params);
+  };
 
-  /** 处理原始数据，将原始数据处理为层级关系 **/
+  // ==================
+  // 属性 和 memo
+  // ==================
+
+  // 处理原始数据，将原始数据处理为层级关系
   const sourceData = useMemo(() => {
     const d = _.cloneDeep(props.userinfo.menus);
     d.forEach((item) => {
@@ -321,101 +295,99 @@ function PowerAdminContainer(props) {
     return dataToJson(null, d) || [];
   }, [props.userinfo.menus, dataToJson]);
 
-  /** 构建表格字段 **/
-  const tableColumns = useMemo(() => {
-    return [
-      {
-        title: "序号",
-        dataIndex: "serial",
-        key: "serial",
-      },
-      {
-        title: "权限名称",
-        dataIndex: "title",
-        key: "title",
-      },
-      {
-        title: "Code",
-        dataIndex: "code",
-        key: "code",
-      },
-      {
-        title: "描述",
-        dataIndex: "desc",
-        key: "desc",
-      },
-      {
-        title: "状态",
-        dataIndex: "conditions",
-        key: "conditions",
-        render: (text, record) =>
-          text === 1 ? (
-            <span style={{ color: "green" }}>启用</span>
-          ) : (
-            <span style={{ color: "red" }}>禁用</span>
-          ),
-      },
-      {
-        title: "操作",
-        key: "control",
-        width: 120,
-        render: (text, record) => {
-          const controls = [];
-          const p = props.powersCode;
-          p.includes("power:query") &&
-            controls.push(
-              <span
-                key="0"
-                className="control-btn green"
-                onClick={() => onModalShow(record, "see")}
-              >
-                <Tooltip placement="top" title="查看">
-                  <EyeOutlined />
+  // 构建表格字段
+  const tableColumns = [
+    {
+      title: "序号",
+      dataIndex: "serial",
+      key: "serial",
+    },
+    {
+      title: "权限名称",
+      dataIndex: "title",
+      key: "title",
+    },
+    {
+      title: "Code",
+      dataIndex: "code",
+      key: "code",
+    },
+    {
+      title: "描述",
+      dataIndex: "desc",
+      key: "desc",
+    },
+    {
+      title: "状态",
+      dataIndex: "conditions",
+      key: "conditions",
+      render: (text, record) =>
+        text === 1 ? (
+          <span style={{ color: "green" }}>启用</span>
+        ) : (
+          <span style={{ color: "red" }}>禁用</span>
+        ),
+    },
+    {
+      title: "操作",
+      key: "control",
+      width: 120,
+      render: (text, record) => {
+        const controls = [];
+        const p = props.powersCode;
+        p.includes("power:query") &&
+          controls.push(
+            <span
+              key="0"
+              className="control-btn green"
+              onClick={() => onModalShow(record, "see")}
+            >
+              <Tooltip placement="top" title="查看">
+                <EyeOutlined />
+              </Tooltip>
+            </span>
+          );
+        p.includes("power:up") &&
+          controls.push(
+            <span
+              key="1"
+              className="control-btn blue"
+              onClick={() => onModalShow(record, "up")}
+            >
+              <Tooltip placement="top" title="修改">
+                <ToolOutlined />
+              </Tooltip>
+            </span>
+          );
+        p.includes("power:del") &&
+          controls.push(
+            <Popconfirm
+              key="2"
+              title="确定删除吗?"
+              okText="确定"
+              cancelText="取消"
+              onConfirm={() => onDel(record)}
+            >
+              <span className="control-btn red">
+                <Tooltip placement="top" title="删除">
+                  <DeleteOutlined />
                 </Tooltip>
               </span>
-            );
-          p.includes("power:up") &&
-            controls.push(
-              <span
-                key="1"
-                className="control-btn blue"
-                onClick={() => onModalShow(record, "up")}
-              >
-                <Tooltip placement="top" title="修改">
-                  <ToolOutlined />
-                </Tooltip>
-              </span>
-            );
-          p.includes("power:del") &&
-            controls.push(
-              <Popconfirm
-                key="2"
-                title="确定删除吗?"
-                okText="确定"
-                cancelText="取消"
-                onConfirm={() => onDel(record)}
-              >
-                <span className="control-btn red">
-                  <Tooltip placement="top" title="删除">
-                    <DeleteOutlined />
-                  </Tooltip>
-                </span>
-              </Popconfirm>
-            );
-          const result = [];
-          controls.forEach((item, index) => {
-            if (index) {
-              result.push(<Divider key={`line${index}`} type="vertical" />);
-            }
-            result.push(item);
-          });
-          return result;
-        },
+            </Popconfirm>
+          );
+        const result = [];
+        controls.forEach((item, index) => {
+          if (index) {
+            result.push(<Divider key={`line${index}`} type="vertical" />);
+          }
+          result.push(item);
+        });
+        return result;
       },
-    ];
-  }, [props.powersCode, onDel, onModalShow]);
+    },
+  ];
 
-  /** 构建表格数据 **/
+  // 构建表格数据
   const tableData = useMemo(() => {
     return data.map((item, index) => {
       return {
@@ -432,18 +404,13 @@ function PowerAdminContainer(props) {
     });
   }, [data]);
 
-  /** 新增或修改时 构建‘赋予’项数据 **/
+  // 新增或修改时 构建‘赋予’项数据
   const rolesCheckboxData = useMemo(() => {
     return props.roles.map((item) => ({
       label: item.title,
       value: item.id,
     }));
   }, [props.roles]);
-
-  // 赋予相关角色改变
-  const onRolesCheckboxChange = useCallback((values) => {
-    setRolesCheckboxChose(values);
-  }, []);
 
   return (
     <div className="page-power-admin">
@@ -481,13 +448,13 @@ function PowerAdminContainer(props) {
       </div>
       {/** 查看&新增&修改用户模态框 **/}
       <Modal
-        title={`${{ add: "新增", up: "修改", see: "查看" }[operateType]}权限: ${
-          treeSelect.title
-        }->${nowData?.title ?? ""}`}
-        visible={modalShow}
+        title={`${
+          { add: "新增", up: "修改", see: "查看" }[modal.operateType]
+        }权限: ${treeSelect.title}->${modal.nowData?.title ?? ""}`}
+        visible={modal.modalShow}
         onOk={onOk}
         onCancel={onClose}
-        confirmLoading={modalLoading}
+        confirmLoading={modal.modalLoading}
       >
         <Form form={form} initialValues={{ formConditions: 1 }}>
           <Form.Item
@@ -501,7 +468,7 @@ function PowerAdminContainer(props) {
           >
             <Input
               placeholder="请输入权限名"
-              disabled={operateType === "see"}
+              disabled={modal.operateType === "see"}
             />
           </Form.Item>
           <Form.Item
@@ -515,7 +482,7 @@ function PowerAdminContainer(props) {
           >
             <Input
               placeholder="请输入权限Code"
-              disabled={operateType === "see"}
+              disabled={modal.operateType === "see"}
             />
           </Form.Item>
           <Form.Item
@@ -526,7 +493,7 @@ function PowerAdminContainer(props) {
           >
             <TextArea
               rows={4}
-              disabled={operateType === "see"}
+              disabled={modal.operateType === "see"}
               placeholoder="请输入描述"
               autosize={{ minRows: 2, maxRows: 6 }}
             />
@@ -541,7 +508,7 @@ function PowerAdminContainer(props) {
               min={0}
               max={99999}
               style={{ width: "100%" }}
-              disabled={operateType === "see"}
+              disabled={modal.operateType === "see"}
             />
           </Form.Item>
           <Form.Item
@@ -550,7 +517,7 @@ function PowerAdminContainer(props) {
             {...formItemLayout}
             rules={[{ required: true, message: "请选择状态" }]}
           >
-            <Select disabled={operateType === "see"}>
+            <Select disabled={modal.operateType === "see"}>
               <Option key={1} value={1}>
                 启用
               </Option>
@@ -561,10 +528,10 @@ function PowerAdminContainer(props) {
           </Form.Item>
           <Form.Item label="赋予" {...formItemLayout}>
             <Checkbox.Group
-              disabled={operateType === "see"}
+              disabled={modal.operateType === "see"}
               options={rolesCheckboxData}
               value={rolesCheckboxChose}
-              onChange={onRolesCheckboxChange}
+              onChange={setRolesCheckboxChose}
             />
           </Form.Item>
         </Form>

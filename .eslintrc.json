@@ -16,6 +16,7 @@
     "allowImportExportEverywhere": true,
     "sourceType": "module"
   },
+  "extends": ["plugin:react-hooks/recommended"],
   "plugins": ["react", "react-hooks", "prettier"],
   "rules": {
     "semi": "warn",
@@ -28,8 +29,6 @@
     "no-with": "error",
     "no-catch-shadow": "error",
     "react/no-unescaped-entities": "off",
-    "react-hooks/rules-of-hooks": "error",
-    "react-hooks/exhaustive-deps": "warn",
     "prettier/prettier": "warn"
   }
 }

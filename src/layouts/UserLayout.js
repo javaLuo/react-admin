@@ -23,7 +23,10 @@ import Footer from "../components/Footer";
 // ==================
 // 异步加载各路由模块
 // ==================
-const [NotFound, Login] = [() => import("../pages/ErrorPages/404"), () => import("../pages/Login")].map((item) => {
+const [NotFound, Login] = [
+  () => import("../pages/ErrorPages/404"),
+  () => import("../pages/Login"),
+].map((item) => {
   return loadable(item, {
     fallback: <Loading />,
   });
