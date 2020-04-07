@@ -14,7 +14,7 @@ import axios from "axios";
 // 请求是否带上cookie
 axios.defaults.withCredentials = false;
 // 默认基础请求地址
-axios.defaults.baseUrl = baseUrl;
+axios.defaults.baseURL = baseUrl;
 // 对返回的结果做处理
 axios.interceptors.response.use((response) => {
   // const code = response && response.data ? response.data.code : 200;

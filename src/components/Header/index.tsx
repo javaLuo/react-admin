@@ -1,13 +1,5 @@
 /** 头部 **/
 
-// Com.propTypes = {
-//   onToggle: P.func, // 菜单收起与展开状态切换
-//   collapsed: P.bool, // 菜单的状态
-//   onLogout: P.func, // 退出登录
-//   userinfo: P.object, // 用户信息
-//   popLoading: P.bool // 消息弹窗是否正在加载数据
-// };
-
 import React, { useState, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { Layout, Tooltip, Menu, Dropdown } from "antd";
@@ -21,26 +13,45 @@ import {
   SmileOutlined,
 } from "@ant-design/icons";
 import "./index.less";
+import { IUserInfo } from "@/models/app";
 const { Header } = Layout;
 
-export default function HeaderCom(props) {
+interface Props {
+  onToggle: Function; // 菜单收起与展开状态切换
+  collapsed: boolean; // 菜单的状态
+  onLogout: Function; // 退出登录
+  userinfo: IUserInfo; // 用户信息
+}
+type Element = {
+  webkitRequestFullscreen?: Function;
+  webkitExitFullscreen?: Function;
+  mozRequestFullScreen?: Function;
+  mozCancelFullScreen?: Function;
+  msRequestFullscreen?: Function;
+  msExitFullscreen?: Function;
+};
+type Win = Window &
+  typeof globalThis & {
+    ActiveXObject?: any;
+  };
+export default function HeaderCom(props: Props) {
   const [fullScreen, setFullScreen] = useState(false); // 当前是否是全屏状态
   /**
    * 进入全屏
    * **/
   const requestFullScreen = useCallback(() => {
-    const element = document.documentElement;
+    const element: HTMLElement & Element = document.documentElement;
     // 判断各种浏览器，找到正确的方法
     const requestMethod =
-      element.requestFullScreen || //W3C
-      element.webkitRequestFullScreen || //Chrome等
-      element.mozRequestFullScreen || //FireFox
-      element.msRequestFullScreen; //IE11
+      element.requestFullscreen || // W3C
+      element.webkitRequestFullscreen || // Chrome等
+      element.mozRequestFullScreen || // FireFox
+      element.msRequestFullscreen; // IE11
     if (requestMethod) {
       requestMethod.call(element);
-    } else if (typeof window.ActiveXObject !== "undefined") {
+    } else if (typeof (window as Win).ActiveXObject !== "undefined") {
       //for Internet Explorer
-      const wscript = new ActiveXObject("WScript.Shell");
+      const wscript = new (window as Win).ActiveXObject("WScript.Shell");
       if (wscript !== null) {
         wscript.SendKeys("{F11}");
       }
@@ -53,15 +64,18 @@ export default function HeaderCom(props) {
    */
   const exitFullScreen = useCallback(() => {
     // 判断各种浏览器，找到正确的方法
+    const element: Document & Element = document;
     const exitMethod =
-      document.exitFullscreen || //W3C
-      document.mozCancelFullScreen || //Chrome等
-      document.webkitExitFullscreen;
+      element.exitFullscreen || //W3C
+      element.mozCancelFullScreen || //Chrome等
+      element.webkitExitFullscreen ||
+      element.msExitFullscreen;
+
     if (exitMethod) {
       exitMethod.call(document);
-    } else if (typeof window.ActiveXObject !== "undefined") {
+    } else if (typeof (window as Win).ActiveXObject !== "undefined") {
       //for Internet Explorer
-      const wscript = new ActiveXObject("WScript.Shell");
+      const wscript = new (window as Win).ActiveXObject("WScript.Shell");
       if (wscript !== null) {
         wscript.SendKeys("{F11}");
       }
@@ -91,7 +105,7 @@ export default function HeaderCom(props) {
       >
         <MenuFoldOutlined
           className={props.collapsed ? "trigger fold" : "trigger"}
-          onClick={props.onToggle}
+          onClick={() => props.onToggle()}
         />
       </Tooltip>
       <div className="rightBox">

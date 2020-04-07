@@ -19,6 +19,7 @@ import "./UserLayout.less";
 // ==================
 import Loading from "../components/Loading";
 import Footer from "../components/Footer";
+import { iRootState, Dispatch } from "@/store";
 
 // ==================
 // 异步加载各路由模块
@@ -50,6 +51,6 @@ function AppContainer() {
 }
 
 export default connect(
-  (state) => ({}),
-  (dispatch) => ({})
+  (state: iRootState) => ({}),
+  (dispatch: Dispatch) => ({})
 )(AppContainer);

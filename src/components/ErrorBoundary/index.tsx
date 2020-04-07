@@ -7,18 +7,25 @@ import React from "react";
 import { WarningOutlined } from "@ant-design/icons";
 import "./index.less";
 
-export default class ErrorBoundary extends React.PureComponent {
-  constructor(props) {
+interface Props {
+  location: Location;
+  children: JSX.Element;
+}
+interface State {
+  hasError: boolean;
+}
+export default class ErrorBoundary extends React.PureComponent<Props, State> {
+  constructor(props: Props) {
     super(props);
     this.state = {
       hasError: false,
     };
   }
-  static getDerivedStateFromError(error) {
+  static getDerivedStateFromError() {
     return { hasError: true };
   }
 
-  componentDidUpdate(prevP) {
+  componentDidUpdate(prevP: Props) {
     if (prevP.location !== this.props.location) {
       this.setState({
         hasError: false,

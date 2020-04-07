@@ -3,12 +3,20 @@ import React, { useMemo } from "react";
 import { Breadcrumb } from "antd";
 import { EnvironmentOutlined } from "@ant-design/icons";
 import "./index.less";
+import { IMenu } from "@/models/app";
 
-export default function BreadCom(props) {
+interface Props {
+  location: Location;
+  menus: IMenu[];
+}
+
+export default function BreadCom(props: Props) {
   /** 根据当前location动态生成对应的面包屑 **/
   const breads = useMemo(() => {
-    const paths = props.location.pathname.split("/").filter((item) => !!item);
-    const breads = [];
+    const paths: string[] = props.location.pathname
+      .split("/")
+      .filter((item) => !!item);
+    const breads: JSX.Element[] = [];
     paths.forEach((item, index) => {
       const temp = props.menus.find((v) => v.url.replace(/^\//, "") === item);
       if (temp) {

@@ -792,13 +792,12 @@ const setUserRoles = (p) => {
 exports.mockApi = ({ url, body }) => {
   let params = typeof body === "string" ? JSON.parse(body) : body;
   let path = url;
-  // 是get请求
+  // 是get请求 解析参数
   if (url.includes("?")) {
     path = url.split("?")[0];
     const s = new URLSearchParams(url.split("?")[1]);
     params = {};
     for (let item of s.entries()) {
-      console.log("what fuck:", item);
       params[item[0]] = item[1];
     }
   }

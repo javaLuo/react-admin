@@ -6,6 +6,10 @@ const IconFont = createFromIconfontCN({
   scriptUrl: "//at.alicdn.com/t/font_1688075_vwak21i2wxj.js",
 });
 
-export default function Icon(props) {
+interface Props {
+  type: string;
+}
+
+export default function Icon(props: Props) {
   return <IconFont type={props.type} />;
 }

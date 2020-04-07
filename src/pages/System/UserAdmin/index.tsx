@@ -3,7 +3,7 @@
 // ==================
 // 所需的第三方库
 // ==================
-import React, { useState, useEffect, useCallback, useMemo } from "react";
+import React, { useState, useMemo } from "react";
 import { useSetState, useMount } from "react-use";
 import { connect } from "react-redux";
 import {
@@ -32,11 +32,12 @@ import {
 // ==================
 import "./index.less";
 import tools from "@/util/tools"; // 工具函数
-
+import { IRole, IUserBasicInfoParam, IUserInfo } from "@/models/app";
 // ==================
 // 所需的组件
 // ==================
 import RoleTree from "@/components/TreeChose/RoleTree";
+import { iRootState, Dispatch } from "@/store";
 
 const { TextArea } = Input;
 const { Option } = Select;
@@ -55,22 +56,57 @@ const formItemLayout = {
 // ==================
 // 本组件
 // ==================
-function UserAdminContainer(props) {
+interface Props {
+  powersCode: string[];
+  userinfo: IUserInfo;
+  getAllRoles: Function;
+  getUserList: Function;
+  addUser: Function;
+  upUser: Function;
+  delUser: Function;
+}
+
+interface IDataList {
+  key?: number;
+  id: number;
+  serial: number; // 序号
+  username: string; // 用户名
+  password: string; // 密码
+  phone: string | number; // 手机
+  email: string; // 邮箱
+  desc: string; // 描述
+  conditions: number; // 是否启用 1启用 -1禁用
+  control?: number; // 控制，传入的ID
+  roles?: number[]; // 拥有的所有权限ID
+}
+
+function UserAdminContainer(props: Props): JSX.Element {
   const p = props.powersCode; // 用户拥有的所有权限code
   const [form] = Form.useForm();
 
-  const [data, setData] = useState([]); // 当前页面列表数据
+  const [data, setData] = useState<IDataList[]>([]); // 当前页面列表数据
   const [loading, setLoading] = useState(false); // 数据是否正在加载中
 
+  type Page = {
+    pageNum: number;
+    pageSize: number;
+    total: number;
+  };
   // 分页相关参数
-  const [page, setPage] = useSetState({
+  const [page, setPage] = useSetState<Page>({
     pageNum: 1,
     pageSize: 10,
     total: 0,
   });
 
+  type Modal = {
+    operateType: string;
+    nowData: IUserBasicInfoParam | null;
+    modalShow: boolean;
+    modalLoading: boolean;
+  };
   // 模态框相关参数
-  const [modal, setModal] = useSetState({
+  const [modal, setModal] = useSetState<Modal>({
     operateType: "add", // see查看，add添加，up修改
     nowData: null,
     modalShow: false,
@@ -78,17 +114,27 @@ function UserAdminContainer(props) {
   });
 
   // 搜索相关参数
-  const [searchInfo, setSearchInfo] = useSetState({
+  type SearchInfo = {
+    username: string | undefined; // 用户名
+    conditions: number | undefined; // 状态
+  };
+  const [searchInfo, setSearchInfo] = useSetState<SearchInfo>({
     username: undefined, // 用户名
     conditions: undefined, // 状态
   });
 
   // 角色树相关参数
-  const [role, setRole] = useSetState({
-    roleData: [], // 所有的角色数据
-    roleTreeLoading: false, // 控制树的loading状态，因为要先加载当前role的菜单，才能显示树
-    roleTreeShow: false, // 角色树是否显示
-    roleTreeDefault: [], // 用于角色树，默认需要选中的项
+  type Role = {
+    roleData: IRole[]; // 所有的角色数据
+    roleTreeLoading: boolean; // 控制树的loading状态，因为要先加载当前role的菜单，才能显示树
+    roleTreeShow: boolean; // 角色树是否显示
+    roleTreeDefault: number[]; // 用于角色树，默认需要选中的项
+  };
+  const [role, setRole] = useSetState<Role>({
+    roleData: [],
+    roleTreeLoading: false,
+    roleTreeShow: false,
+    roleTreeDefault: [],
   });
 
   // 生命周期 - 组件挂载时触发一次
@@ -98,7 +144,7 @@ function UserAdminContainer(props) {
   });
 
   // 函数 - 获取所有的角色数据，用于分配角色控件的原始数据
-  const getAllRolesData = async () => {
+  const getAllRolesData = async (): Promise<void> => {
     try {
       const res = await props.getAllRoles();
       if (res.status === 200) {
@@ -110,7 +156,10 @@ function UserAdminContainer(props) {
   };
 
   // 函数 - 查询当前页面所需列表数据
-  async function onGetData(page) {
+  async function onGetData(page: {
+    pageNum: number;
+    pageSize: number;
+  }): Promise<void> {
     const p = props.powersCode;
     if (!p.includes("user:query")) {
       return;
@@ -141,19 +190,21 @@ function UserAdminContainer(props) {
   }
 
   // 搜索 - 名称输入框值改变时触发
-  const searchUsernameChange = (e) => {
+  const searchUsernameChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ): void => {
     if (e.target.value.length < 20) {
       setSearchInfo({ username: e.target.value });
     }
   };
 
   // 搜索 - 状态下拉框选择时触发
-  const searchConditionsChange = (v) => {
+  const searchConditionsChange = (v: number): void => {
     setSearchInfo({ conditions: v });
   };
 
   // 搜索
-  const onSearch = () => {
+  const onSearch = (): void => {
     onGetData(page);
   };
 
@@ -162,7 +213,7 @@ function UserAdminContainer(props) {
    * @param data 当前选中的那条数据
    * @param type add添加/up修改/see查看
    * **/
-  const onModalShow = (data, type) => {
+  const onModalShow = (data: IDataList | null, type: string): void => {
     setModal({
       modalShow: true,
       nowData: data,
@@ -173,7 +224,7 @@ function UserAdminContainer(props) {
       if (type === "add") {
         // 新增，需重置表单各控件的值
         form.resetFields();
-      } else {
+      } else if (data) {
         // 查看或修改，需设置表单各控件的值为当前所选中行的数据
         form.setFieldsValue({
           formConditions: data.conditions,
@@ -188,7 +239,7 @@ function UserAdminContainer(props) {
   };
 
   /** 模态框确定 **/
-  const onOk = async () => {
+  const onOk = async (): Promise<void> => {
     if (modal.operateType === "see") {
       onClose();
       return;
@@ -198,7 +249,7 @@ function UserAdminContainer(props) {
       setModal({
         modalLoading: true,
       });
-      const params = {
+      const params: IUserBasicInfoParam = {
         username: values.formUsername,
         password: values.formPassword,
         phone: values.formPhone,
@@ -224,7 +275,7 @@ function UserAdminContainer(props) {
         }
       } else {
         // 修改
-        params.id = modal.nowData.id;
+        params.id = modal.nowData?.id;
         try {
           const res = await props.upUser(params);
           if (res.status === 200) {
@@ -246,7 +297,7 @@ function UserAdminContainer(props) {
   };
 
   // 删除某一条数据
-  const onDel = async (id) => {
+  const onDel = async (id: number): Promise<void> => {
     setLoading(true);
     try {
       const res = await props.delUser({ id });
@@ -269,7 +320,7 @@ function UserAdminContainer(props) {
   };
 
   /** 分配角色按钮点击，角色控件出现 **/
-  const onTreeShowClick = (record) => {
+  const onTreeShowClick = (record: IDataList): void => {
     setModal({
       nowData: record,
     });
@@ -280,9 +331,9 @@ function UserAdminContainer(props) {
   };
 
   // 分配角色确定
-  const onRoleOk = async (keys, objs) => {
+  const onRoleOk = async (keys: number[]): Promise<void> => {
     const params = {
-      id: modal.nowData.id,
+      id: modal.nowData?.id,
       roles: keys.map((item) => Number(item)),
     };
     setRole({
@@ -305,14 +356,14 @@ function UserAdminContainer(props) {
   };
 
   // 分配角色树关闭
-  const onRoleClose = () => {
+  const onRoleClose = (): void => {
     setRole({
       roleTreeShow: false,
     });
   };
 
   // 表格页码改变
-  const onTablePageChange = (pageNum, pageSize) => {
+  const onTablePageChange = (pageNum: number, pageSize: number): void => {
     onGetData({ pageNum, pageSize });
   };
 
@@ -351,8 +402,8 @@ function UserAdminContainer(props) {
       title: "状态",
       dataIndex: "conditions",
       key: "conditions",
-      render: (text, record) =>
-        text === 1 ? (
+      render: (v: number): JSX.Element =>
+        v === 1 ? (
           <span style={{ color: "green" }}>启用</span>
         ) : (
           <span style={{ color: "red" }}>禁用</span>
@@ -362,18 +413,16 @@ function UserAdminContainer(props) {
       title: "操作",
       key: "control",
       width: 200,
-      render: (text, record) => {
+      render: (v: null, record: IDataList) => {
         const controls = [];
-        const u = props.userinfo.userBasicInfo || {};
+        const u = props.userinfo.userBasicInfo || { id: -1 };
         const p = props.powersCode;
-        console.log("重新渲染。");
         p.includes("user:query") &&
           controls.push(
             <span
               key="0"
               className="control-btn green"
-              onClick={() => onModalShow(record, "see")}
-            >
+              onClick={() => onModalShow(record, "see")}>
               <Tooltip placement="top" title="查看">
                 <EyeOutlined />
               </Tooltip>
@@ -384,8 +433,7 @@ function UserAdminContainer(props) {
             <span
               key="1"
               className="control-btn blue"
-              onClick={() => onModalShow(record, "up")}
-            >
+              onClick={() => onModalShow(record, "up")}>
               <Tooltip placement="top" title="修改">
                 <ToolOutlined />
               </Tooltip>
@@ -396,8 +444,7 @@ function UserAdminContainer(props) {
             <span
               key="2"
               className="control-btn blue"
-              onClick={() => onTreeShowClick(record)}
-            >
+              onClick={() => onTreeShowClick(record)}>
               <Tooltip placement="top" title="分配角色">
                 <EditOutlined />
               </Tooltip>
@@ -412,8 +459,7 @@ function UserAdminContainer(props) {
               title="确定删除吗?"
               onConfirm={() => onDel(record.id)}
               okText="确定"
-              cancelText="取消"
-            >
+              cancelText="取消">
               <span className="control-btn red">
                 <Tooltip placement="top" title="删除">
                   <DeleteOutlined />
@@ -422,7 +468,7 @@ function UserAdminContainer(props) {
             </Popconfirm>
           );
 
-        const result = [];
+        const result: JSX.Element[] = [];
         controls.forEach((item, index) => {
           if (index) {
             result.push(<Divider key={`line${index}`} type="vertical" />);
@@ -462,8 +508,7 @@ function UserAdminContainer(props) {
               type="primary"
               icon={<PlusCircleOutlined />}
               disabled={!p.includes("user:add")}
-              onClick={() => onModalShow(null, "add")}
-            >
+              onClick={() => onModalShow(null, "add")}>
               添加用户
             </Button>
           </li>
@@ -484,8 +529,7 @@ function UserAdminContainer(props) {
                 allowClear
                 style={{ width: "200px" }}
                 onChange={searchConditionsChange}
-                value={searchInfo.conditions}
-              >
+                value={searchInfo.conditions}>
                 <Option value={1}>启用</Option>
                 <Option value={-1}>禁用</Option>
               </Select>
@@ -494,8 +538,7 @@ function UserAdminContainer(props) {
               <Button
                 type="primary"
                 icon={<SearchOutlined />}
-                onClick={onSearch}
-              >
+                onClick={onSearch}>
                 搜索
               </Button>
             </li>
@@ -523,14 +566,12 @@ function UserAdminContainer(props) {
         visible={modal.modalShow}
         onOk={onOk}
         onCancel={onClose}
-        confirmLoading={modal.modalLoading}
-      >
+        confirmLoading={modal.modalLoading}>
         <Form
           form={form}
           initialValues={{
             formConditions: 1,
-          }}
-        >
+          }}>
           <Form.Item
             label="用户名"
             name="formUsername"
@@ -538,8 +579,7 @@ function UserAdminContainer(props) {
             rules={[
               { required: true, whitespace: true, message: "必填" },
               { max: 12, message: "最多输入12位字符" },
-            ]}
-          >
+            ]}>
             <Input
               placeholder="请输入用户名"
               disabled={modal.operateType === "see"}
@@ -553,8 +593,7 @@ function UserAdminContainer(props) {
               { required: true, whitespace: true, message: "必填" },
               { min: 6, message: "最少输入6位字符" },
               { max: 18, message: "最多输入18位字符" },
-            ]}
-          >
+            ]}>
             <Input
               type="password"
               placeholder="请输入密码"
@@ -577,8 +616,7 @@ function UserAdminContainer(props) {
                   return Promise.resolve();
                 },
               }),
-            ]}
-          >
+            ]}>
             <Input
               placeholder="请输入手机号"
               disabled={modal.operateType === "see"}
@@ -600,8 +638,7 @@ function UserAdminContainer(props) {
                   return Promise.resolve();
                 },
               }),
-            ]}
-          >
+            ]}>
             <Input
               placeholder="请输入邮箱地址"
               disabled={modal.operateType === "see"}
@@ -611,21 +648,18 @@ function UserAdminContainer(props) {
             label="描述"
             name="formDesc"
             {...formItemLayout}
-            rules={[{ max: 100, message: "最多输入100个字符" }]}
-          >
+            rules={[{ max: 100, message: "最多输入100个字符" }]}>
             <TextArea
               rows={4}
               disabled={modal.operateType === "see"}
-              placeholoder="请输入描述"
-              autosize={{ minRows: 2, maxRows: 6 }}
+              autoSize={{ minRows: 2, maxRows: 6 }}
             />
           </Form.Item>
           <Form.Item
             label="状态"
             name="formConditions"
             {...formItemLayout}
-            rules={[{ required: true, message: "请选择状态" }]}
-          >
+            rules={[{ required: true, message: "请选择状态" }]}>
             <Select disabled={modal.operateType === "see"}>
               <Option key={1} value={1}>
                 启用
@@ -651,12 +685,12 @@ function UserAdminContainer(props) {
 }
 
 export default connect(
-  (state) => ({
+  (state: iRootState) => ({
     powerTreeData: state.sys.powerTreeData, // 权限树所需数据
     userinfo: state.app.userinfo, // 用户信息
     powersCode: state.app.powersCode, // 所有的权限code
   }),
-  (dispatch) => ({
+  (dispatch: Dispatch) => ({
     getAllRoles: dispatch.sys.getAllRoles,
     addUser: dispatch.sys.addUser,
     upUser: dispatch.sys.upUser,

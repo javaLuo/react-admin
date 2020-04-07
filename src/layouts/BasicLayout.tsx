@@ -3,10 +3,11 @@
 // ==================
 // 所需的第三方库
 // ==================
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, FC } from "react";
 import { connect } from "react-redux";
 import { Route, Switch, Redirect } from "react-router-dom";
 import loadable from "@loadable/component";
+import { History } from "history";
 
 // ==================
 // 所需的自定义的东西
@@ -24,6 +25,8 @@ import Footer from "@/components/Footer";
 import Bread from "@/components/Bread";
 import Loading from "@/components/Loading";
 import ErrorBoundary from "@/components/ErrorBoundary";
+import { iRootState, Dispatch } from "@/store";
+import { IMenu, IUserInfo } from "@/models/app";
 
 // ==================
 // 异步加载各路由模块
@@ -47,7 +50,13 @@ const { Content } = Layout;
 // ==================
 // 本组件
 // ==================
-function BasicLayoutCom(props) {
+interface Props {
+  history: History;
+  location: Location;
+  userinfo: IUserInfo;
+  onLogout: Function;
+}
+const BasicLayoutCom: FC<Props> = (props: Props) => {
   const [collapsed, setCollapsed] = useState(false); // 菜单栏是否收起
 
   /** 退出登录 **/
@@ -63,17 +72,18 @@ function BasicLayoutCom(props) {
    * @param pathname 路由路径
    * **/
   const checkRouterPower = useCallback(
-    (pathname) => {
-      let menus;
+    (pathname: String) => {
+      let menus: IMenu[] = [];
       if (props.userinfo.menus && props.userinfo.menus.length) {
         menus = props.userinfo.menus;
       } else if (sessionStorage.getItem("userinfo")) {
-        menus = JSON.parse(tools.uncompile(sessionStorage.getItem("userinfo")))
-          .menus;
+        menus = JSON.parse(
+          tools.uncompile(sessionStorage.getItem("userinfo") || "[]")
+        ).menus;
       }
-      const m = menus.map((item) => item.url.replace(/^\//, "")); // 当前用户拥有的所有菜单
-      const urls = pathname.split("/").filter((item) => !!item);
-      for (let i = 0; i < urls.length; i++) {
+      const m: string[] = menus.map((item) => item.url.replace(/^\//, "")); // 当前用户拥有的所有菜单
+      const urls: string[] = pathname.split("/").filter((item) => !!item);
+      for (let i: number = 0; i < urls.length; i++) {
         if (!m.includes(urls[i])) {
           return false;
         }
@@ -99,13 +109,14 @@ function BasicLayoutCom(props) {
   );
 
   return (
-    <Layout className="page-basic">
+    <Layout className="page-basic" hasSider>
       <Menu
         data={props.userinfo.menus}
         collapsed={collapsed}
         location={props.location}
         history={props.history}
       />
+
       <Layout>
         <Header
           collapsed={collapsed}
@@ -153,13 +164,15 @@ function BasicLayoutCom(props) {
       </Layout>
     </Layout>
   );
-}
+};
+
+const mapDispatch = (dispatch: Dispatch) => ({
+  onLogout: dispatch.app.onLogout,
+});
 
 export default connect(
-  (state) => ({
+  (state: iRootState) => ({
     userinfo: state.app.userinfo,
   }),
-  (dispatch) => ({
-    onLogout: dispatch.app.onLogout,
-  })
+  mapDispatch
 )(BasicLayoutCom);

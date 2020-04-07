@@ -5,7 +5,11 @@ import "./index.less";
 
 const { Footer } = Layout;
 
-export default function FooterCom(props) {
+interface Props {
+  className?: string;
+}
+
+export default function FooterCom(props: Props) {
   return (
     <Footer className={`footer ${props.className}`}>
       © 2018-2020{" "}

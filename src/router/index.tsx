@@ -1,11 +1,12 @@
 /** 根路由 **/
-import React, { useEffect, useCallback } from "react";
+import React, { useEffect, useCallback, FC } from "react";
 import { Router, Route, Switch, Redirect } from "react-router-dom";
 import { connect } from "react-redux";
 // import {createBrowserHistory as createHistory} from "history/"; // URL模式的history
 import { createHashHistory as createHistory } from "history"; // 锚点模式的history
 import tools from "@/util/tools";
-
+import { iRootState, Dispatch } from "@/store";
+import { IUserInfo } from "@/models/app";
 /** 本页面所需页面级组件 **/
 import BasicLayout from "@/layouts/BasicLayout";
 import UserLayout from "@/layouts/UserLayout";
@@ -21,7 +22,12 @@ const history = createHistory();
 // ==================
 // 本组件
 // ==================
-function RouterCom(props) {
+interface Props {
+  userinfo: IUserInfo;
+  setUserInfo: Function;
+}
+
+const RouterCom: FC<Props> = (props: Props) => {
   useEffect(() => {
     const userinfo = sessionStorage.getItem("userinfo");
     /**
@@ -49,22 +55,25 @@ function RouterCom(props) {
   return (
     <Router history={history}>
       <Route
-        render={(props) => {
+        render={(): JSX.Element => {
           return (
             <Switch>
               <Route path="/user" component={UserLayout} />
-              <Route path="/" render={(props) => onEnter(BasicLayout, props)} />
+              <Route
+                path="/"
+                render={(props): JSX.Element => onEnter(BasicLayout, props)}
+              />
             </Switch>
           );
         }}
       />
     </Router>
   );
-}
+};
 
 export default connect(
-  (state) => ({ userinfo: state.app.userinfo }),
-  (dispatch) => ({
+  (state: iRootState) => ({ userinfo: state.app.userinfo }),
+  (dispatch: Dispatch) => ({
     setUserInfo: dispatch.app.setUserInfo,
   })
 )(RouterCom);
