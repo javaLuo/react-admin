@@ -1,17 +1,26 @@
 /** 根路由 **/
-import React, { useEffect, useCallback, FC } from "react";
+
+// ==================
+// 第三方库
+// ==================
+import React, { useEffect, useCallback } from "react";
 import { Router, Route, Switch, Redirect } from "react-router-dom";
 import { connect } from "react-redux";
-// import {createBrowserHistory as createHistory} from "history/"; // URL模式的history
+// import {createBrowserHistory as createHistory} from "history"; // URL模式的history
 import { createHashHistory as createHistory } from "history"; // 锚点模式的history
+import { message } from "antd";
+
+// ==================
+// 自定义的东西
+// ==================
 import tools from "@/util/tools";
-import { iRootState, Dispatch } from "@/store";
-import { IUserInfo } from "@/models/app";
-/** 本页面所需页面级组件 **/
+
+// ==================
+// 组件
+// ==================
 import BasicLayout from "@/layouts/BasicLayout";
 import UserLayout from "@/layouts/UserLayout";
-/** 普通组件 **/
-import { message } from "antd";
+
 // 全局提示只显示2秒
 message.config({
   duration: 2,
@@ -20,14 +29,20 @@ message.config({
 const history = createHistory();
 
 // ==================
-// 本组件
+// 类型声明
 // ==================
+import { IUserInfo } from "@/models/index.type";
+import { iRootState, Dispatch } from "@/store";
+
 interface Props {
   userinfo: IUserInfo;
   setUserInfo: Function;
 }
 
-const RouterCom: FC<Props> = (props: Props) => {
+// ==================
+// 本组件
+// ==================
+function RouterCom(props: Props): JSX.Element {
   useEffect(() => {
     const userinfo = sessionStorage.getItem("userinfo");
     /**
@@ -69,7 +84,7 @@ const RouterCom: FC<Props> = (props: Props) => {
       />
     </Router>
   );
-};
+}
 
 export default connect(
   (state: iRootState) => ({ userinfo: state.app.userinfo }),

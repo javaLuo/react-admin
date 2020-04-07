@@ -3,7 +3,7 @@ import React, { useMemo } from "react";
 import { Breadcrumb } from "antd";
 import { EnvironmentOutlined } from "@ant-design/icons";
 import "./index.less";
-import { IMenu } from "@/models/app";
+import { IMenu } from "@/models/index.type";
 
 interface Props {
   location: Location;

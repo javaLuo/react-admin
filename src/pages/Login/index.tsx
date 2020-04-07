@@ -16,12 +16,15 @@ import { Form, Input, Button, Checkbox, message } from "antd";
 import { UserOutlined, KeyOutlined } from "@ant-design/icons";
 import CanvasBack from "@/components/CanvasBack";
 import LogoImg from "@/assets/logo.png";
+
+// ==================
+// 类型声明
+// ==================
 import { iRootState, Dispatch } from "@/store";
 import { History } from "history";
-import { IRole, IMenu, IPower } from "@/models/sys";
-import { IUserBasicInfo } from "@/models/app";
+import { IRole, IMenu, IPower, IUserBasicInfo } from "@/models/index.type";
 import { CheckboxChangeEvent } from "antd/lib/checkbox";
-/** 函数组件 **/
+
 interface Props {
   history: History;
   setUserInfo: Function;
@@ -31,6 +34,9 @@ interface Props {
   getPowerById: Function;
 }
 
+// ==================
+// 本组件
+// ==================
 function LoginContainer(props: Props): JSX.Element {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false); // 是否正在登录中

@@ -611,6 +611,9 @@ const getRoleById = (p) => {
 const addRole = (p) => {
   // const p = JSON.parse(request.body);
   p.id = ++id_sequence;
+  if (!p.menuAndPowers) {
+    p.menuAndPowers = [];
+  }
   roles.push(p);
   return { status: 200, data: null, message: "success" };
 };
@@ -657,7 +660,7 @@ const findAllPowerByRoleId = (p) => {
   }
 };
 // 获取所有的菜单及权限数据 - 为了构建PowerTree组件
-const getAllPowers = (p) => {
+const getAllMenusAndPowers = (p) => {
   const res = menus.map((item) => {
     const _menu = item;
     const _powers = powers.filter(
@@ -673,7 +676,7 @@ const setPowersByRoleId = (p) => {
   // const p = JSON.parse(request.body);
   const oldIndex = roles.findIndex((item) => item.id === p.id);
   if (oldIndex !== -1) {
-    let pow = p.menus.map((item) => ({ menuId: item, powers: [] }));
+    const pow = p.menus.map((item) => ({ menuId: item, powers: [] }));
     console.log("此时的POW", pow);
     // 将每一个权限id归类到对应的菜单里
     p.powers.forEach((ppItem) => {
@@ -703,7 +706,7 @@ const setPowersByRoleIds = (ps) => {
   ps.forEach((p) => {
     const oldIndex = roles.findIndex((item) => item.id === p.id);
     if (oldIndex !== -1) {
-      let pow = p.menus.map((item) => ({ menuId: item, powers: [] }));
+      const pow = p.menus.map((item) => ({ menuId: item, powers: [] }));
       console.log("此时的POW", pow);
       // 将每一个权限id归类到对应的菜单里
       p.powers.forEach((ppItem) => {
@@ -797,7 +800,7 @@ exports.mockApi = ({ url, body }) => {
     path = url.split("?")[0];
     const s = new URLSearchParams(url.split("?")[1]);
     params = {};
-    for (let item of s.entries()) {
+    for (const item of s.entries()) {
       params[item[0]] = item[1];
     }
   }
@@ -854,8 +857,8 @@ exports.mockApi = ({ url, body }) => {
       return delRole(params);
     case "/api/findAllPowerByRoleId":
       return findAllPowerByRoleId(params);
-    case "/api/getAllPowers":
-      return getAllPowers(params);
+    case "/api/getAllMenusAndPowers":
+      return getAllMenusAndPowers(params);
     case "/api/setPowersByRoleId":
       return setPowersByRoleId(params);
     case "/api/setPowersByRoleIds":

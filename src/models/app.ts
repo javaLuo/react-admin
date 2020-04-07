@@ -6,67 +6,14 @@
 import axios from "@/util/axios"; // 自己写的工具函数，封装了请求数据的通用接口
 import { message } from "antd";
 import { Dispatch, iRootState } from "@/store";
-import { IPower } from "@/models/sys";
-// 菜单对象
-export interface IMenu {
-  id: number;
-  title: string;
-  icon: string;
-  url: string;
-  parent: number;
-  desc: string;
-  sorts: number;
-  conditions: number;
-  children?: IMenu[];
-}
-// 角色对象
-export interface IRole {
-  id: number;
-  title: string;
-  desc: string;
-  sorts: number;
-  conditions: number;
-  menuAndPowers: IMenuAndPower[];
-}
-
-export interface IMenuAndPower {
-  menuId: number;
-  powers: number[];
-}
-
-// UserInfo 用户数据类型
-export interface IUserInfo {
-  userBasicInfo: IUserBasicInfo | null;
-  menus: IMenu[];
-  roles: IRole[];
-  powers: any[];
-}
-
-export interface IUserBasicInfo {
-  id: number; // ID
-  username: string; // 用户名
-  password: string | number; // 密码
-  phone: string | number; // 手机
-  email: string; // 邮箱
-  desc: string; // 描述
-  conditions: number; // 状态 1启用，-1禁用
-  roles: number[]; // 拥有的所有角色ID
-}
-
-export type IUserBasicInfoParam = {
-  id?: number; // ID
-  username: string; // 用户名
-  password: string | number; // 密码
-  phone: string | number; // 手机
-  email: string; // 邮箱
-  desc: string; // 描述
-  conditions: number; // 状态 1启用，-1禁用
-};
-
-export type appState = {
-  userinfo: IUserInfo;
-  powersCode: string[];
-};
+import {
+  IMenu,
+  IRole,
+  IPower,
+  IMenuAndPower,
+  IUserInfo,
+  appState,
+} from "./index.type";
 
 export default {
   state: {
@@ -77,7 +24,7 @@ export default {
       userBasicInfo: null,
     }, // 当前用户基本信息
     powersCode: [], // 当前用户拥有的权限code列表(仅保留了code)，页面中的按钮的权限控制将根据此数据源判断
-  } as appState,
+  },
   reducers: {
     reducerUserInfo(state: appState, payload: IUserInfo) {
       return {

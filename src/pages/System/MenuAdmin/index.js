@@ -26,7 +26,7 @@ import {
   DeleteOutlined,
   PlusCircleOutlined,
 } from "@ant-design/icons";
-import _ from "lodash";
+import { cloneDeep } from "lodash";
 
 // ==================
 // 所需的自定义的东西
@@ -235,7 +235,7 @@ function MenuAdminContainer(props) {
 
   /** 处理原始数据，将原始数据处理为层级关系 **/
   const sourceData = useMemo(() => {
-    const d = _.cloneDeep(data);
+    const d = cloneDeep(data);
     d.forEach((item) => {
       item.key = String(item.id);
     });
@@ -302,7 +302,7 @@ function MenuAdminContainer(props) {
       width: 120,
       render: (text, record) => {
         const p = props.powersCode;
-        let controls = [];
+        const controls = [];
 
         p.includes("menu:query") &&
           controls.push(

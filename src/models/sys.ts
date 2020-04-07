@@ -7,74 +7,18 @@ import axios from "@/util/axios"; // 自己写的工具函数，封装了请求�
 import qs from "qs";
 import { message } from "antd";
 import { Dispatch } from "@/store";
-import { IUserBasicInfo } from "./app";
 
-// 菜单对象
-export interface IMenu {
-  id: number;
-  title: string;
-  icon: string;
-  url: string;
-  parent: number;
-  desc: string;
-  sorts: number;
-  conditions: number;
-}
-
-// 角色对象
-export interface IRole {
-  id: number;
-  title: string;
-  desc: string;
-  sorts: number;
-  conditions: number;
-  menuAndPowers: IMenuAndPower[];
-}
-
-export interface IMenuAndPower {
-  menuId: number;
-  powers: number[];
-}
-
-export interface IPower {
-  id: number; // ID
-  menu: number; // 所属的菜单
-  title: string; // 标题
-  code: string; // CODE
-  desc: string; // 描述
-  sorts: number; // 排序
-  conditions: number; // 状态 1启用，-1禁用
-}
-
-interface IMenuParam {
-  title: string;
-  icon: string;
-  url: string;
-  parent: number;
-  desc: string;
-  sorts: number;
-  conditions: number;
-}
-interface IPowerParam {
-  menu: number; // 所属的菜单
-  title: string; // 标题
-  code: string; // CODE
-  desc: string; // 描述
-  sorts: number; // 排序
-  conditions: number; // 状态 1启用，-1禁用
-}
-interface IRoleParam {
-  title: string;
-  desc: string;
-  sorts: number;
-  conditions: number;
-  menuAndPowers: IMenuAndPower[];
-}
-export type sysState = {
-  menus: IMenu[];
-  roles: IRole[];
-  powerTreeData: IPower[];
-};
+import {
+  IMenu,
+  IRole,
+  IPower,
+  IUserBasicInfo,
+  IMenuParam,
+  IPowerParam,
+  PowerTree,
+  IRoleParam,
+  sysState,
+} from "./index.type";
 
 const defaultState: sysState = {
   menus: [], // 所有的菜单信息（用于菜单管理，无视权限）
@@ -86,16 +30,16 @@ export default {
   state: defaultState,
   reducers: {
     // 保存所有菜单数据
-    reducerSetMenus(state: sysState, payload: IMenu[]) {
+    reducerSetMenus(state: sysState, payload: IMenu[]): sysState {
       return { ...state, menus: payload };
     },
     // 保存所有角色数据
-    reducerSetRoles(state: sysState, payload: IRole[]) {
+    reducerSetRoles(state: sysState, payload: IRole[]): sysState {
       return { ...state, roles: payload };
     },
 
     // 保存所有权限数据
-    reducerSetAllPowers(state: sysState, payload: IPower[]) {
+    reducerSetAllPowers(state: sysState, payload: PowerTree[]): sysState {
       return { ...state, powerTreeData: payload };
     },
   },
@@ -158,7 +102,7 @@ export default {
     /**
      * 删除菜单
      * **/
-    async delMenu(params: { id: Number }) {
+    async delMenu(params: { id: number }) {
       try {
         const res = await axios.post("/api/delmenu", params);
         return res;
@@ -338,9 +282,9 @@ export default {
     /**
      * 获取所有的菜单及权限详细信息
      * **/
-    async getAllPowers() {
+    async getAllMenusAndPowers() {
       try {
-        const res = await axios.get(`/api/getAllPowers`);
+        const res = await axios.get(`/api/getAllMenusAndPowers`);
         if (res.status === 200) {
           dispatch.sys.reducerSetAllPowers(res.data);
         }

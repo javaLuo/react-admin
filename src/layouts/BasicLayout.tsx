@@ -1,32 +1,31 @@
-/** 基础页面结构 - 有头部，有底部，有侧边导航 **/
+/** 基础页面结构 - 有头部、底部、侧边导航 **/
 
 // ==================
-// 所需的第三方库
+// 第三方库
 // ==================
-import React, { useState, useCallback, FC } from "react";
+import React, { useState, useCallback } from "react";
 import { connect } from "react-redux";
 import { Route, Switch, Redirect } from "react-router-dom";
 import loadable from "@loadable/component";
-import { History } from "history";
+import { Layout, message } from "antd";
 
 // ==================
-// 所需的自定义的东西
+// 自定义的东西
 // ==================
 import tools from "@/util/tools";
 import "./BasicLayout.less";
 
 // ==================
-// 所需的所有组件
+// 组件
 // ==================
-import { Layout, message } from "antd";
 import Header from "@/components/Header";
 import Menu from "@/components/Menu";
 import Footer from "@/components/Footer";
 import Bread from "@/components/Bread";
 import Loading from "@/components/Loading";
 import ErrorBoundary from "@/components/ErrorBoundary";
-import { iRootState, Dispatch } from "@/store";
-import { IMenu, IUserInfo } from "@/models/app";
+
+const { Content } = Layout;
 
 // ==================
 // 异步加载各路由模块
@@ -45,21 +44,27 @@ const [NotFound, NoPower, Home, MenuAdmin, PowerAdmin, RoleAdmin, UserAdmin] = [
   });
 });
 
-const { Content } = Layout;
+// ==================
+// 类型声明
+// ==================
+import { iRootState, Dispatch } from "@/store";
+import { IMenu, IUserInfo } from "@/models/index.type";
+import { History } from "history";
 
-// ==================
-// 本组件
-// ==================
 interface Props {
   history: History;
   location: Location;
   userinfo: IUserInfo;
   onLogout: Function;
 }
-const BasicLayoutCom: FC<Props> = (props: Props) => {
+
+// ==================
+// 本组件
+// ==================
+function BasicLayoutCom(props: Props): JSX.Element {
   const [collapsed, setCollapsed] = useState(false); // 菜单栏是否收起
 
-  /** 退出登录 **/
+  // 退出登录
   const onLogout = useCallback(() => {
     props.onLogout().then(() => {
       message.success("退出成功");
@@ -72,7 +77,7 @@ const BasicLayoutCom: FC<Props> = (props: Props) => {
    * @param pathname 路由路径
    * **/
   const checkRouterPower = useCallback(
-    (pathname: String) => {
+    (pathname: string) => {
       let menus: IMenu[] = [];
       if (props.userinfo.menus && props.userinfo.menus.length) {
         menus = props.userinfo.menus;
@@ -83,7 +88,7 @@ const BasicLayoutCom: FC<Props> = (props: Props) => {
       }
       const m: string[] = menus.map((item) => item.url.replace(/^\//, "")); // 当前用户拥有的所有菜单
       const urls: string[] = pathname.split("/").filter((item) => !!item);
-      for (let i: number = 0; i < urls.length; i++) {
+      for (let i = 0; i < urls.length; i++) {
         if (!m.includes(urls[i])) {
           return false;
         }
@@ -93,7 +98,7 @@ const BasicLayoutCom: FC<Props> = (props: Props) => {
     [props.userinfo.menus]
   );
 
-  /** 切换路由时触发 **/
+  // 切换路由时触发
   const onEnter = useCallback(
     (Component, props) => {
       /**
@@ -164,15 +169,13 @@ const BasicLayoutCom: FC<Props> = (props: Props) => {
       </Layout>
     </Layout>
   );
-};
-
-const mapDispatch = (dispatch: Dispatch) => ({
-  onLogout: dispatch.app.onLogout,
-});
+}
 
 export default connect(
   (state: iRootState) => ({
     userinfo: state.app.userinfo,
   }),
-  mapDispatch
+  (dispatch: Dispatch) => ({
+    onLogout: dispatch.app.onLogout,
+  })
 )(BasicLayoutCom);

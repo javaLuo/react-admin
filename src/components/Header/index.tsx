@@ -1,5 +1,8 @@
 /** 头部 **/
 
+// ==================
+// 第三方库
+// ==================
 import React, { useState, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { Layout, Tooltip, Menu, Dropdown } from "antd";
@@ -12,16 +15,19 @@ import {
   LogoutOutlined,
   SmileOutlined,
 } from "@ant-design/icons";
-import "./index.less";
-import { IUserInfo } from "@/models/app";
+
 const { Header } = Layout;
 
-interface Props {
-  onToggle: Function; // 菜单收起与展开状态切换
-  collapsed: boolean; // 菜单的状态
-  onLogout: Function; // 退出登录
-  userinfo: IUserInfo; // 用户信息
-}
+// ==================
+// 自定义的东西
+// ==================
+import "./index.less";
+
+// ==================
+// 类型声明
+// ==================
+import { IUserInfo } from "@/models/index.type";
+
 type Element = {
   webkitRequestFullscreen?: Function;
   webkitExitFullscreen?: Function;
@@ -30,15 +36,17 @@ type Element = {
   msRequestFullscreen?: Function;
   msExitFullscreen?: Function;
 };
-type Win = Window &
-  typeof globalThis & {
-    ActiveXObject?: any;
-  };
+
+interface Props {
+  onToggle: Function; // 菜单收起与展开状态切换
+  collapsed: boolean; // 菜单的状态
+  onLogout: Function; // 退出登录
+  userinfo: IUserInfo; // 用户信息
+}
+
 export default function HeaderCom(props: Props) {
   const [fullScreen, setFullScreen] = useState(false); // 当前是否是全屏状态
-  /**
-   * 进入全屏
-   * **/
+  // 进入全屏
   const requestFullScreen = useCallback(() => {
     const element: HTMLElement & Element = document.documentElement;
     // 判断各种浏览器，找到正确的方法
@@ -49,47 +57,31 @@ export default function HeaderCom(props: Props) {
       element.msRequestFullscreen; // IE11
     if (requestMethod) {
       requestMethod.call(element);
-    } else if (typeof (window as Win).ActiveXObject !== "undefined") {
-      //for Internet Explorer
-      const wscript = new (window as Win).ActiveXObject("WScript.Shell");
-      if (wscript !== null) {
-        wscript.SendKeys("{F11}");
-      }
     }
     setFullScreen(true);
   }, []);
 
-  /**
-   * 退出全屏
-   */
+  // 退出全屏
   const exitFullScreen = useCallback(() => {
     // 判断各种浏览器，找到正确的方法
     const element: Document & Element = document;
     const exitMethod =
-      element.exitFullscreen || //W3C
-      element.mozCancelFullScreen || //Chrome等
-      element.webkitExitFullscreen ||
-      element.msExitFullscreen;
+      element.exitFullscreen || // W3C
+      element.mozCancelFullScreen || // firefox
+      element.webkitExitFullscreen || // Chrome等
+      element.msExitFullscreen; // IE11
 
     if (exitMethod) {
       exitMethod.call(document);
-    } else if (typeof (window as Win).ActiveXObject !== "undefined") {
-      //for Internet Explorer
-      const wscript = new (window as Win).ActiveXObject("WScript.Shell");
-      if (wscript !== null) {
-        wscript.SendKeys("{F11}");
-      }
     }
     setFullScreen(false);
   }, []);
 
-  /**
-   * 退出登录
-   * **/
+  // 退出登录
   const onMenuClick = useCallback(
     (e) => {
+      // 退出按钮被点击
       if (e.key === "logout") {
-        // 退出按钮被点击
         props.onLogout();
       }
     },
@@ -101,8 +93,7 @@ export default function HeaderCom(props: Props) {
     <Header className="header">
       <Tooltip
         placement="bottom"
-        title={props.collapsed ? "展开菜单" : "收起菜单"}
-      >
+        title={props.collapsed ? "展开菜单" : "收起菜单"}>
         <MenuFoldOutlined
           className={props.collapsed ? "trigger fold" : "trigger"}
           onClick={() => props.onToggle()}
@@ -132,8 +123,7 @@ export default function HeaderCom(props: Props) {
                   <a
                     href="https://blog.isluo.com"
                     target="_blank"
-                    rel="noopener noreferrer"
-                  >
+                    rel="noopener noreferrer">
                     <ChromeOutlined />
                     blog.isluo.com
                   </a>
@@ -142,8 +132,7 @@ export default function HeaderCom(props: Props) {
                   <a
                     href="https://github.com/javaLuo/react-admin"
                     target="_blank"
-                    rel="noopener noreferrer"
-                  >
+                    rel="noopener noreferrer">
                     <GithubOutlined />
                     GitHub
                   </a>
@@ -155,8 +144,7 @@ export default function HeaderCom(props: Props) {
                 </Menu.Item>
               </Menu>
             }
-            placement="bottomRight"
-          >
+            placement="bottomRight">
             <div className="userhead all_center">
               <SmileOutlined />
               <span className="username">{u.username}</span>

@@ -2,13 +2,10 @@
 import React, { useRef, useCallback } from "react";
 import { useMount } from "react-use";
 import "./index.less";
-/**
- * this.props.col 纵向密度
- * this.props.row 横向密度
- * */
+
 interface Props {
-  col: number;
-  row: number;
+  col: number; // 纵向密度
+  row: number; // 横向密度
 }
 type BaseData = {
   ctx: CanvasRenderingContext2D | null;
@@ -26,7 +23,7 @@ type Dot = {
   color: number; // b通道颜色值
   dcolor: boolean; // 颜色改变向量
 };
-export default function CanvasBack(props: Props) {
+export default function CanvasBack(props: Props): JSX.Element {
   const myCanvas = useRef<HTMLCanvasElement | null>(null);
   const data = useRef<BaseData>({
     ctx: null,
@@ -50,7 +47,7 @@ export default function CanvasBack(props: Props) {
       }
     }
 
-    return () => {
+    return (): void => {
       animateTimer.current && window.cancelAnimationFrame(animateTimer.current);
     };
   });
@@ -69,8 +66,8 @@ export default function CanvasBack(props: Props) {
   ): void => {
     const step_row: number = height / (row - 2);
     const step_col: number = width / (col - 2);
-    for (let i: number = 0; i < row; i++) {
-      for (let j: number = 0; j < col; j++) {
+    for (let i = 0; i < row; i++) {
+      for (let j = 0; j < col; j++) {
         const temp: Dot = {
           x: j * step_col - step_col / 2, // 原始坐标x
           y: i * step_row - step_row / 2, // 原始坐标y
@@ -98,8 +95,8 @@ export default function CanvasBack(props: Props) {
     ): void => {
       ctx.fillRect(0, 0, width, height);
 
-      for (let i: number = 0; i < row; i++) {
-        for (let j: number = 0; j < col - 1; j++) {
+      for (let i = 0; i < row; i++) {
+        for (let j = 0; j < col - 1; j++) {
           const k = i * col + j;
           const k1 = k + 1;
           const k2 = k + col;
@@ -135,7 +132,7 @@ export default function CanvasBack(props: Props) {
   );
 
   /** 动画函数 **/
-  const animate = () => {
+  const animate = (): void => {
     const row = props.row;
     const col = props.col;
     const width = data.current.width;

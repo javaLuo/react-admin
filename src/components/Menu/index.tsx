@@ -1,15 +1,28 @@
 /** 左侧导航 **/
+
+// ==================
+// 第三方库
+// ==================
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { Layout, Menu } from "antd";
 import { Link } from "react-router-dom";
+import { cloneDeep } from "lodash";
+
+const { Sider } = Layout;
+const { SubMenu, Item } = Menu;
+
+// ==================
+// 自定义的东西
+// ==================
 import "./index.less";
 import ImgLogo from "@/assets/logo.png";
 import Icon from "@/components/Icon";
-import _ from "lodash";
+
+// ==================
+// 类型声明
+// ==================
 import { History } from "history";
-import { IMenu } from "@/models/app";
-const { Sider } = Layout;
-const { SubMenu, Item } = Menu;
+import { IMenu } from "@/models/index.type";
 
 interface Props {
   data: IMenu[]; // 所有的菜单数据
@@ -17,6 +30,10 @@ interface Props {
   history: History;
   location: Location;
 }
+
+// ==================
+// 本组件
+// ==================
 export default function MenuCom(props: Props): JSX.Element {
   const [chosedKey, setChosedKey] = useState<string[]>([]); // 当前选中
   const [openKeys, setOpenKeys] = useState<string[]>([]); // 当前需要被展开的项
@@ -71,8 +88,7 @@ export default function MenuCom(props: Props): JSX.Element {
                 ) : (
                   item.title
                 )
-              }
-            >
+              }>
               {makeTreeDom(item.children, newKey)}
             </SubMenu>
           );
@@ -95,7 +111,7 @@ export default function MenuCom(props: Props): JSX.Element {
 
   /** 处理原始数据，将原始数据处理为层级关系 **/
   const treeDom: JSX.Element[] = useMemo(() => {
-    const d: IMenu[] = _.cloneDeep(props.data);
+    const d: IMenu[] = cloneDeep(props.data);
     // 按照sort排序
     d.sort((a, b) => {
       return a.sorts - b.sorts;
@@ -105,17 +121,13 @@ export default function MenuCom(props: Props): JSX.Element {
     return treeDom;
   }, [props.data, dataToJson, makeTreeDom]);
 
-  // ==================
-  // 组件DOM渲染
-  // ==================
   return (
     <Sider
       width={256}
       className="sider"
       trigger={null}
       collapsible
-      collapsed={props.collapsed}
-    >
+      collapsed={props.collapsed}>
       <div className={props.collapsed ? "menuLogo hide" : "menuLogo"}>
         <Link to="/">
           <img src={ImgLogo} />
@@ -128,8 +140,7 @@ export default function MenuCom(props: Props): JSX.Element {
         selectedKeys={chosedKey}
         {...(props.collapsed ? {} : { openKeys })}
         onOpenChange={setOpenKeys}
-        onSelect={onSelect}
-      >
+        onSelect={onSelect}>
         {treeDom}
       </Menu>
     </Sider>

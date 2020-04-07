@@ -32,12 +32,6 @@ import {
 // ==================
 import "./index.less";
 import tools from "@/util/tools"; // 工具函数
-import { IRole, IUserBasicInfoParam, IUserInfo } from "@/models/app";
-// ==================
-// 所需的组件
-// ==================
-import RoleTree from "@/components/TreeChose/RoleTree";
-import { iRootState, Dispatch } from "@/store";
 
 const { TextArea } = Input;
 const { Option } = Select;
@@ -54,8 +48,16 @@ const formItemLayout = {
 };
 
 // ==================
-// 本组件
+// 所需的组件
 // ==================
+import RoleTree from "@/components/TreeChose/RoleTree";
+
+// ==================
+// 类型声明
+// ==================
+import { IRole, IUserBasicInfoParam, IUserInfo } from "@/models/index.type";
+import { iRootState, Dispatch } from "@/store";
+
 interface Props {
   powersCode: string[];
   userinfo: IUserInfo;
@@ -80,6 +82,36 @@ interface IDataList {
   roles?: number[]; // 拥有的所有权限ID
 }
 
+type Page = {
+  pageNum: number;
+  pageSize: number;
+  total: number;
+};
+
+type operateType = "add" | "see" | "up";
+
+type ModalType = {
+  operateType: operateType;
+  nowData: IUserBasicInfoParam | null;
+  modalShow: boolean;
+  modalLoading: boolean;
+};
+
+type SearchInfo = {
+  username: string | undefined; // 用户名
+  conditions: number | undefined; // 状态
+};
+
+type Role = {
+  roleData: IRole[]; // 所有的角色数据
+  roleTreeLoading: boolean; // 控制树的loading状态，因为要先加载当前role的菜单，才能显示树
+  roleTreeShow: boolean; // 角色树是否显示
+  roleTreeDefault: number[]; // 用于角色树，默认需要选中的项
+};
+
+// ==================
+// 本组件
+// ==================
 function UserAdminContainer(props: Props): JSX.Element {
   const p = props.powersCode; // 用户拥有的所有权限code
   const [form] = Form.useForm();
@@ -87,11 +119,6 @@ function UserAdminContainer(props: Props): JSX.Element {
   const [data, setData] = useState<IDataList[]>([]); // 当前页面列表数据
   const [loading, setLoading] = useState(false); // 数据是否正在加载中
 
-  type Page = {
-    pageNum: number;
-    pageSize: number;
-    total: number;
-  };
   // 分页相关参数
   const [page, setPage] = useSetState<Page>({
     pageNum: 1,
@@ -99,14 +126,8 @@ function UserAdminContainer(props: Props): JSX.Element {
     total: 0,
   });
 
-  type Modal = {
-    operateType: string;
-    nowData: IUserBasicInfoParam | null;
-    modalShow: boolean;
-    modalLoading: boolean;
-  };
   // 模态框相关参数
-  const [modal, setModal] = useSetState<Modal>({
+  const [modal, setModal] = useSetState<ModalType>({
     operateType: "add", // see查看，add添加，up修改
     nowData: null,
     modalShow: false,
@@ -114,22 +135,12 @@ function UserAdminContainer(props: Props): JSX.Element {
   });
 
   // 搜索相关参数
-  type SearchInfo = {
-    username: string | undefined; // 用户名
-    conditions: number | undefined; // 状态
-  };
   const [searchInfo, setSearchInfo] = useSetState<SearchInfo>({
     username: undefined, // 用户名
     conditions: undefined, // 状态
   });
 
   // 角色树相关参数
-  type Role = {
-    roleData: IRole[]; // 所有的角色数据
-    roleTreeLoading: boolean; // 控制树的loading状态，因为要先加载当前role的菜单，才能显示树
-    roleTreeShow: boolean; // 角色树是否显示
-    roleTreeDefault: number[]; // 用于角色树，默认需要选中的项
-  };
   const [role, setRole] = useSetState<Role>({
     roleData: [],
     roleTreeLoading: false,
@@ -213,7 +224,7 @@ function UserAdminContainer(props: Props): JSX.Element {
    * @param data 当前选中的那条数据
    * @param type add添加/up修改/see查看
    * **/
-  const onModalShow = (data: IDataList | null, type: string): void => {
+  const onModalShow = (data: IDataList | null, type: operateType): void => {
     setModal({
       modalShow: true,
       nowData: data,
@@ -619,6 +630,7 @@ function UserAdminContainer(props: Props): JSX.Element {
             ]}>
             <Input
               placeholder="请输入手机号"
+              maxLength={11}
               disabled={modal.operateType === "see"}
             />
           </Form.Item>

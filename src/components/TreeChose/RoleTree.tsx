@@ -1,8 +1,8 @@
 /* Tree选择 - 角色选择 - 多选 */
 import React, { useState, useMemo, useEffect, useCallback } from "react";
 import { Tree, Modal } from "antd";
-import _ from "lodash";
-
+import { cloneDeep } from "lodash";
+import { IRole } from "@/models/index.type";
 /**
  * 本组件
  * @param data 原始数据
@@ -13,8 +13,25 @@ import _ from "lodash";
  * @param onOk 确定
  * @param onClose 关闭
  */
-export default function RoleTreeComponent(props) {
-  const [nowKeys, setNowKeys] = useState([]);
+
+type IRoleLevel = IRole & {
+  key?: string;
+  parent?: IRole;
+  children?: IRole;
+};
+
+interface Props {
+  title: string;
+  data: IRole[];
+  defaultKeys: number[];
+  visible: boolean;
+  loading: boolean;
+  onOk: Function;
+  onClose: Function;
+}
+
+export default function RoleTreeComponent(props: Props) {
+  const [nowKeys, setNowKeys] = useState<string[]>([]);
 
   useEffect(() => {
     setNowKeys(props.defaultKeys.map((item) => `${item}`));
@@ -25,11 +42,13 @@ export default function RoleTreeComponent(props) {
     let kids;
     if (!one) {
       // 第1次递归
-      kids = data.filter((item) => !item.parent);
+      kids = data.filter((item: IRoleLevel) => !item.parent);
     } else {
-      kids = data.filter((item) => item.parent === one.id);
+      kids = data.filter((item: IRoleLevel) => item.parent === one.id);
     }
-    kids.forEach((item) => (item.children = dataToJson(item, data)));
+    kids.forEach(
+      (item: IRoleLevel) => (item.children = dataToJson(item, data))
+    );
     return kids.length ? kids : null;
   }, []);
 
@@ -59,7 +78,7 @@ export default function RoleTreeComponent(props) {
 
   // 处理原始数据，将原始数据处理为层级关系
   const sourceData = useMemo(() => {
-    const d = _.cloneDeep(props.data);
+    const d: IRoleLevel[] = cloneDeep(props.data);
     d.forEach((item) => {
       item.key = String(item.id);
     });
@@ -73,15 +92,14 @@ export default function RoleTreeComponent(props) {
       wrapClassName="menuTreeModal"
       confirmLoading={props.loading}
       onOk={onOk}
-      onCancel={onClose}
-    >
+      onCancel={onClose}>
       <Tree
         checkable
         selectable={false}
         checkedKeys={nowKeys}
         onCheck={onCheck}
         treeData={sourceData}
-      ></Tree>
+      />
     </Modal>
   );
 }

@@ -42,12 +42,17 @@ module.exports = {
             loader: "awesome-typescript-loader",
             options: {
               getCustomTransformers: () => ({
-                before: [tsImportPluginFactory(/** options */)],
+                before: [
+                  tsImportPluginFactory({
+                    libraryName: "antd",
+                    libraryDirectory: "lib",
+                    style: true,
+                  }),
+                ],
               }),
             },
           },
         ],
-
         include: path.resolve(__dirname, "src"),
       },
       // {

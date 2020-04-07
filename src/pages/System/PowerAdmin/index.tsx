@@ -1,7 +1,7 @@
 /** 权限管理页 **/
 
 // ==================
-// 所需的第三方库
+// 第三方库
 // ==================
 import React, { useState, useCallback, useMemo } from "react";
 import { useSetState, useMount } from "react-use";
@@ -27,10 +27,10 @@ import {
   DeleteOutlined,
   PlusCircleOutlined,
 } from "@ant-design/icons";
-import _ from "lodash";
+import { cloneDeep } from "lodash";
 
 // ==================
-// 所需的自定义的东西
+// 自定义的东西
 // ==================
 import "./index.less";
 
@@ -49,26 +49,61 @@ const formItemLayout = {
 };
 
 // ==================
+// 类型声明
+// ==================
+import {
+  IMenu,
+  IUserInfo,
+  IRole,
+  IPower,
+  IPowerParam,
+} from "@/models/index.type";
+import {
+  TableRecordData,
+  ModalType,
+  operateType,
+  IMenuLevel,
+} from "./index.type";
+import { iRootState, Dispatch } from "@/store";
+import { CheckboxValueType } from "antd/lib/checkbox/Group";
+import { EventDataNode, DataNode } from "rc-tree/lib/interface";
+interface Props {
+  powersCode: string[];
+  roles: IRole[];
+  userinfo: IUserInfo;
+  getMenus: Function;
+  getAllRoles: Function;
+  getPowerDataByMenuId: Function;
+  addPower: Function;
+  updateUserInfo: Function;
+  upPower: Function;
+  delPower: Function;
+  setPowersByRoleIds: Function;
+}
+
+// ==================
 // 本组件
 // ==================
-function PowerAdminContainer(props) {
+function PowerAdminContainer(props: Props) {
   const p = props.powersCode; // 用户拥有的所有权限code
   const [form] = Form.useForm();
 
-  const [data, setData] = useState([]); // 当前所选菜单下的权限数据
-  const [loading, setLoading] = useState(false); // 数据是否正在加载中
+  const [data, setData] = useState<IPower[]>([]); // 当前所选菜单下的权限数据
+  const [loading, setLoading] = useState<boolean>(false); // 数据是否正在加载中
 
   // 模态框相关参数控制
-  const [modal, setModal] = useSetState({
-    operateType: false,
+  const [modal, setModal] = useSetState<ModalType>({
+    operateType: "add",
     nowData: null,
     modalShow: false,
     modalLoading: false,
   });
-  const [rolesCheckboxChose, setRolesCheckboxChose] = useState([]); // 表单 - 赋予项选中的值
+  const [rolesCheckboxChose, setRolesCheckboxChose] = useState<number[]>([]); // 表单 - 赋予项选中的值
 
   // 左侧菜单树相关参数 当前Menu树被选中的节点数据
-  const [treeSelect, setTreeSelect] = useState({});
+  const [treeSelect, setTreeSelect] = useState<{ title?: string; id?: number }>(
+    {}
+  );
 
   // 生命周期 - 首次加载组件时触发
   useMount(() => {
@@ -80,7 +115,7 @@ function PowerAdminContainer(props) {
   });
 
   // 根据所选菜单id获取其下权限数据
-  const getData = async (menuId = null) => {
+  const getData = async (menuId: string | number | null = null) => {
     const p = props.powersCode;
     if (!p.includes("power:query")) {
       return;
@@ -107,20 +142,32 @@ function PowerAdminContainer(props) {
     let kids;
     if (!one) {
       // 第1次递归
-      kids = data.filter((item) => !item.parent);
+      kids = data.filter((item: IMenu) => !item.parent);
     } else {
-      kids = data.filter((item) => item.parent === one.id);
+      kids = data.filter((item: IMenu) => item.parent === one.id);
     }
-    kids.forEach((item) => (item.children = dataToJson(item, data)));
+    kids.forEach((item: IMenu) => (item.children = dataToJson(item, data)));
     return kids.length ? kids : null;
   }, []);
 
   // 点击树目录时触发
-  const onTreeSelect = (keys, e) => {
-    if (e.selected) {
+  const onTreeSelect = (
+    keys: React.ReactText[],
+    info: {
+      event: "select";
+      selected: boolean;
+      node: EventDataNode & { id: number; title: string };
+      selectedNodes: DataNode[];
+      nativeEvent: MouseEvent;
+    }
+  ) => {
+    if (info.selected) {
       // 选中时才触发
       getData(keys[0]);
-      setTreeSelect({ title: e.node.title, id: e.node.id });
+      setTreeSelect({
+        title: info.node.title,
+        id: info.node.id,
+      });
     } else {
       setTreeSelect({});
       setData([]);
@@ -128,7 +175,7 @@ function PowerAdminContainer(props) {
   };
 
   // 新增&修改 模态框出现
-  const onModalShow = (data, type) => {
+  const onModalShow = (data: TableRecordData | null, type: operateType) => {
     setModal({
       modalShow: true,
       nowData: data,
@@ -156,11 +203,11 @@ function PowerAdminContainer(props) {
       } else {
         // 查看或修改，需设置表单各控件的值为当前所选中行的数据
         form.setFieldsValue({
-          formConditions: data.conditions,
-          formDesc: data.desc,
-          formCode: data.code,
-          formSorts: data.sorts,
-          formTitle: data.title,
+          formConditions: data?.conditions,
+          formDesc: data?.desc,
+          formCode: data?.code,
+          formSorts: data?.sorts,
+          formTitle: data?.title,
         });
       }
     });
@@ -182,10 +229,10 @@ function PowerAdminContainer(props) {
 
     try {
       const values = await form.validateFields();
-      const params = {
+      const params: IPowerParam = {
         title: values.formTitle,
         code: values.formCode,
-        menu: treeSelect.id,
+        menu: treeSelect.id || 0,
         sorts: values.formSorts,
         desc: values.formDesc,
         conditions: values.formConditions,
@@ -216,7 +263,10 @@ function PowerAdminContainer(props) {
       } else {
         // 修改
         try {
-          params.id = modal.nowData.id;
+          params.id = modal?.nowData?.id;
+          if (!params.id) {
+            throw new Error("该条数据没有ID");
+          }
           const res = await props.upPower(params);
           if (res.status === 200) {
             message.success("修改成功");
@@ -241,7 +291,7 @@ function PowerAdminContainer(props) {
   };
 
   // 删除一条数据
-  const onDel = async (record) => {
+  const onDel = async (record: TableRecordData) => {
     const params = { id: record.id };
     setLoading(true);
     const res = await props.delPower(params);
@@ -259,7 +309,7 @@ function PowerAdminContainer(props) {
    * @param id 当前这个权限的id
    * @param roleIds 选中的角色的id们，要把当前权限赋给这些角色
    *  **/
-  const setPowersByRoleIds = (id, roleIds) => {
+  const setPowersByRoleIds = (id: number, roleIds: number[]) => {
     const params = props.roles.map((item) => {
       const powersTemp = new Set(
         item.menuAndPowers.reduce((a, b) => [...a, ...b.powers], [])
@@ -284,8 +334,8 @@ function PowerAdminContainer(props) {
 
   // 处理原始数据，将原始数据处理为层级关系
   const sourceData = useMemo(() => {
-    const d = _.cloneDeep(props.userinfo.menus);
-    d.forEach((item) => {
+    const d: IMenu[] = cloneDeep(props.userinfo.menus);
+    d.forEach((item: IMenuLevel) => {
       item.key = String(item.id);
     });
     // 按照sort排序
@@ -321,8 +371,8 @@ function PowerAdminContainer(props) {
       title: "状态",
       dataIndex: "conditions",
       key: "conditions",
-      render: (text, record) =>
-        text === 1 ? (
+      render: (v: number) =>
+        v === 1 ? (
           <span style={{ color: "green" }}>启用</span>
         ) : (
           <span style={{ color: "red" }}>禁用</span>
@@ -332,7 +382,7 @@ function PowerAdminContainer(props) {
       title: "操作",
       key: "control",
       width: 120,
-      render: (text, record) => {
+      render: (v: number, record: TableRecordData) => {
         const controls = [];
         const p = props.powersCode;
         p.includes("power:query") &&
@@ -340,8 +390,7 @@ function PowerAdminContainer(props) {
             <span
               key="0"
               className="control-btn green"
-              onClick={() => onModalShow(record, "see")}
-            >
+              onClick={() => onModalShow(record, "see")}>
               <Tooltip placement="top" title="查看">
                 <EyeOutlined />
               </Tooltip>
@@ -352,8 +401,7 @@ function PowerAdminContainer(props) {
             <span
               key="1"
               className="control-btn blue"
-              onClick={() => onModalShow(record, "up")}
-            >
+              onClick={() => onModalShow(record, "up")}>
               <Tooltip placement="top" title="修改">
                 <ToolOutlined />
               </Tooltip>
@@ -366,8 +414,7 @@ function PowerAdminContainer(props) {
               title="确定删除吗?"
               okText="确定"
               cancelText="取消"
-              onConfirm={() => onDel(record)}
-            >
+              onConfirm={() => onDel(record)}>
               <span className="control-btn red">
                 <Tooltip placement="top" title="删除">
                   <DeleteOutlined />
@@ -375,7 +422,7 @@ function PowerAdminContainer(props) {
               </span>
             </Popconfirm>
           );
-        const result = [];
+        const result: JSX.Element[] = [];
         controls.forEach((item, index) => {
           if (index) {
             result.push(<Divider key={`line${index}`} type="vertical" />);
@@ -428,8 +475,7 @@ function PowerAdminContainer(props) {
                 type="primary"
                 icon={<PlusCircleOutlined />}
                 onClick={() => onModalShow(null, "add")}
-                disabled={!(treeSelect.id && p.includes("power:add"))}
-              >
+                disabled={!(treeSelect.id && p.includes("power:add"))}>
                 {`添加${treeSelect.title || ""}权限`}
               </Button>
             </li>
@@ -454,8 +500,7 @@ function PowerAdminContainer(props) {
         visible={modal.modalShow}
         onOk={onOk}
         onCancel={onClose}
-        confirmLoading={modal.modalLoading}
-      >
+        confirmLoading={modal.modalLoading}>
         <Form form={form} initialValues={{ formConditions: 1 }}>
           <Form.Item
             label="权限名"
@@ -464,8 +509,7 @@ function PowerAdminContainer(props) {
             rules={[
               { required: true, whitespace: true, message: "必填" },
               { max: 12, message: "最多输入12位字符" },
-            ]}
-          >
+            ]}>
             <Input
               placeholder="请输入权限名"
               disabled={modal.operateType === "see"}
@@ -478,8 +522,7 @@ function PowerAdminContainer(props) {
             rules={[
               { required: true, whitespace: true, message: "必填" },
               { max: 12, message: "最多输入12位字符" },
-            ]}
-          >
+            ]}>
             <Input
               placeholder="请输入权限Code"
               disabled={modal.operateType === "see"}
@@ -489,21 +532,18 @@ function PowerAdminContainer(props) {
             label="描述"
             name="formDesc"
             {...formItemLayout}
-            rules={[{ max: 100, message: "最多输入100位字符" }]}
-          >
+            rules={[{ max: 100, message: "最多输入100位字符" }]}>
             <TextArea
               rows={4}
               disabled={modal.operateType === "see"}
-              placeholoder="请输入描述"
-              autosize={{ minRows: 2, maxRows: 6 }}
+              autoSize={{ minRows: 2, maxRows: 6 }}
             />
           </Form.Item>
           <Form.Item
             label="排序"
             name="formSorts"
             {...formItemLayout}
-            rules={[{ required: true, message: "请输入排序号" }]}
-          >
+            rules={[{ required: true, message: "请输入排序号" }]}>
             <InputNumber
               min={0}
               max={99999}
@@ -515,8 +555,7 @@ function PowerAdminContainer(props) {
             label="状态"
             name="formConditions"
             {...formItemLayout}
-            rules={[{ required: true, message: "请选择状态" }]}
-          >
+            rules={[{ required: true, message: "请选择状态" }]}>
             <Select disabled={modal.operateType === "see"}>
               <Option key={1} value={1}>
                 启用
@@ -531,7 +570,9 @@ function PowerAdminContainer(props) {
               disabled={modal.operateType === "see"}
               options={rolesCheckboxData}
               value={rolesCheckboxChose}
-              onChange={setRolesCheckboxChose}
+              onChange={(v: CheckboxValueType[]) =>
+                setRolesCheckboxChose(v as number[])
+              }
             />
           </Form.Item>
         </Form>
@@ -541,12 +582,12 @@ function PowerAdminContainer(props) {
 }
 
 export default connect(
-  (state) => ({
+  (state: iRootState) => ({
     userinfo: state.app.userinfo,
     powersCode: state.app.powersCode,
     roles: state.sys.roles,
   }),
-  (dispatch) => ({
+  (dispatch: Dispatch) => ({
     addPower: dispatch.sys.addPower,
     getMenus: dispatch.sys.getMenus,
     upPower: dispatch.sys.upPower,
