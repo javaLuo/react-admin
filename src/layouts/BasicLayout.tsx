@@ -47,16 +47,15 @@ const [NotFound, NoPower, Home, MenuAdmin, PowerAdmin, RoleAdmin, UserAdmin] = [
 // ==================
 // 类型声明
 // ==================
-import { iRootState, Dispatch } from "@/store";
-import { IMenu, IUserInfo } from "@/models/index.type";
+import { RootState, Dispatch } from "@/store";
+import { IMenu } from "@/models/index.type";
 import { History } from "history";
 
-interface Props {
-  history: History;
-  location: Location;
-  userinfo: IUserInfo;
-  onLogout: Function;
-}
+type Props = ReturnType<typeof mapState> &
+  ReturnType<typeof mapDispatch> & {
+    history: History;
+    location: Location;
+  };
 
 // ==================
 // 本组件
@@ -171,11 +170,10 @@ function BasicLayoutCom(props: Props): JSX.Element {
   );
 }
 
-export default connect(
-  (state: iRootState) => ({
-    userinfo: state.app.userinfo,
-  }),
-  (dispatch: Dispatch) => ({
-    onLogout: dispatch.app.onLogout,
-  })
-)(BasicLayoutCom);
+const mapState = (state: RootState) => ({
+  userinfo: state.app.userinfo,
+});
+const mapDispatch = (dispatch: Dispatch) => ({
+  onLogout: dispatch.app.onLogout,
+});
+export default connect(mapState, mapDispatch)(BasicLayoutCom);

@@ -52,35 +52,24 @@ const formItemLayout = {
 // 类型声明
 // ==================
 import {
-  IMenu,
-  IUserInfo,
-  IRole,
-  IPower,
-  IPowerParam,
-} from "@/models/index.type";
-import {
   TableRecordData,
   ModalType,
   operateType,
   IMenuLevel,
+  IMenu,
+  IPower,
+  IPowerParam,
+  Res,
 } from "./index.type";
-import { iRootState, Dispatch } from "@/store";
+import { RootState, Dispatch } from "@/store";
 import { CheckboxValueType } from "antd/lib/checkbox/Group";
 import { EventDataNode, DataNode } from "rc-tree/lib/interface";
-interface Props {
-  powersCode: string[];
-  roles: IRole[];
-  userinfo: IUserInfo;
-  getMenus: Function;
-  getAllRoles: Function;
-  getPowerDataByMenuId: Function;
-  addPower: Function;
-  updateUserInfo: Function;
-  upPower: Function;
-  delPower: Function;
-  setPowersByRoleIds: Function;
-}
 
+type Props = ReturnType<typeof mapState> &
+  ReturnType<typeof mapDispatch> & {
+    history: History;
+    location: Location;
+  };
 // ==================
 // 本组件
 // ==================
@@ -127,9 +116,9 @@ function PowerAdminContainer(props: Props) {
     };
 
     try {
-      const res = await props.getPowerDataByMenuId(params);
+      const res: Res = await props.getPowerDataByMenuId(params);
 
-      if (res.status === 200) {
+      if (res && res.status === 200) {
         setData(res.data);
       }
     } finally {
@@ -243,8 +232,8 @@ function PowerAdminContainer(props: Props) {
       if (modal.operateType === "add") {
         // 新增
         try {
-          const res = await props.addPower(params);
-          if (res.status === 200) {
+          const res: Res = await props.addPower(params);
+          if (res && res.status === 200) {
             message.success("添加成功");
             getData(treeSelect.id);
             onClose();
@@ -263,12 +252,14 @@ function PowerAdminContainer(props: Props) {
       } else {
         // 修改
         try {
-          params.id = modal?.nowData?.id;
-          if (!params.id) {
-            throw new Error("该条数据没有ID");
+          if (!modal?.nowData?.id) {
+            message.error("该数据没有ID");
+            return;
           }
-          const res = await props.upPower(params);
-          if (res.status === 200) {
+          params.id = modal.nowData.id;
+
+          const res: Res = await props.upPower(params);
+          if (res && res.status === 200) {
             message.success("修改成功");
             getData(treeSelect.id);
             onClose();
@@ -295,12 +286,12 @@ function PowerAdminContainer(props: Props) {
     const params = { id: record.id };
     setLoading(true);
     const res = await props.delPower(params);
-    if (res.status === 200) {
+    if (res && res.status === 200) {
       getData(treeSelect.id);
       props.updateUserInfo();
       message.success("删除成功");
     } else {
-      message.error(res.message);
+      message.error(res?.message ?? "操作失败");
     }
   };
 
@@ -581,20 +572,20 @@ function PowerAdminContainer(props: Props) {
   );
 }
 
-export default connect(
-  (state: iRootState) => ({
-    userinfo: state.app.userinfo,
-    powersCode: state.app.powersCode,
-    roles: state.sys.roles,
-  }),
-  (dispatch: Dispatch) => ({
-    addPower: dispatch.sys.addPower,
-    getMenus: dispatch.sys.getMenus,
-    upPower: dispatch.sys.upPower,
-    delPower: dispatch.sys.delPower,
-    getPowerDataByMenuId: dispatch.sys.getPowerDataByMenuId,
-    updateUserInfo: dispatch.app.updateUserInfo,
-    setPowersByRoleIds: dispatch.sys.setPowersByRoleIds,
-    getAllRoles: dispatch.sys.getAllRoles,
-  })
-)(PowerAdminContainer);
+const mapState = (state: RootState) => ({
+  userinfo: state.app.userinfo,
+  powersCode: state.app.powersCode,
+  roles: state.sys.roles,
+});
+const mapDispatch = (dispatch: Dispatch) => ({
+  addPower: dispatch.sys.addPower,
+  getMenus: dispatch.sys.getMenus,
+  upPower: dispatch.sys.upPower,
+  delPower: dispatch.sys.delPower,
+  getPowerDataByMenuId: dispatch.sys.getPowerDataByMenuId,
+  updateUserInfo: dispatch.app.updateUserInfo,
+  setPowersByRoleIds: dispatch.sys.setPowersByRoleIds,
+  getAllRoles: dispatch.sys.getAllRoles,
+});
+
+export default connect(mapState, mapDispatch)(PowerAdminContainer);

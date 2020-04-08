@@ -44,7 +44,7 @@ interface Props {
   userinfo: IUserInfo; // 用户信息
 }
 
-export default function HeaderCom(props: Props) {
+export default function HeaderCom(props: Props): JSX.Element {
   const [fullScreen, setFullScreen] = useState(false); // 当前是否是全屏状态
   // 进入全屏
   const requestFullScreen = useCallback(() => {
@@ -93,7 +93,8 @@ export default function HeaderCom(props: Props) {
     <Header className="header">
       <Tooltip
         placement="bottom"
-        title={props.collapsed ? "展开菜单" : "收起菜单"}>
+        title={props.collapsed ? "展开菜单" : "收起菜单"}
+      >
         <MenuFoldOutlined
           className={props.collapsed ? "trigger fold" : "trigger"}
           onClick={() => props.onToggle()}
@@ -123,7 +124,8 @@ export default function HeaderCom(props: Props) {
                   <a
                     href="https://blog.isluo.com"
                     target="_blank"
-                    rel="noopener noreferrer">
+                    rel="noopener noreferrer"
+                  >
                     <ChromeOutlined />
                     blog.isluo.com
                   </a>
@@ -132,7 +134,8 @@ export default function HeaderCom(props: Props) {
                   <a
                     href="https://github.com/javaLuo/react-admin"
                     target="_blank"
-                    rel="noopener noreferrer">
+                    rel="noopener noreferrer"
+                  >
                     <GithubOutlined />
                     GitHub
                   </a>
@@ -144,7 +147,8 @@ export default function HeaderCom(props: Props) {
                 </Menu.Item>
               </Menu>
             }
-            placement="bottomRight">
+            placement="bottomRight"
+          >
             <div className="userhead all_center">
               <SmileOutlined />
               <span className="username">{u.username}</span>

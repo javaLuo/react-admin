@@ -4,22 +4,22 @@
 // 所需的第三方库
 // ==================
 import React from "react";
-import { connect } from "react-redux";
 import loadable from "@loadable/component";
 import { Route, Switch, Redirect } from "react-router-dom";
 import { Layout } from "antd";
 
 // ==================
-// 所需的自定义的东西
+// 自定义的东西
 // ==================
 import "./UserLayout.less";
 
 // ==================
-// 所需的所有组件
+// 组件
 // ==================
 import Loading from "../components/Loading";
 import Footer from "../components/Footer";
-import { iRootState, Dispatch } from "@/store";
+
+const { Content } = Layout;
 
 // ==================
 // 异步加载各路由模块
@@ -33,9 +33,10 @@ const [NotFound, Login] = [
   });
 });
 
-const { Content } = Layout;
-
-function AppContainer() {
+// ==================
+// 本组件
+// ==================
+export default function AppContainer(): JSX.Element {
   return (
     <Layout className="page-user">
       <Content className="content">
@@ -49,8 +50,3 @@ function AppContainer() {
     </Layout>
   );
 }
-
-export default connect(
-  (state: iRootState) => ({}),
-  (dispatch: Dispatch) => ({})
-)(AppContainer);

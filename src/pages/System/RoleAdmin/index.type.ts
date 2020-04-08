@@ -1,6 +1,9 @@
+/** 当前页面所需所有类型声明 **/
+
 import { PowerTreeDefault } from "@/components/TreeChose/PowerTreeTable";
 import { IRole } from "@/models/index.type";
 
+export type { PowerTree, IRoleParam, IRole, Res } from "@/models/index.type";
 // 分页相关参数控制
 export type Page = {
   pageNum: number; // 当前页码

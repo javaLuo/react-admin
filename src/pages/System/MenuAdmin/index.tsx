@@ -1,9 +1,9 @@
 /** 菜单管理页 **/
 
 // ==================
-// 所需的第三方库
+// 第三方库
 // ==================
-import React, { useState, useEffect, useCallback, useMemo } from "react";
+import React, { useState, useCallback, useMemo } from "react";
 import { useSetState, useMount } from "react-use";
 import { connect } from "react-redux";
 import {
@@ -29,9 +29,13 @@ import {
 import { cloneDeep } from "lodash";
 
 // ==================
-// 所需的自定义的东西
+// 自定义的东西
 // ==================
 import "./index.less";
+
+// ==================
+// 组件
+// ==================
 import { IconsData } from "@/util/json";
 import Icon from "@/components/Icon";
 
@@ -50,24 +54,48 @@ const formItemLayout = {
 };
 
 // ==================
+// 类型声明
+// ==================
+import {
+  TableRecordData,
+  IMenu,
+  ModalType,
+  operateType,
+  IMenuParam,
+  IMenuLevel,
+} from "./index.type";
+import { RootState, Dispatch } from "@/store";
+import { History } from "history";
+import { match } from "react-router-dom";
+
+type Props = ReturnType<typeof mapState> &
+  ReturnType<typeof mapDispatch> & {
+    history: History;
+    location: Location;
+    match: match;
+  };
+
+// ==================
 // 本组件
 // ==================
-function MenuAdminContainer(props) {
+function MenuAdminContainer(props: Props) {
   const p = props.powersCode;
   const [form] = Form.useForm();
 
-  const [data, setData] = useState([]); // 所有的菜单数据（未分层级）
-  const [loading, setLoading] = useState(false); // 数据是否正在加载中
+  const [data, setData] = useState<IMenu[]>([]); // 所有的菜单数据（未分层级）
+  const [loading, setLoading] = useState<boolean>(false); // 数据是否正在加载中
 
   // 模态框相关参数控制
-  const [modal, setModal] = useSetState({
+  const [modal, setModal] = useSetState<ModalType>({
     operateType: "add",
     nowData: null,
     modalShow: false,
     modalLoading: false,
   });
 
-  const [treeSelect, setTreeSelect] = useState({});
+  const [treeSelect, setTreeSelect] = useState<{ title?: string; id?: number }>(
+    {}
+  );
 
   // 生命周期 - 首次加载组件时触发
   useMount(() => {
@@ -83,7 +111,7 @@ function MenuAdminContainer(props) {
     setLoading(true);
     try {
       const res = await props.getMenus();
-      if (res.status === 200) {
+      if (res && res.status === 200) {
         setData(res.data);
       }
     } finally {
@@ -96,11 +124,11 @@ function MenuAdminContainer(props) {
     let kids;
     if (!one) {
       // 第1次递归
-      kids = data.filter((item) => !item.parent);
+      kids = data.filter((item: IMenu) => !item.parent);
     } else {
-      kids = data.filter((item) => item.parent === one.id);
+      kids = data.filter((item: IMenu) => item.parent === one.id);
     }
-    kids.forEach((item) => (item.children = dataToJson(item, data)));
+    kids.forEach((item: IMenu) => (item.children = dataToJson(item, data)));
     return kids.length ? kids : null;
   }, []);
 
@@ -115,13 +143,13 @@ function MenuAdminContainer(props) {
   }, []);
 
   /** 工具 - 根据parentID返回parentName **/
-  const getNameByParentId = (id) => {
+  const getNameByParentId = (id: number | null) => {
     const p = data.find((item) => item.id === id);
     return p ? p.title : undefined;
   };
 
   /** 新增&修改 模态框出现 **/
-  const onModalShow = (data, type) => {
+  const onModalShow = (data: TableRecordData | null, type: operateType) => {
     setModal({
       modalShow: true,
       nowData: data,
@@ -134,14 +162,16 @@ function MenuAdminContainer(props) {
         form.resetFields();
       } else {
         // 查看或修改，需设置表单各控件的值为当前所选中行的数据
-        form.setFieldsValue({
-          formConditions: data.conditions,
-          formDesc: data.desc,
-          formIcon: data.icon,
-          formSorts: data.sorts,
-          formTitle: data.title,
-          formUrl: data.url,
-        });
+        if (data) {
+          form.setFieldsValue({
+            formConditions: data.conditions,
+            formDesc: data.desc,
+            formIcon: data.icon,
+            formSorts: data.sorts,
+            formTitle: data.title,
+            formUrl: data.url,
+          });
+        }
       }
     });
   };
@@ -162,7 +192,7 @@ function MenuAdminContainer(props) {
     try {
       const values = await form.validateFields();
 
-      const params = {
+      const params: IMenuParam = {
         title: values.formTitle,
         url: values.formUrl,
         icon: values.formIcon,
@@ -178,7 +208,7 @@ function MenuAdminContainer(props) {
         // 新增
         try {
           const res = await props.addMenu(params);
-          if (res.status === 200) {
+          if (res && res.status === 200) {
             message.success("添加成功");
             getData();
             onClose();
@@ -194,9 +224,9 @@ function MenuAdminContainer(props) {
       } else {
         // 修改
         try {
-          params.id = modal.nowData.id;
+          params.id = modal?.nowData?.id;
           const res = await props.upMenu(params);
-          if (res.status === 200) {
+          if (res && res.status === 200) {
             message.success("修改成功");
             getData();
             onClose();
@@ -216,17 +246,17 @@ function MenuAdminContainer(props) {
   };
 
   /** 删除一条数据 **/
-  const onDel = (record) => {
+  const onDel = async (record: TableRecordData) => {
     const params = { id: record.id };
-    props.delMenu(params).then((res) => {
-      if (res.status === 200) {
-        getData();
-        props.updateUserInfo();
-        message.success("删除成功");
-      } else {
-        message.error(res.message);
-      }
-    });
+    const res = await props.delMenu(params);
+    console.log("what fuck:", res);
+    if (res && res.status === 200) {
+      getData();
+      props.updateUserInfo();
+      message.success("删除成功");
+    } else {
+      message.error(res?.message ?? "操作失败");
+    }
   };
 
   // ==================
@@ -235,8 +265,8 @@ function MenuAdminContainer(props) {
 
   /** 处理原始数据，将原始数据处理为层级关系 **/
   const sourceData = useMemo(() => {
-    const d = cloneDeep(data);
-    d.forEach((item) => {
+    const d: IMenu[] = cloneDeep(data);
+    d.forEach((item: IMenuLevel) => {
       item.key = String(item.id);
     });
     // 按照sort排序
@@ -257,8 +287,8 @@ function MenuAdminContainer(props) {
       title: "图标",
       dataIndex: "icon",
       key: "icon",
-      render: (text) => {
-        return text ? <Icon type={text} /> : "";
+      render: (v: string | null) => {
+        return v ? <Icon type={v} /> : "";
       },
     },
     {
@@ -270,8 +300,8 @@ function MenuAdminContainer(props) {
       title: "路径",
       dataIndex: "url",
       key: "url",
-      render: (text, record) => {
-        return text ? `/${text.replace(/^\//, "")}` : "";
+      render: (v: string | null) => {
+        return v ? `/${v.replace(/^\//, "")}` : "";
       },
     },
     {
@@ -283,14 +313,14 @@ function MenuAdminContainer(props) {
       title: "父级",
       dataIndex: "parent",
       key: "parent",
-      render: (text) => getNameByParentId(text),
+      render: (v: number | null) => getNameByParentId(v),
     },
     {
       title: "状态",
       dataIndex: "conditions",
       key: "conditions",
-      render: (text, record) =>
-        text === 1 ? (
+      render: (v: number) =>
+        v === 1 ? (
           <span style={{ color: "green" }}>启用</span>
         ) : (
           <span style={{ color: "red" }}>禁用</span>
@@ -300,7 +330,7 @@ function MenuAdminContainer(props) {
       title: "操作",
       key: "control",
       width: 120,
-      render: (text, record) => {
+      render: (v: number, record: TableRecordData) => {
         const p = props.powersCode;
         const controls = [];
 
@@ -341,7 +371,7 @@ function MenuAdminContainer(props) {
               </span>
             </Popconfirm>
           );
-        const result = [];
+        const result: JSX.Element[] = [];
         controls.forEach((item, index) => {
           if (index) {
             result.push(<Divider key={`line${index}`} type="vertical" />);
@@ -356,7 +386,7 @@ function MenuAdminContainer(props) {
   /** 构建表格数据 **/
   const tableData = useMemo(() => {
     return data
-      .filter((item) => item.parent === (Number(treeSelect.id) || null))
+      .filter((item: IMenu) => item.parent === (Number(treeSelect.id) || null))
       .map((item, index) => {
         return {
           key: index,
@@ -406,7 +436,7 @@ function MenuAdminContainer(props) {
           dataSource={tableData}
           pagination={{
             showQuickJumper: true,
-            showTotal: (total, range) => `共 ${total} 条数据`,
+            showTotal: (total) => `共 ${total} 条数据`,
           }}
         />
       </div>
@@ -462,8 +492,7 @@ function MenuAdminContainer(props) {
             <TextArea
               rows={4}
               disabled={modal.operateType === "see"}
-              placeholoder="请输入描述"
-              autosize={{ minRows: 2, maxRows: 6 }}
+              autoSize={{ minRows: 2, maxRows: 6 }}
             />
           </Form.Item>
           <Form.Item
@@ -505,16 +534,17 @@ function MenuAdminContainer(props) {
   );
 }
 
-export default connect(
-  (state) => ({
-    roles: state.sys.roles,
-    powersCode: state.app.powersCode,
-  }),
-  (dispatch) => ({
-    addMenu: dispatch.sys.addMenu,
-    getMenus: dispatch.sys.getMenus,
-    upMenu: dispatch.sys.upMenu,
-    delMenu: dispatch.sys.delMenu,
-    updateUserInfo: dispatch.app.updateUserInfo,
-  })
-)(MenuAdminContainer);
+const mapState = (state: RootState) => ({
+  roles: state.sys.roles,
+  powersCode: state.app.powersCode,
+});
+
+const mapDispatch = (dispatch: Dispatch) => ({
+  addMenu: dispatch.sys.addMenu,
+  getMenus: dispatch.sys.getMenus,
+  upMenu: dispatch.sys.upMenu,
+  delMenu: dispatch.sys.delMenu,
+  updateUserInfo: dispatch.app.updateUserInfo,
+});
+
+export default connect(mapState, mapDispatch)(MenuAdminContainer);

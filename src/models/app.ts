@@ -5,7 +5,7 @@
 
 import axios from "@/util/axios"; // 自己写的工具函数，封装了请求数据的通用接口
 import { message } from "antd";
-import { Dispatch, iRootState } from "@/store";
+import { Dispatch, RootState } from "@/store";
 import {
   IMenu,
   IRole,
@@ -13,18 +13,20 @@ import {
   IMenuAndPower,
   IUserInfo,
   appState,
+  Res,
 } from "./index.type";
 
+const defaultState: appState = {
+  userinfo: {
+    roles: [], // 当前用户拥有的角色
+    menus: [], // 当前用户拥有的已授权的菜单
+    powers: [], // 当前用户拥有的权限数据
+    userBasicInfo: null, // 用户的基础信息，id,用户名...
+  }, // 当前用户基本信息
+  powersCode: [], // 当前用户拥有的权限code列表(仅保留了code)，页面中的按钮的权限控制将根据此数据源判断
+};
 export default {
-  state: {
-    userinfo: {
-      roles: [], // 当前用户拥有的角色
-      menus: [], // 当前用户拥有的已授权的菜单
-      powers: [], // 当前用户拥有的权限数据
-      userBasicInfo: null,
-    }, // 当前用户基本信息
-    powersCode: [], // 当前用户拥有的权限code列表(仅保留了code)，页面中的按钮的权限控制将根据此数据源判断
-  },
+  state: defaultState,
   reducers: {
     reducerUserInfo(state: appState, payload: IUserInfo) {
       return {
@@ -52,7 +54,7 @@ export default {
      * */
     async onLogin(params = {}) {
       try {
-        const res = await axios.post("/api/login", params);
+        const res: Res = await axios.post("/api/login", params);
         return res;
       } catch (err) {
         message.error("网络错误，请重试");
@@ -84,11 +86,11 @@ export default {
     },
 
     /** 修改了角色/菜单/权限信息后需要更新用户的roles,menus,powers数据 **/
-    async updateUserInfo(params: null, rootState: iRootState) {
+    async updateUserInfo(params: null, rootState: RootState) {
       /** 2.重新查询角色信息 **/
       const userinfo: IUserInfo = rootState.app.userinfo;
 
-      const res2 = await dispatch.sys.getRoleById({
+      const res2: Res | undefined = await dispatch.sys.getRoleById({
         id: userinfo.roles.map((item) => item.id),
       });
       if (!res2 || res2.status !== 200) {
@@ -105,7 +107,7 @@ export default {
         (a, b) => [...a, ...b.menuAndPowers],
         [] as IMenuAndPower[]
       );
-      const res3 = await dispatch.sys.getMenusById({
+      const res3: Res | undefined = await dispatch.sys.getMenusById({
         id: Array.from(new Set(menuAndPowers.map((item) => item.menuId))),
       });
       if (!res3 || res3.status !== 200) {
@@ -117,7 +119,7 @@ export default {
       );
 
       /** 4.根据权限id，获取权限信息 **/
-      const res4 = await dispatch.sys.getPowerById({
+      const res4: Res | undefined = await dispatch.sys.getPowerById({
         id: Array.from(
           new Set(
             menuAndPowers.reduce((a, b) => [...a, ...b.powers], [] as number[])

@@ -10,6 +10,6 @@ interface Props {
   type: string;
 }
 
-export default function Icon(props: Props) {
+export default function Icon(props: Props): JSX.Element {
   return <IconFont type={props.type} />;
 }

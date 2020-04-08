@@ -3,16 +3,10 @@ import React, { useState, useMemo, useEffect, useCallback } from "react";
 import { Tree, Modal } from "antd";
 import { cloneDeep } from "lodash";
 import { IRole } from "@/models/index.type";
-/**
- * 本组件
- * @param data 原始数据
- * @param title 标题
- * @param visible 是否显示
- * @param defaultKeys 当前默认选中的key们
- * @param loading 确定按钮是否在等待中状态
- * @param onOk 确定
- * @param onClose 关闭
- */
+
+// ==================
+// 类型声明
+// ==================
 
 type IRoleLevel = IRole & {
   key?: string;
@@ -21,16 +15,19 @@ type IRoleLevel = IRole & {
 };
 
 interface Props {
-  title: string;
-  data: IRole[];
-  defaultKeys: number[];
-  visible: boolean;
-  loading: boolean;
-  onOk: Function;
-  onClose: Function;
+  title: string; // 标题
+  data: IRole[]; //  原始数据
+  defaultKeys: number[]; // 当前默认选中的key们
+  visible: boolean; // 是否显示
+  loading: boolean; // 确定按钮是否在等待中状态
+  onOk: Function; // 确定
+  onClose: Function; // 关闭
 }
 
-export default function RoleTreeComponent(props: Props) {
+// ==================
+// 本组件
+// ==================
+export default function RoleTreeComponent(props: Props): JSX.Element {
   const [nowKeys, setNowKeys] = useState<string[]>([]);
 
   useEffect(() => {
@@ -92,7 +89,8 @@ export default function RoleTreeComponent(props: Props) {
       wrapClassName="menuTreeModal"
       confirmLoading={props.loading}
       onOk={onOk}
-      onCancel={onClose}>
+      onCancel={onClose}
+    >
       <Tree
         checkable
         selectable={false}

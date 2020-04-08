@@ -20,19 +20,23 @@ import LogoImg from "@/assets/logo.png";
 // ==================
 // 类型声明
 // ==================
-import { iRootState, Dispatch } from "@/store";
-import { History } from "history";
-import { IRole, IMenu, IPower, IUserBasicInfo } from "@/models/index.type";
+import { RootState, Dispatch } from "@/store";
+import { IRole, IMenu, IPower, IUserBasicInfo, Res } from "@/models/index.type";
 import { CheckboxChangeEvent } from "antd/lib/checkbox";
 
-interface Props {
-  history: History;
-  setUserInfo: Function;
-  onLogin: Function;
-  getRoleById: Function;
-  getMenusById: Function;
-  getPowerById: Function;
-}
+import { History } from "history";
+import { match } from "react-router-dom";
+
+/**
+ * 除了mapState和mapDispatch
+ * 每个页面都自动被注入history,location,match 3个对象
+ */
+type Props = ReturnType<typeof mapState> &
+  ReturnType<typeof mapDispatch> & {
+    history: History;
+    location: Location;
+    match: match;
+  };
 
 // ==================
 // 本组件
@@ -79,8 +83,8 @@ function LoginContainer(props: Props): JSX.Element {
       let powers: IPower[] = [];
 
       /** 1.登录 （返回信息中有该用户拥有的角色id） **/
-      const res1 = await props.onLogin({ username, password });
-      if (!res1 || res1.status !== 200) {
+      const res1: Res | undefined = await props.onLogin({ username, password });
+      if (!res1 || res1.status !== 200 || !res1.data) {
         // 登录失败
         return res1;
       }
@@ -88,7 +92,9 @@ function LoginContainer(props: Props): JSX.Element {
       userBasicInfo = res1.data;
 
       /** 2.根据角色id获取角色信息 (角色信息中有该角色拥有的菜单id和权限id) **/
-      const res2 = await props.getRoleById({ id: userBasicInfo?.roles });
+      const res2 = await props.getRoleById({
+        id: (userBasicInfo as IUserBasicInfo).roles,
+      });
       if (!res2 || res2.status !== 200) {
         // 角色查询失败
         return res2;
@@ -133,7 +139,7 @@ function LoginContainer(props: Props): JSX.Element {
       const values = await form.validateFields();
       setLoading(true);
       const res = await loginIn(values.username, values.password);
-      if (res.status === 200) {
+      if (res && res.status === 200) {
         message.success("登录成功");
         if (rememberPassword) {
           localStorage.setItem(
@@ -154,7 +160,7 @@ function LoginContainer(props: Props): JSX.Element {
         await props.setUserInfo(res.data);
         props.history.replace("/"); // 跳转到主页
       } else {
-        message.error(res.message);
+        message.error(res?.message ?? "登录失败");
         setLoading(false);
       }
     } catch (e) {
@@ -284,13 +290,13 @@ function LoginContainer(props: Props): JSX.Element {
   );
 }
 
-export default connect(
-  (state: iRootState) => ({}),
-  (dispatch: Dispatch) => ({
-    onLogin: dispatch.app.onLogin,
-    setUserInfo: dispatch.app.setUserInfo,
-    getRoleById: dispatch.sys.getRoleById,
-    getPowerById: dispatch.sys.getPowerById,
-    getMenusById: dispatch.sys.getMenusById,
-  })
-)(LoginContainer);
+const mapState = (state: RootState) => ({});
+const mapDispatch = (dispatch: Dispatch) => ({
+  onLogin: dispatch.app.onLogin,
+  getRoleById: dispatch.sys.getRoleById,
+  getMenusById: dispatch.sys.getMenusById,
+  getPowerById: dispatch.sys.getPowerById,
+  setUserInfo: dispatch.app.setUserInfo,
+});
+
+export default connect(mapState, mapDispatch)(LoginContainer);

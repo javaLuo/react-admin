@@ -10,7 +10,7 @@ interface Props {
   menus: IMenu[];
 }
 
-export default function BreadCom(props: Props) {
+export default function BreadCom(props: Props): JSX.Element {
   /** 根据当前location动态生成对应的面包屑 **/
   const breads = useMemo(() => {
     const paths: string[] = props.location.pathname

@@ -55,60 +55,19 @@ import RoleTree from "@/components/TreeChose/RoleTree";
 // ==================
 // 类型声明
 // ==================
-import { IRole, IUserBasicInfoParam, IUserInfo } from "@/models/index.type";
-import { iRootState, Dispatch } from "@/store";
+import {
+  TableRecordData,
+  Page,
+  operateType,
+  ModalType,
+  SearchInfo,
+  Role,
+  IUserBasicInfoParam,
+  Res,
+} from "./index.type";
+import { RootState, Dispatch } from "@/store";
 
-interface Props {
-  powersCode: string[];
-  userinfo: IUserInfo;
-  getAllRoles: Function;
-  getUserList: Function;
-  addUser: Function;
-  upUser: Function;
-  delUser: Function;
-}
-
-interface IDataList {
-  key?: number;
-  id: number;
-  serial: number; // 序号
-  username: string; // 用户名
-  password: string; // 密码
-  phone: string | number; // 手机
-  email: string; // 邮箱
-  desc: string; // 描述
-  conditions: number; // 是否启用 1启用 -1禁用
-  control?: number; // 控制，传入的ID
-  roles?: number[]; // 拥有的所有权限ID
-}
-
-type Page = {
-  pageNum: number;
-  pageSize: number;
-  total: number;
-};
-
-type operateType = "add" | "see" | "up";
-
-type ModalType = {
-  operateType: operateType;
-  nowData: IUserBasicInfoParam | null;
-  modalShow: boolean;
-  modalLoading: boolean;
-};
-
-type SearchInfo = {
-  username: string | undefined; // 用户名
-  conditions: number | undefined; // 状态
-};
-
-type Role = {
-  roleData: IRole[]; // 所有的角色数据
-  roleTreeLoading: boolean; // 控制树的loading状态，因为要先加载当前role的菜单，才能显示树
-  roleTreeShow: boolean; // 角色树是否显示
-  roleTreeDefault: number[]; // 用于角色树，默认需要选中的项
-};
-
+type Props = ReturnType<typeof mapState> & ReturnType<typeof mapDispatch>;
 // ==================
 // 本组件
 // ==================
@@ -116,7 +75,7 @@ function UserAdminContainer(props: Props): JSX.Element {
   const p = props.powersCode; // 用户拥有的所有权限code
   const [form] = Form.useForm();
 
-  const [data, setData] = useState<IDataList[]>([]); // 当前页面列表数据
+  const [data, setData] = useState<TableRecordData[]>([]); // 当前页面列表数据
   const [loading, setLoading] = useState(false); // 数据是否正在加载中
 
   // 分页相关参数
@@ -158,7 +117,7 @@ function UserAdminContainer(props: Props): JSX.Element {
   const getAllRolesData = async (): Promise<void> => {
     try {
       const res = await props.getAllRoles();
-      if (res.status === 200) {
+      if (res && res.status === 200) {
         setRole({
           roleData: res.data,
         });
@@ -185,7 +144,7 @@ function UserAdminContainer(props: Props): JSX.Element {
     setLoading(true);
     try {
       const res = await props.getUserList(tools.clearNull(params));
-      if (res.status === 200) {
+      if (res && res.status === 200) {
         setData(res.data.list);
         setPage({
           pageNum: page.pageNum,
@@ -193,7 +152,7 @@ function UserAdminContainer(props: Props): JSX.Element {
           total: res.data.total,
         });
       } else {
-        message.error(res.message);
+        message.error(res?.message ?? "数据获取失败");
       }
     } finally {
       setLoading(false);
@@ -224,7 +183,10 @@ function UserAdminContainer(props: Props): JSX.Element {
    * @param data 当前选中的那条数据
    * @param type add添加/up修改/see查看
    * **/
-  const onModalShow = (data: IDataList | null, type: operateType): void => {
+  const onModalShow = (
+    data: TableRecordData | null,
+    type: operateType
+  ): void => {
     setModal({
       modalShow: true,
       nowData: data,
@@ -271,13 +233,13 @@ function UserAdminContainer(props: Props): JSX.Element {
       if (modal.operateType === "add") {
         // 新增
         try {
-          const res = await props.addUser(params);
-          if (res.status === 200) {
+          const res: Res | undefined = await props.addUser(params);
+          if (res && res.status === 200) {
             message.success("添加成功");
             onGetData(page);
             onClose();
           } else {
-            message.error(res.message);
+            message.error(res?.message ?? "操作失败");
           }
         } finally {
           setModal({
@@ -288,13 +250,13 @@ function UserAdminContainer(props: Props): JSX.Element {
         // 修改
         params.id = modal.nowData?.id;
         try {
-          const res = await props.upUser(params);
-          if (res.status === 200) {
+          const res: Res | undefined = await props.upUser(params);
+          if (res && res.status === 200) {
             message.success("修改成功");
             onGetData(page);
             onClose();
           } else {
-            message.error(res.message);
+            message.error(res?.message ?? "操作失败");
           }
         } finally {
           setModal({
@@ -312,11 +274,11 @@ function UserAdminContainer(props: Props): JSX.Element {
     setLoading(true);
     try {
       const res = await props.delUser({ id });
-      if (res.status === 200) {
+      if (res && res.status === 200) {
         message.success("删除成功");
         onGetData(page);
       } else {
-        message.error(res.message);
+        message.error(res?.message ?? "操作失败");
       }
     } finally {
       setLoading(false);
@@ -331,7 +293,7 @@ function UserAdminContainer(props: Props): JSX.Element {
   };
 
   /** 分配角色按钮点击，角色控件出现 **/
-  const onTreeShowClick = (record: IDataList): void => {
+  const onTreeShowClick = (record: TableRecordData): void => {
     setModal({
       nowData: record,
     });
@@ -351,13 +313,13 @@ function UserAdminContainer(props: Props): JSX.Element {
       roleTreeLoading: true,
     });
     try {
-      const res = await props.upUser(params);
-      if (res.status === 200) {
+      const res: Res = await props.upUser(params);
+      if (res && res.status === 200) {
         message.success("分配成功");
         onGetData(page);
         onRoleClose();
       } else {
-        message.error(res.message);
+        message.error(res?.message ?? "操作失败");
       }
     } finally {
       setRole({
@@ -424,7 +386,7 @@ function UserAdminContainer(props: Props): JSX.Element {
       title: "操作",
       key: "control",
       width: 200,
-      render: (v: null, record: IDataList) => {
+      render: (v: null, record: TableRecordData) => {
         const controls = [];
         const u = props.userinfo.userBasicInfo || { id: -1 };
         const p = props.powersCode;
@@ -696,17 +658,16 @@ function UserAdminContainer(props: Props): JSX.Element {
   );
 }
 
-export default connect(
-  (state: iRootState) => ({
-    powerTreeData: state.sys.powerTreeData, // 权限树所需数据
-    userinfo: state.app.userinfo, // 用户信息
-    powersCode: state.app.powersCode, // 所有的权限code
-  }),
-  (dispatch: Dispatch) => ({
-    getAllRoles: dispatch.sys.getAllRoles,
-    addUser: dispatch.sys.addUser,
-    upUser: dispatch.sys.upUser,
-    delUser: dispatch.sys.delUser,
-    getUserList: dispatch.sys.getUserList,
-  })
-)(UserAdminContainer);
+const mapState = (state: RootState) => ({
+  powerTreeData: state.sys.powerTreeData,
+  userinfo: state.app.userinfo,
+  powersCode: state.app.powersCode,
+});
+const mapDispatch = (dispatch: Dispatch) => ({
+  getAllRoles: dispatch.sys.getAllRoles,
+  addUser: dispatch.sys.addUser,
+  upUser: dispatch.sys.upUser,
+  delUser: dispatch.sys.delUser,
+  getUserList: dispatch.sys.getUserList,
+});
+export default connect(mapState, mapDispatch)(UserAdminContainer);

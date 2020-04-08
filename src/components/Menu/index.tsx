@@ -88,7 +88,8 @@ export default function MenuCom(props: Props): JSX.Element {
                 ) : (
                   item.title
                 )
-              }>
+              }
+            >
               {makeTreeDom(item.children, newKey)}
             </SubMenu>
           );
@@ -127,7 +128,8 @@ export default function MenuCom(props: Props): JSX.Element {
       className="sider"
       trigger={null}
       collapsible
-      collapsed={props.collapsed}>
+      collapsed={props.collapsed}
+    >
       <div className={props.collapsed ? "menuLogo hide" : "menuLogo"}>
         <Link to="/">
           <img src={ImgLogo} />
@@ -140,7 +142,8 @@ export default function MenuCom(props: Props): JSX.Element {
         selectedKeys={chosedKey}
         {...(props.collapsed ? {} : { openKeys })}
         onOpenChange={setOpenKeys}
-        onSelect={onSelect}>
+        onSelect={onSelect}
+      >
         {treeDom}
       </Menu>
     </Sider>

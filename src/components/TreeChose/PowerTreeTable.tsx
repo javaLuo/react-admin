@@ -7,16 +7,6 @@ import { IPower, PowerTree } from "@/models/index.type";
 // ==================
 // 类型声明
 // ==================
-interface Props {
-  title: string; // 指定模态框标题
-  data: PowerTree[]; // 所有的菜单&权限原始数据
-  defaultChecked: PowerTreeDefault; // 需要默认选中的项
-  modalShow: boolean; // 是否显示
-  initloading?: boolean; // 初始化时，树是否处于加载中状态
-  loading: boolean; // 提交表单时，树的确定按钮是否处于等待状态
-  onClose: Function; // 关闭模态框
-  onOk: Function; // 确定选择，将所选项信息返回上级
-}
 
 // 默认被选中的菜单和权限
 export type PowerTreeDefault = {
@@ -29,6 +19,17 @@ export type IPowerLevel = IPower & {
   children?: IPower;
   key?: number;
 };
+
+interface Props {
+  title: string; // 指定模态框标题
+  data: PowerTree[]; // 所有的菜单&权限原始数据
+  defaultChecked: PowerTreeDefault; // 需要默认选中的项
+  modalShow: boolean; // 是否显示
+  initloading?: boolean; // 初始化时，树是否处于加载中状态
+  loading: boolean; // 提交表单时，树的确定按钮是否处于等待状态
+  onClose: Function; // 关闭模态框
+  onOk: Function; // 确定选择，将所选项信息返回上级
+}
 
 // ==================
 // 本组件 用于角色授权的树形表格
@@ -204,7 +205,8 @@ export default function TreeTable(props: Props): JSX.Element {
                 <Checkbox
                   key={index}
                   checked={dtoIsChecked(item.id)}
-                  onChange={(e): void => onBtnDtoChange(e, item.id, record)}>
+                  onChange={(e): void => onBtnDtoChange(e, item.id, record)}
+                >
                   {item.title}
                 </Checkbox>
               );
@@ -225,7 +227,8 @@ export default function TreeTable(props: Props): JSX.Element {
       visible={props.modalShow}
       onOk={onOk}
       onCancel={onClose}
-      confirmLoading={props.loading}>
+      confirmLoading={props.loading}
+    >
       {props.initloading ? (
         <div style={{ textAlign: "center" }}>
           <Spin tip="加载中…" />

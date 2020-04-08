@@ -117,11 +117,11 @@ const tools = {
    * 清除一个对象中那些属性为空值的属性
    * 0 算有效值
    * **/
-  clearNull(obj: object): object {
-    const temp: object = {};
-    Object.keys(obj).forEach((item) => {
-      if (obj[item] === 0 || !!obj[item]) {
-        temp[item] = obj[item];
+  clearNull<T>(obj: T): T {
+    const temp: T = { ...obj };
+    Object.keys(temp).forEach((item) => {
+      if (temp[item] !== 0 && !temp[item]) {
+        delete temp[item];
       }
     });
     return temp;

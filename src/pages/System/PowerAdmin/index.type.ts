@@ -1,5 +1,15 @@
+/** 当前页面所需所有类型声明 **/
+
 import { PowerTreeDefault } from "@/components/TreeChose/PowerTreeTable";
 import { IPower, IMenu } from "@/models/index.type";
+export type {
+  IMenu,
+  IUserInfo,
+  IRole,
+  IPower,
+  IPowerParam,
+  Res,
+} from "@/models/index.type";
 
 // 分页相关参数控制
 export type Page = {

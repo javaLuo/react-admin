@@ -12,10 +12,11 @@ export type IMenu = {
 };
 
 export interface IMenuParam {
+  id?: number;
   title: string;
   icon: string;
   url: string;
-  parent: number;
+  parent: number | null;
   desc: string;
   sorts: number;
   conditions: number;
@@ -85,12 +86,12 @@ export interface IUserBasicInfo {
 
 export type IUserBasicInfoParam = {
   id?: number; // ID
-  username: string; // 用户名
-  password: string | number; // 密码
-  phone: string | number; // 手机
-  email: string; // 邮箱
-  desc: string; // 描述
-  conditions: number; // 状态 1启用，-1禁用
+  username?: string; // 用户名
+  password?: string | number; // 密码
+  phone?: string | number; // 手机
+  email?: string; // 邮箱
+  desc?: string; // 描述
+  conditions?: number; // 状态 1启用，-1禁用
 };
 
 export type PowerTree = IMenu & {
@@ -107,3 +108,11 @@ export type sysState = {
   roles: IRole[];
   powerTreeData: PowerTree[];
 };
+
+export type Res =
+  | {
+      status: number;
+      data?: any;
+      message?: string;
+    }
+  | undefined;

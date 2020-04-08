@@ -31,13 +31,9 @@ const history = createHistory();
 // ==================
 // 类型声明
 // ==================
-import { IUserInfo } from "@/models/index.type";
-import { iRootState, Dispatch } from "@/store";
+import { RootState, Dispatch } from "@/store";
 
-interface Props {
-  userinfo: IUserInfo;
-  setUserInfo: Function;
-}
+type Props = ReturnType<typeof mapState> & ReturnType<typeof mapDispatch>;
 
 // ==================
 // 本组件
@@ -86,9 +82,8 @@ function RouterCom(props: Props): JSX.Element {
   );
 }
 
-export default connect(
-  (state: iRootState) => ({ userinfo: state.app.userinfo }),
-  (dispatch: Dispatch) => ({
-    setUserInfo: dispatch.app.setUserInfo,
-  })
-)(RouterCom);
+const mapState = (state: RootState) => ({ userinfo: state.app.userinfo });
+const mapDispatch = (dispatch: Dispatch) => ({
+  setUserInfo: dispatch.app.setUserInfo,
+});
+export default connect(mapState, mapDispatch)(RouterCom);
