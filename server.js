@@ -17,10 +17,20 @@ const PORT = 8888; // 服务启动端口号
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
+/** 监听POST请求，返回MOCK模拟数据 **/
+app.post(/\/api.*/, (req, res, next) => {
+  const result = mock.mockApi({ url: req.originalUrl, body: req.body });
+  res.send(result);
+});
+app.get(/\/api.*/, (req, res, next) => {
+  const result = mock.mockApi({ url: req.originalUrl, body: req.body });
+  res.send(result);
+});
+
 if (env === "production") {
   // 如果是生产环境，则运行build文件夹中的代码
   app.use(express.static("build"));
-  app.get("*", function(req, res) {
+  app.get("*", function (req, res) {
     res.sendFile(path.join(__dirname, "build", "index.html"));
   });
 } else {
@@ -35,20 +45,10 @@ if (env === "production") {
         colors: true, // 不同信息不同颜色
         timings: true, // 输出各步骤消耗的时间
       },
-    }),
+    })
   );
   // 挂载HMR热更新中间件
   app.use(webpackHotMiddleware(compiler));
-
-  /** 监听POST请求，返回MOCK模拟数据 **/
-  app.post(/\/api.*/, (req, res, next) => {
-    const result = mock.mockApi({ url: req.originalUrl, body: req.body });
-    res.send(result);
-  });
-  app.get(/\/api.*/, (req, res, next) => {
-    const result = mock.mockApi({ url: req.originalUrl, body: req.body });
-    res.send(result);
-  });
 
   // 所有请求都返回index.html
   app.get("*", (req, res, next) => {

@@ -373,7 +373,8 @@ function RoleAdminContainer(props: Props) {
             <span
               key="0"
               className="control-btn green"
-              onClick={() => onModalShow(record, "see")}>
+              onClick={() => onModalShow(record, "see")}
+            >
               <Tooltip placement="top" title="查看">
                 <EyeOutlined />
               </Tooltip>
@@ -384,7 +385,8 @@ function RoleAdminContainer(props: Props) {
             <span
               key="1"
               className="control-btn blue"
-              onClick={() => onModalShow(record, "up")}>
+              onClick={() => onModalShow(record, "up")}
+            >
               <Tooltip placement="top" title="修改">
                 <ToolOutlined />
               </Tooltip>
@@ -395,7 +397,8 @@ function RoleAdminContainer(props: Props) {
             <span
               key="2"
               className="control-btn blue"
-              onClick={() => onAllotPowerClick(record)}>
+              onClick={() => onAllotPowerClick(record)}
+            >
               <Tooltip placement="top" title="分配权限">
                 <EditOutlined />
               </Tooltip>
@@ -408,7 +411,8 @@ function RoleAdminContainer(props: Props) {
               title="确定删除吗?"
               onConfirm={() => onDel(record.id)}
               okText="确定"
-              cancelText="取消">
+              cancelText="取消"
+            >
               <span className="control-btn red">
                 <Tooltip placement="top" title="删除">
                   <DeleteOutlined />
@@ -456,7 +460,8 @@ function RoleAdminContainer(props: Props) {
               type="primary"
               icon={<PlusCircleOutlined />}
               disabled={!p.includes("role:add")}
-              onClick={() => onModalShow(null, "add")}>
+              onClick={() => onModalShow(null, "add")}
+            >
               添加角色
             </Button>
           </li>
@@ -477,7 +482,8 @@ function RoleAdminContainer(props: Props) {
                 allowClear
                 style={{ width: "200px" }}
                 onChange={searchConditionsChange}
-                value={searchInfo.conditions}>
+                value={searchInfo.conditions}
+              >
                 <Option value={1}>启用</Option>
                 <Option value={-1}>禁用</Option>
               </Select>
@@ -486,7 +492,8 @@ function RoleAdminContainer(props: Props) {
               <Button
                 type="primary"
                 icon={<SearchOutlined />}
-                onClick={onSearch}>
+                onClick={onSearch}
+              >
                 搜索
               </Button>
             </li>
@@ -514,12 +521,14 @@ function RoleAdminContainer(props: Props) {
         visible={modal.modalShow}
         onOk={() => onOk()}
         onCancel={() => onClose()}
-        confirmLoading={modal.modalLoading}>
+        confirmLoading={modal.modalLoading}
+      >
         <Form
           form={form}
           initialValues={{
             formConditions: 1,
-          }}>
+          }}
+        >
           <Form.Item
             label="角色名"
             name="formTitle"
@@ -527,7 +536,8 @@ function RoleAdminContainer(props: Props) {
             rules={[
               { required: true, whitespace: true, message: "必填" },
               { max: 12, message: "最多输入12位字符" },
-            ]}>
+            ]}
+          >
             <Input
               placeholder="请输入角色名"
               disabled={modal.operateType === "see"}
@@ -537,7 +547,8 @@ function RoleAdminContainer(props: Props) {
             label="描述"
             name="formDesc"
             {...formItemLayout}
-            rules={[{ max: 100, message: "最多输入100个字符" }]}>
+            rules={[{ max: 100, message: "最多输入100个字符" }]}
+          >
             <TextArea
               rows={4}
               disabled={modal.operateType === "see"}
@@ -548,7 +559,8 @@ function RoleAdminContainer(props: Props) {
             label="排序"
             name="formSorts"
             {...formItemLayout}
-            rules={[{ required: true, message: "请输入排序号" }]}>
+            rules={[{ required: true, message: "请输入排序号" }]}
+          >
             <InputNumber
               min={0}
               max={99999}
@@ -560,7 +572,8 @@ function RoleAdminContainer(props: Props) {
             label="状态"
             name="formConditions"
             {...formItemLayout}
-            rules={[{ required: true, message: "请选择状态" }]}>
+            rules={[{ required: true, message: "请选择状态" }]}
+          >
             <Select disabled={modal.operateType === "see"}>
               <Option key={1} value={1}>
                 启用

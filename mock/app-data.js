@@ -548,7 +548,7 @@ const addPower = (p) => {
 // 修改权限
 const upPower = (p) => {
   // const p = JSON.parse(request.body);
-  console.log("到这了吗：", p);
+
   const oldIndex = powers.findIndex((item) => item.id === p.id);
   if (oldIndex !== -1) {
     const news = Object.assign({}, powers[oldIndex], p);

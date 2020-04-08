@@ -5,6 +5,7 @@ const webpack = require("webpack"); // webpack核心
 const MiniCssExtractPlugin = require("mini-css-extract-plugin"); // 为了单独打包css
 const HtmlWebpackPlugin = require("html-webpack-plugin"); // 生成html
 const AntdDayjsWebpackPlugin = require("antd-dayjs-webpack-plugin");
+const tsImportPluginFactory = require("ts-import-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin"); // 每次打包前清除旧的build文件夹
 const SWPrecacheWebpackPlugin = require("sw-precache-webpack-plugin"); // 生成一个server-worker用于缓存
 const FaviconsWebpackPlugin = require("favicons-webpack-plugin"); // 自动生成各尺寸的favicon图标
@@ -29,7 +30,7 @@ module.exports = {
     chunkFilename: "dist/[name].[chunkhash:8].chunk.js",
   },
   stats: {
-    warningsFilter: warning => /Conflicting order/gm.test(warning), // 不输出一些警告，多为因CSS引入顺序不同导致的警告
+    warningsFilter: (warning) => /Conflicting order/gm.test(warning), // 不输出一些警告，多为因CSS引入顺序不同导致的警告
     children: false, // 不输出子模块的打包信息
   },
   optimization: {
@@ -54,10 +55,25 @@ module.exports = {
   module: {
     rules: [
       {
-        // .js .jsx用babel解析
-        test: /\.js?$/,
+        // .tsx用typescript-loader解析解析
+        test: /\.(ts|tsx|js|jsx)?$/,
+        use: [
+          {
+            loader: "awesome-typescript-loader",
+            options: {
+              getCustomTransformers: () => ({
+                before: [
+                  tsImportPluginFactory({
+                    libraryName: "antd",
+                    libraryDirectory: "lib",
+                    style: true,
+                  }),
+                ],
+              }),
+            },
+          },
+        ],
         include: path.resolve(__dirname, "src"),
-        use: ["babel-loader"],
       },
       {
         // .css 解析
@@ -67,7 +83,12 @@ module.exports = {
       {
         // .less 解析
         test: /\.less$/,
-        use: [MiniCssExtractPlugin.loader, "css-loader", "postcss-loader", { loader: "less-loader", options: { javascriptEnabled: true } }],
+        use: [
+          MiniCssExtractPlugin.loader,
+          "css-loader",
+          "postcss-loader",
+          { loader: "less-loader", options: { javascriptEnabled: true } },
+        ],
       },
       {
         // 文件解析
@@ -111,10 +132,7 @@ module.exports = {
     ],
   },
   plugins: [
-    /**
-     * 打包前删除上一次打包留下的旧代码（根据output.path）
-     * **/
-    new CleanWebpackPlugin(),
+    new CleanWebpackPlugin(), // 打包前删除上一次留下的旧代码（根据output.path）
     new webpackbar(),
     new AntdDayjsWebpackPlugin(), // dayjs 替代 momentjs
     /**
@@ -126,15 +144,11 @@ module.exports = {
         PUBLIC_URL: PUBLIC_PATH.replace(/\/$/, ""),
       }),
     }),
-    /**
-     * 提取CSS等样式生成单独的CSS文件
-     * **/
+    // 提取CSS等样式生成单独的CSS文件
     new MiniCssExtractPlugin({
       filename: "dist/[name].[chunkhash:8].css", // 生成的文件名
     }),
-    /**
-     * 生成一个server-work用于缓存资源（PWA）
-     * */
+    // 生成一个server-work用于缓存资源（PWA）
     new SWPrecacheWebpackPlugin({
       dontCacheBustUrlsMatching: /\.\w{8}\./,
       filename: "service-worker.js",
@@ -150,11 +164,13 @@ module.exports = {
       minify: true, // 压缩
       navigateFallback: PUBLIC_PATH, // 遇到不存在的URL时，跳转到主页
       navigateFallbackWhitelist: [/^(?!\/__).*/], // 忽略从/__开始的网址，参考 https://github.com/facebookincubator/create-react-app/issues/2237#issuecomment-302693219
-      staticFileGlobsIgnorePatterns: [/\.map$/, /asset-manifest\.json$/, /\.cache$/], // 不缓存sourcemaps,它们太大了
+      staticFileGlobsIgnorePatterns: [
+        /\.map$/,
+        /asset-manifest\.json$/,
+        /\.cache$/,
+      ], // 不缓存sourcemaps,它们太大了
     }),
-    /**
-     * 自动生成HTML，并注入各参数
-     * **/
+    // 自动生成HTML，并注入各参数
     new HtmlWebpackPlugin({
       filename: "index.html", // 生成的html存放路径，相对于 output.path
       template: "./public/index.html", // html模板路径
@@ -197,7 +213,7 @@ module.exports = {
     }),
   ],
   resolve: {
-    extensions: [".js", ".jsx", ".less", ".css", ".wasm"], // 后缀名自动补全
+    extensions: [".js", ".jsx", ".ts", ".tsx", ".less", ".css", ".wasm"], //后缀名自动补全
     alias: {
       "@": path.resolve(__dirname, "src"),
     },
