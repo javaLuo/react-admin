@@ -6,6 +6,7 @@ const HtmlWebpackPlugin = require("html-webpack-plugin"); // 动态生成html插
 const AntdDayjsWebpackPlugin = require("antd-dayjs-webpack-plugin");
 const tsImportPluginFactory = require("ts-import-plugin");
 const webpackbar = require("webpackbar");
+
 const PUBLIC_PATH = "/"; // 基础路径
 module.exports = {
   mode: "development",

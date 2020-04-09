@@ -18,13 +18,12 @@
     "no-unmodified-loop-condition": "error",
     "no-with": "error",
     "no-catch-shadow": "error",
-    "@typescript-eslint/no-var-requires": "off",
-    "@typescript-eslint/no-unused-vars": "off",
-    "@typescript-eslint/interface-name-prefix": "off",
-    "@typescript-eslint/no-use-before-define": "off",
+
     "@typescript-eslint/camelcase": "off",
+    "@typescript-eslint/no-unused-vars": "off",
+    "@typescript-eslint/no-var-requires": "off",
+    "@typescript-eslint/no-use-before-define": "off",
     "@typescript-eslint/explicit-function-return-type": "off",
-    "react/no-unescaped-entities": "off",
 
     "prettier/prettier": "warn"
   }
