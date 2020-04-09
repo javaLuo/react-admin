@@ -11,6 +11,10 @@ React+Redux 后台管理系统脚手架<br/> React Hooks / Redux / Typescript
  <li>仿antd-pro外观，但没有使用dva和roadhog</li>
 </ul>
 
+## 分支
+- master: React hooks + Typescript
+- react-class: React Class
+
 ## 构建 Start
 
 ```javascript
