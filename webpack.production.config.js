@@ -14,7 +14,7 @@ const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin"); /
 const webpackbar = require("webpackbar"); // 进度条
 /**
  * 基础路径
- * 比如我上传到自己的服务器填写的是："/work/pwa/"，最终访问为"https://isluo.com/work/pwa/"
+ * 比如我上传到自己的服务器填写的是："/work/admin/"，最终访问为"https://isluo.com/work/admin/"
  * 根据你自己的需求填写
  * "/" 就是根路径，假如最终项目上线的地址为：https://isluo.com/， 那就可以直接写"/"
  * **/

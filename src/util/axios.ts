@@ -6,7 +6,7 @@ import axios from "axios";
 // 不需要下面这些mock配置，仅本地测试用
 // import Mock from "mockjs";
 // const mock = require("../../mock/app-data");
-// Mock.mock(/\/api.*/, options => {
+// Mock.mock(/\/api.*/, (options: any) => {
 //   const res = mock.mockApi(options);
 //   return res;
 // });

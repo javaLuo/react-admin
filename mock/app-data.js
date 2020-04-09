@@ -529,7 +529,6 @@ const getPowerByMenuId = (p) => {
 const getPowerById = (p) => {
   // const p = JSON.parse(request.body);
   let res = [];
-  console.log("开始查权限了，都有什么：", p);
   if (p.id instanceof Array) {
     res = powers.filter((item) => p.id.includes(item.id));
   } else {
@@ -584,7 +583,6 @@ const getRoles = (p) => {
   });
   const r = map.sort((a, b) => a.sorts - b.sorts);
   const res = r.slice((p.pageNum - 1) * p.pageSize, p.pageNum * p.pageSize);
-  console.log("你在搞笑？", res);
   return {
     status: 200,
     data: { list: res, total: map.length },
@@ -633,7 +631,6 @@ const upRole = (p) => {
 const delRole = (p) => {
   // const p = JSON.parse(request.body);
   const oldIndex = roles.findIndex((item) => item.id === p.id);
-  console.log("开始删除：", oldIndex);
   if (oldIndex !== -1) {
     roles.splice(oldIndex, 1);
     return { status: 200, data: null, message: "success" };
