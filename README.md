@@ -13,7 +13,7 @@ React+Redux 后台管理系统脚手架<br/> React Hooks / Redux / Typescript
 
 ## 分支
 - master: React hooks + Typescript
-- react-class: React Class
+- [react-class](https://github.com/javaLuo/react-admin/tree/react-class) : 原版 React Class
 
 ## 构建 Start
 
