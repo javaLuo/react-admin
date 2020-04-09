@@ -792,6 +792,7 @@ const setUserRoles = (p) => {
 exports.mockApi = ({ url, body }) => {
   let params = typeof body === "string" ? JSON.parse(body) : body;
   let path = url;
+
   // 是get请求 解析参数
   if (url.includes("?")) {
     path = url.split("?")[0];
@@ -801,7 +802,13 @@ exports.mockApi = ({ url, body }) => {
       params[item[0]] = item[1];
     }
   }
-  console.log("请求接口：", path, params);
+  if (path.includes("http")) {
+    path = path.replace(
+      `${globalThis.location.protocol}//${globalThis.location.host}`,
+      ""
+    );
+  }
+  console.info("请求接口：", path, params);
   switch (path) {
     case "/api/login":
       return onLogin(params);

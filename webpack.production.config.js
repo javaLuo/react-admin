@@ -41,8 +41,9 @@ module.exports = {
           // https://github.com/terser/terser#minify-options
           compress: {
             warnings: false, // 删除无用代码时是否给出警告
-            drop_console: true, // 删除所有的console.*
+            // drop_console: true, // 删除所有的console.*
             drop_debugger: true, // 删除所有的debugger
+            pure_funcs: ["console.log"], // 删除所有的console.log
           },
         },
       }),
@@ -142,6 +143,7 @@ module.exports = {
     new webpack.DefinePlugin({
       "process.env": JSON.stringify({
         PUBLIC_URL: PUBLIC_PATH.replace(/\/$/, ""),
+        NODE_ENV: "production",
       }),
     }),
     // 提取CSS等样式生成单独的CSS文件

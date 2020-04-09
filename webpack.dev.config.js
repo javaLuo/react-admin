@@ -118,6 +118,7 @@ module.exports = {
     new webpack.DefinePlugin({
       "process.env": JSON.stringify({
         PUBLIC_URL: PUBLIC_PATH,
+        NODE_ENV: "dev",
       }),
     }),
     new HtmlWebpackPlugin({
