@@ -414,15 +414,8 @@ const roles = [
 // 登录
 const onLogin = (p) => {
   const u = users.find((item) => {
-    console.log(
-      "gaoxiao?",
-      item.username,
-      p.username,
-      item.musername === p.username
-    );
     return item.username === p.username;
   });
-  console.log("没有？", users, p, u);
   if (!u) {
     return { status: 204, data: null, message: "该用户不存在" };
   } else if (u.password !== p.password) {
@@ -471,7 +464,6 @@ const getMenusById = (p) => {
 // 添加新菜单
 const addMenu = (p) => {
   // const p = JSON.parse(request.body);
-  console.log("添加：", p);
   p.id = ++id_sequence;
   menus.push(p);
   return { status: 200, data: menus, message: "添加成功" };
@@ -479,7 +471,6 @@ const addMenu = (p) => {
 // 修改菜单
 const upMenu = (p) => {
   // const p = JSON.parse(request.body);
-  console.log("到这了吗：", p);
   const oldIndex = menus.findIndex((item) => item.id === p.id);
   if (oldIndex !== -1) {
     const news = Object.assign({}, menus[oldIndex], p);
@@ -674,7 +665,6 @@ const setPowersByRoleId = (p) => {
   const oldIndex = roles.findIndex((item) => item.id === p.id);
   if (oldIndex !== -1) {
     const pow = p.menus.map((item) => ({ menuId: item, powers: [] }));
-    console.log("此时的POW", pow);
     // 将每一个权限id归类到对应的菜单里
     p.powers.forEach((ppItem) => {
       // 通过权限id查询该权限对象
@@ -690,7 +680,6 @@ const setPowersByRoleId = (p) => {
       }
     });
 
-    console.log("最终的POW：", pow);
     roles[oldIndex].menuAndPowers = pow;
     return { status: 200, data: null, message: "success" };
   } else {
@@ -704,7 +693,6 @@ const setPowersByRoleIds = (ps) => {
     const oldIndex = roles.findIndex((item) => item.id === p.id);
     if (oldIndex !== -1) {
       const pow = p.menus.map((item) => ({ menuId: item, powers: [] }));
-      console.log("此时的POW", pow);
       // 将每一个权限id归类到对应的菜单里
       p.powers.forEach((ppItem) => {
         // 通过权限id查询该权限对象
@@ -719,7 +707,6 @@ const setPowersByRoleIds = (ps) => {
           }
         }
       });
-      console.log("最终的POW：", pow);
       roles[oldIndex].menuAndPowers = pow;
     }
   });
