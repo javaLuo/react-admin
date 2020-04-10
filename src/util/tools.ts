@@ -119,9 +119,9 @@ const tools = {
    * **/
   clearNull<T>(obj: T): T {
     const temp: T = { ...obj };
-    Object.keys(temp).forEach((item) => {
-      if (temp[item] !== 0 && !temp[item]) {
-        delete temp[item];
+    Object.keys(temp).forEach((key) => {
+      if (temp[key] !== 0 && !temp[key]) {
+        delete temp[key];
       }
     });
     return temp;

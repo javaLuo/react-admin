@@ -276,7 +276,6 @@ function RoleAdminContainer(props: Props) {
 
   /** 分配权限按钮点击，权限控件出现 **/
   const onAllotPowerClick = (record: TableRecordData) => {
-    console.log("what is :", record);
     const menus = record.menuAndPowers.map((item) => item.menuId); // 需默认选中的菜单项ID
     // 需默认选中的权限ID
     const powers = record.menuAndPowers.reduce(

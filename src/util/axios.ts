@@ -3,7 +3,7 @@
 import { baseUrl } from "../config";
 import axios from "axios";
 
-// 不需要下面这些mock配置，仅本地测试用
+// 不需要下面这些mock配置，仅本地发布DEMO用
 // import Mock from "mockjs";
 // const mock = require("../../mock/app-data");
 // Mock.mock(/\/api.*/, (options: any) => {

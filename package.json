@@ -27,6 +27,7 @@
     "@rematch/core": "^1.4.0",
     "antd": "4.1.1",
     "axios": "^0.19.2",
+    "core-js": "^3.6.5",
     "history": "^4.10.1",
     "lodash": "^4.17.15",
     "normalize.css": "^8.0.1",

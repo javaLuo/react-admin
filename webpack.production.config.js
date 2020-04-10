@@ -74,7 +74,7 @@ module.exports = {
             },
           },
         ],
-        include: path.resolve(__dirname, "src"),
+        include: [path.resolve(__dirname, "src")],
       },
       {
         // .css 解析
@@ -161,7 +161,6 @@ module.exports = {
         if (message.indexOf("Skipping static resource") === 0) {
           return;
         }
-        console.log(message);
       },
       minify: true, // 压缩
       navigateFallback: PUBLIC_PATH, // 遇到不存在的URL时，跳转到主页
