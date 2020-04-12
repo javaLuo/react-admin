@@ -1,6 +1,6 @@
 /**
- * 基础model
- * 在src/store/index.js 中被挂载到store上，命名为 app
+ * 基础model,系统权限相关功能
+ * 在src/store/index.js 中被挂载到store上，命名为 sys
  * **/
 
 import axios from "@/util/axios"; // 自己写的工具函数，封装了请求数据的通用接口
