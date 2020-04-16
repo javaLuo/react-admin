@@ -7,8 +7,9 @@ const webpack = require("webpack"); // webpack核心
 const webpackDevMiddleware = require("webpack-dev-middleware"); // webpack服务器
 const webpackHotMiddleware = require("webpack-hot-middleware"); // HMR热更新中间件
 const webpackConfig = require("./webpack.dev.config.js"); // webpack开发环境的配置文件
-
 const mock = require("./mock/app-data"); // mock模拟数据，模拟后台业务
+
+// const { createProxyMiddleware } = require("http-proxy-middleware"); // 跨域配置 需要跨域请打开注释即可
 
 const app = express(); // 实例化express服务
 const DIST_DIR = webpackConfig.output.path; // webpack配置中设置的文件输出路径，所有文件存放在内存中
@@ -16,6 +17,19 @@ const PORT = 8888; // 服务启动端口号
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+
+// 跨域设置 需要跨域请打开注释,自己设置对应的域名
+// app.use(
+//   "/api",
+//   createProxyMiddleware({
+//     target: "https://example.com", // 目标域名
+//     changeOrigin: true,
+//     ws: false,
+//     pathRewrite: {
+//       "^/api": "/"
+//     }
+//   })
+// );
 
 /** 监听POST请求，返回MOCK模拟数据 **/
 app.post(/\/api.*/, (req, res, next) => {
