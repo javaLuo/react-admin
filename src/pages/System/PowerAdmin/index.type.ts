@@ -1,13 +1,13 @@
 /** 当前页面所需所有类型声明 **/
 
 import { PowerTreeDefault } from "@/components/TreeChose/PowerTreeTable";
-import { IPower, IMenu } from "@/models/index.type";
+import { Power } from "@/models/index.type";
 export type {
-  IMenu,
-  IUserInfo,
-  IRole,
-  IPower,
-  IPowerParam,
+  Menu,
+  UserInfo,
+  Role,
+  Power,
+  PowerParam,
   Res,
 } from "@/models/index.type";
 
@@ -19,7 +19,7 @@ export type Page = {
 };
 
 // 构建table所需数据
-export type TableRecordData = IPower & {
+export type TableRecordData = Power & {
   key: number;
   serial: number;
   control: number;
@@ -40,16 +40,4 @@ export type PowerTreeInfo = {
 export type SearchInfo = {
   title: string | undefined; // 用户名
   conditions: number | undefined; // 状态
-};
-
-export type IPowerLevel = IPower & {
-  parent?: IPower;
-  children?: IPower;
-  key?: string;
-};
-
-export type IMenuLevel = IMenu & {
-  parent?: IMenu;
-  children?: IMenu;
-  key?: string;
 };

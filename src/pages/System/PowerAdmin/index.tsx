@@ -55,10 +55,9 @@ import {
   TableRecordData,
   ModalType,
   operateType,
-  IMenuLevel,
-  IMenu,
-  IPower,
-  IPowerParam,
+  Menu,
+  Power,
+  PowerParam,
   Res,
 } from "./index.type";
 import { RootState, Dispatch } from "@/store";
@@ -77,7 +76,7 @@ function PowerAdminContainer(props: Props) {
   const p = props.powersCode; // 用户拥有的所有权限code
   const [form] = Form.useForm();
 
-  const [data, setData] = useState<IPower[]>([]); // 当前所选菜单下的权限数据
+  const [data, setData] = useState<Power[]>([]); // 当前所选菜单下的权限数据
   const [loading, setLoading] = useState<boolean>(false); // 数据是否正在加载中
 
   // 模态框相关参数控制
@@ -131,11 +130,11 @@ function PowerAdminContainer(props: Props) {
     let kids;
     if (!one) {
       // 第1次递归
-      kids = data.filter((item: IMenu) => !item.parent);
+      kids = data.filter((item: Menu) => !item.parent);
     } else {
-      kids = data.filter((item: IMenu) => item.parent === one.id);
+      kids = data.filter((item: Menu) => item.parent === one.id);
     }
-    kids.forEach((item: IMenu) => (item.children = dataToJson(item, data)));
+    kids.forEach((item: Menu) => (item.children = dataToJson(item, data)));
     return kids.length ? kids : null;
   }, []);
 
@@ -218,7 +217,7 @@ function PowerAdminContainer(props: Props) {
 
     try {
       const values = await form.validateFields();
-      const params: IPowerParam = {
+      const params: PowerParam = {
         title: values.formTitle,
         code: values.formCode,
         menu: treeSelect.id || 0,
@@ -325,8 +324,8 @@ function PowerAdminContainer(props: Props) {
 
   // 处理原始数据，将原始数据处理为层级关系
   const sourceData = useMemo(() => {
-    const d: IMenu[] = cloneDeep(props.userinfo.menus);
-    d.forEach((item: IMenuLevel) => {
+    const d: Menu[] = cloneDeep(props.userinfo.menus);
+    d.forEach((item: Menu & { key: string }) => {
       item.key = String(item.id);
     });
     // 按照sort排序

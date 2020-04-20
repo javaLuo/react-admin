@@ -86,4 +86,5 @@ const mapState = (state: RootState) => ({ userinfo: state.app.userinfo });
 const mapDispatch = (dispatch: Dispatch) => ({
   setUserInfo: dispatch.app.setUserInfo,
 });
+
 export default connect(mapState, mapDispatch)(RouterCom);

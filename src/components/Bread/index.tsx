@@ -3,11 +3,11 @@ import React, { useMemo } from "react";
 import { Breadcrumb } from "antd";
 import { EnvironmentOutlined } from "@ant-design/icons";
 import "./index.less";
-import { IMenu } from "@/models/index.type";
+import { Menu } from "@/models/index.type";
 
 interface Props {
   location: Location;
-  menus: IMenu[];
+  menus: Menu[];
 }
 
 export default function BreadCom(props: Props): JSX.Element {

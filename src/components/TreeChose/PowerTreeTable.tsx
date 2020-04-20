@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo, useEffect, useCallback } from "react";
 import { Modal, Table, Checkbox, Spin } from "antd";
-import { IPower, PowerTree } from "@/models/index.type";
+import { Power, PowerTree } from "@/models/index.type";
 
 // ==================
 // 类型声明
@@ -14,9 +14,9 @@ export type PowerTreeDefault = {
   powers: number[];
 };
 
-export type IPowerLevel = IPower & {
-  parent?: IPower;
-  children?: IPower;
+export type PowerLevel = Power & {
+  parent?: Power;
+  children?: Power;
   key?: number;
 };
 
@@ -87,7 +87,7 @@ export default function TreeTable(props: Props): JSX.Element {
         // 取消选中
         old.splice(old.indexOf(id), 1);
         // 判断当前这一行的权限中是否还有被选中的，如果全都没有选中，那当前菜单也要取消选中
-        const tempMap = record.powers.map((item: IPower) => item.id);
+        const tempMap = record.powers.map((item: Power) => item.id);
         if (
           !btnDtoChecked.some(
             (item) => item !== id && tempMap.indexOf(item) >= 0
@@ -108,11 +108,11 @@ export default function TreeTable(props: Props): JSX.Element {
     let kids;
     if (!one) {
       // 第1次递归
-      kids = data.filter((item: IPowerLevel) => !item.parent);
+      kids = data.filter((item: PowerLevel) => !item.parent);
     } else {
-      kids = data.filter((item: IPowerLevel) => item.parent === one.id);
+      kids = data.filter((item: PowerLevel) => item.parent === one.id);
     }
-    kids.forEach((item: IPowerLevel) => {
+    kids.forEach((item: PowerLevel) => {
       item.children = dataToJson(item, data);
       item.key = item.id;
     });
@@ -195,18 +195,14 @@ export default function TreeTable(props: Props): JSX.Element {
         dataIndex: "powers",
         key: "powers",
         width: "70%",
-        render: (
-          value: IPower[],
-          record: IPowerLevel
-        ): JSX.Element[] | null => {
+        render: (value: Power[], record: PowerLevel): JSX.Element[] | null => {
           if (value) {
-            return value.map((item: IPower, index: number) => {
+            return value.map((item: Power, index: number) => {
               return (
                 <Checkbox
                   key={index}
                   checked={dtoIsChecked(item.id)}
-                  onChange={(e): void => onBtnDtoChange(e, item.id, record)}
-                >
+                  onChange={(e): void => onBtnDtoChange(e, item.id, record)}>
                   {item.title}
                 </Checkbox>
               );
@@ -227,8 +223,7 @@ export default function TreeTable(props: Props): JSX.Element {
       visible={props.modalShow}
       onOk={onOk}
       onCancel={onClose}
-      confirmLoading={props.loading}
-    >
+      confirmLoading={props.loading}>
       {props.initloading ? (
         <div style={{ textAlign: "center" }}>
           <Spin tip="加载中…" />

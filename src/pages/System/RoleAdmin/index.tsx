@@ -64,8 +64,8 @@ import {
   ModalType,
   PowerTreeInfo,
   SearchInfo,
-  IRoleParam,
-  IRole,
+  RoleParam,
+  Role,
   Res,
 } from "./index.type";
 
@@ -81,7 +81,7 @@ function RoleAdminContainer(props: Props) {
   const p = props.powersCode;
   const [form] = Form.useForm();
 
-  const [data, setData] = useState<IRole[]>([]); // 当前页面列表数据
+  const [data, setData] = useState<Role[]>([]); // 当前页面列表数据
   const [loading, setLoading] = useState<boolean>(false); // 数据是否正在加载中
 
   // 分页相关参数控制
@@ -209,7 +209,7 @@ function RoleAdminContainer(props: Props) {
       setModal({
         modalLoading: true,
       });
-      const params: IRoleParam = {
+      const params: RoleParam = {
         title: values.formTitle,
         desc: values.formDesc,
         sorts: values.formSorts,

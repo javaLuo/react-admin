@@ -1,11 +1,7 @@
-/**
- * 全局维护的统一数据
- * **/
+/** 全局维护的统一数据 **/
 
-/**
- * 用于菜单选图标的图标数据
- * **/
-export const IconsData = [
+// 用于菜单选图标的图标数据
+export const IconsData: string[] = [
   "icon-Dollar",
   "icon-compass",
   "icon-EURO",

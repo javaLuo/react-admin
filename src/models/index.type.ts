@@ -1,48 +1,46 @@
-// 菜单对象
-export type IMenu = {
-  id: number;
-  title: string;
-  icon: string;
-  url: string;
-  parent: number;
-  desc: string;
-  sorts: number;
-  conditions: number;
-  children?: IMenu[];
-};
+// 菜单添加，修改时的参数类型
+export interface MenuParam {
+  id?: number; // ID,添加时可以没有id
+  title: string; // 标题
+  icon: string; // 图标
+  url: string; // 链接路径
+  parent: number | null; // 父级ID
+  desc: string; // 描述
+  sorts: number; // 排序编号
+  conditions: number; // 状态，1启用，-1禁用
+  children?: Menu[]; // 子菜单
+}
 
-export interface IMenuParam {
-  id?: number;
-  title: string;
-  icon: string;
-  url: string;
-  parent: number | null;
-  desc: string;
-  sorts: number;
-  conditions: number;
+// 菜单对象
+export interface Menu extends MenuParam {
+  id: number; // ID
+}
+
+// 菜单id和权限id
+export interface MenuAndPower {
+  menuId: number; // 菜单ID
+  powers: number[]; // 该菜单拥有的所有权限ID
+}
+
+// 角色添加和修改时的参数类型
+export interface RoleParam {
+  id?: number; // ID,添加时可以不传id
+  title: string; // 角色名
+  desc: string; // 描述
+  sorts: number; // 排序编号
+  conditions: number; // 状态，1启用，-1禁用
+  menuAndPowers?: MenuAndPower[]; // 添加时可以不传菜单和权限
 }
 
 // 角色对象
-export interface IRole {
-  id: number;
-  title: string;
-  desc: string;
-  sorts: number;
-  conditions: number;
-  menuAndPowers: IMenuAndPower[];
-}
-
-export type IRoleParam = {
-  id?: number;
-  title: string;
-  desc: string;
-  sorts: number;
-  conditions: number;
-  menuAndPowers?: IMenuAndPower[];
-};
-
-export interface IPower {
+export interface Role extends RoleParam {
   id: number; // ID
+  menuAndPowers: MenuAndPower[]; // 当前角色拥有的菜单id和权限id
+}
+
+// 权限添加修改时的参数类型
+export interface PowerParam {
+  id?: number; // ID, 添加时可以没有id
   menu: number; // 所属的菜单
   title: string; // 标题
   code: string; // CODE
@@ -50,30 +48,22 @@ export interface IPower {
   sorts: number; // 排序
   conditions: number; // 状态 1启用，-1禁用
 }
-export interface IPowerParam {
-  id?: number;
-  menu: number; // 所属的菜单
-  title: string; // 标题
-  code: string; // CODE
-  desc: string; // 描述
-  sorts: number; // 排序
-  conditions: number; // 状态 1启用，-1禁用
+
+// 权限对象
+export interface Power extends PowerParam {
+  id: number; // ID
 }
 
-export interface IMenuAndPower {
-  menuId: number;
-  powers: number[];
+// 用户数据类型
+export interface UserInfo {
+  userBasicInfo: UserBasicInfo | null; // 用户的基本信息
+  menus: Menu[]; // 拥有的所有菜单对象
+  roles: Role[]; // 拥有的所有角色对象
+  powers: Power[]; // 拥有的所有权限对象
 }
 
-// UserInfo 用户数据类型
-export interface IUserInfo {
-  userBasicInfo: IUserBasicInfo | null;
-  menus: IMenu[];
-  roles: IRole[];
-  powers: IPower[];
-}
-
-export interface IUserBasicInfo {
+// 用户的基本信息
+export interface UserBasicInfo {
   id: number; // ID
   username: string; // 用户名
   password: string | number; // 密码
@@ -84,35 +74,39 @@ export interface IUserBasicInfo {
   roles: number[]; // 拥有的所有角色ID
 }
 
-export type IUserBasicInfoParam = {
+// 添加修改用户时参数的数据类型
+export interface UserBasicInfoParam {
   id?: number; // ID
-  username?: string; // 用户名
-  password?: string | number; // 密码
+  username: string; // 用户名
+  password: string | number; // 密码
   phone?: string | number; // 手机
   email?: string; // 邮箱
   desc?: string; // 描述
   conditions?: number; // 状态 1启用，-1禁用
-};
+}
 
-export type PowerTree = IMenu & {
-  powers: IPower[];
-};
+export interface PowerTree extends Menu {
+  powers: Power[];
+}
 
-export type appState = {
-  userinfo: IUserInfo;
+// ./app.js的state类型
+export interface AppState {
+  userinfo: UserInfo;
   powersCode: string[];
-};
+}
 
-export type sysState = {
-  menus: IMenu[];
-  roles: IRole[];
+// ./sys.js的state类型
+export interface SysState {
+  menus: Menu[];
+  roles: Role[];
   powerTreeData: PowerTree[];
-};
+}
 
+// 接口的返回值类型
 export type Res =
   | {
-      status: number;
-      data?: any;
-      message?: string;
+      status: number; // 状态，200成功
+      data?: any; // 返回的数据
+      message?: string; // 返回的消息
     }
   | undefined;

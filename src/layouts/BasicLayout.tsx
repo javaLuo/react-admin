@@ -19,7 +19,7 @@ import "./BasicLayout.less";
 // 组件
 // ==================
 import Header from "@/components/Header";
-import Menu from "@/components/Menu";
+import MenuCom from "@/components/Menu";
 import Footer from "@/components/Footer";
 import Bread from "@/components/Bread";
 import Loading from "@/components/Loading";
@@ -48,7 +48,7 @@ const [NotFound, NoPower, Home, MenuAdmin, PowerAdmin, RoleAdmin, UserAdmin] = [
 // 类型声明
 // ==================
 import { RootState, Dispatch } from "@/store";
-import { IMenu } from "@/models/index.type";
+import { Menu } from "@/models/index.type";
 import { History } from "history";
 
 type Props = ReturnType<typeof mapState> &
@@ -77,7 +77,7 @@ function BasicLayoutCom(props: Props): JSX.Element {
    * **/
   const checkRouterPower = useCallback(
     (pathname: string) => {
-      let menus: IMenu[] = [];
+      let menus: Menu[] = [];
       if (props.userinfo.menus && props.userinfo.menus.length) {
         menus = props.userinfo.menus;
       } else if (sessionStorage.getItem("userinfo")) {
@@ -114,7 +114,7 @@ function BasicLayoutCom(props: Props): JSX.Element {
 
   return (
     <Layout className="page-basic" hasSider>
-      <Menu
+      <MenuCom
         data={props.userinfo.menus}
         collapsed={collapsed}
         location={props.location}

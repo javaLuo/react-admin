@@ -9,18 +9,18 @@ import { message } from "antd";
 import { Dispatch } from "@/store";
 
 import {
-  IMenu,
-  IRole,
-  IMenuParam,
-  IPowerParam,
+  Menu,
+  Role,
+  MenuParam,
+  PowerParam,
   PowerTree,
-  IRoleParam,
-  sysState,
+  RoleParam,
+  SysState,
   Res,
-  IUserBasicInfoParam,
+  UserBasicInfoParam,
 } from "./index.type";
 
-const defaultState: sysState = {
+const defaultState: SysState = {
   menus: [], // 所有的菜单信息（用于菜单管理，无视权限）
   roles: [], // 所有的角色信息（用于Model赋予项，无视权限）
   powerTreeData: [], // 分配权限treeTable组件所需原始数据
@@ -30,16 +30,16 @@ export default {
   state: defaultState,
   reducers: {
     // 保存所有菜单数据
-    reducerSetMenus(state: sysState, payload: IMenu[]): sysState {
+    reducerSetMenus(state: SysState, payload: Menu[]): SysState {
       return { ...state, menus: payload };
     },
     // 保存所有角色数据
-    reducerSetRoles(state: sysState, payload: IRole[]): sysState {
+    reducerSetRoles(state: SysState, payload: Role[]): SysState {
       return { ...state, roles: payload };
     },
 
     // 保存所有权限数据
-    reducerSetAllPowers(state: sysState, payload: PowerTree[]): sysState {
+    reducerSetAllPowers(state: SysState, payload: PowerTree[]): SysState {
       return { ...state, powerTreeData: payload };
     },
   },
@@ -76,9 +76,9 @@ export default {
 
     /**
      * 添加菜单
-     * @param params IMenuParam
+     * @param params MenuParam
      */
-    async addMenu(params: IMenuParam) {
+    async addMenu(params: MenuParam) {
       try {
         const res: Res = await axios.post("/api/addmenu", params);
         return res;
@@ -90,7 +90,7 @@ export default {
     /**
      * 修改菜单
      * **/
-    async upMenu(params: IMenuParam) {
+    async upMenu(params: MenuParam) {
       try {
         const res: Res = await axios.post("/api/upmenu", params);
         return res;
@@ -157,7 +157,7 @@ export default {
     /**
      * 添加权限
      * **/
-    async addPower(params: IPowerParam) {
+    async addPower(params: PowerParam) {
       try {
         const res: Res = await axios.post("/api/addpower", params);
         return res;
@@ -170,7 +170,7 @@ export default {
     /**
      * 修改权限
      * **/
-    async upPower(params: IPowerParam) {
+    async upPower(params: PowerParam) {
       try {
         const res: Res = await axios.post("/api/uppower", params);
         return res;
@@ -231,7 +231,7 @@ export default {
     /**
      * 添加角色
      * **/
-    async addRole(params: IRoleParam) {
+    async addRole(params: RoleParam) {
       try {
         const res: Res = await axios.post("/api/addrole", params);
         return res;
@@ -243,7 +243,7 @@ export default {
     /**
      * 修改角色
      * **/
-    async upRole(params: IRoleParam) {
+    async upRole(params: RoleParam) {
       try {
         const res: Res = await axios.post("/api/uprole", params);
         return res;
@@ -357,7 +357,7 @@ export default {
     /**
      * 添加用户
      * **/
-    async addUser(params: IUserBasicInfoParam) {
+    async addUser(params: UserBasicInfoParam) {
       try {
         const res: Res = await axios.post("/api/addUser", params);
         return res;
@@ -370,7 +370,7 @@ export default {
     /**
      * 修改用户
      * **/
-    async upUser(params: IUserBasicInfoParam) {
+    async upUser(params: UserBasicInfoParam) {
       try {
         const res: Res = await axios.post("/api/upUser", params);
         return res;
@@ -395,10 +395,11 @@ export default {
 
     /**
      * 给用户分配角色
+     * 用的也是upUser接口
      * **/
-    async setUserRoles(params = {}) {
+    async setUserRoles(params: { id: number; roles: number[] }) {
       try {
-        const res: Res = await axios.post("/api/setUserRoles", params);
+        const res: Res = await axios.post("/api/upUser", params);
         return res;
       } catch (err) {
         message.error("网络错误，请重试");

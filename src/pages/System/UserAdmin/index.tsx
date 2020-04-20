@@ -61,8 +61,8 @@ import {
   operateType,
   ModalType,
   SearchInfo,
-  Role,
-  IUserBasicInfoParam,
+  RoleTreeInfo,
+  UserBasicInfoParam,
   Res,
 } from "./index.type";
 import { RootState, Dispatch } from "@/store";
@@ -100,7 +100,7 @@ function UserAdminContainer(props: Props): JSX.Element {
   });
 
   // 角色树相关参数
-  const [role, setRole] = useSetState<Role>({
+  const [role, setRole] = useSetState<RoleTreeInfo>({
     roleData: [],
     roleTreeLoading: false,
     roleTreeShow: false,
@@ -222,7 +222,7 @@ function UserAdminContainer(props: Props): JSX.Element {
       setModal({
         modalLoading: true,
       });
-      const params: IUserBasicInfoParam = {
+      const params: UserBasicInfoParam = {
         username: values.formUsername,
         password: values.formPassword,
         phone: values.formPhone,
@@ -305,15 +305,19 @@ function UserAdminContainer(props: Props): JSX.Element {
 
   // 分配角色确定
   const onRoleOk = async (keys: number[]): Promise<void> => {
+    if (!modal.nowData?.id) {
+      message.error("未获取到该条数据id");
+      return;
+    }
     const params = {
-      id: modal.nowData?.id,
+      id: modal.nowData.id,
       roles: keys.map((item) => Number(item)),
     };
     setRole({
       roleTreeLoading: true,
     });
     try {
-      const res: Res = await props.upUser(params);
+      const res: Res = await props.setUserRoles(params);
       if (res && res.status === 200) {
         message.success("分配成功");
         onGetData(page);
@@ -684,5 +688,6 @@ const mapDispatch = (dispatch: Dispatch) => ({
   upUser: dispatch.sys.upUser,
   delUser: dispatch.sys.delUser,
   getUserList: dispatch.sys.getUserList,
+  setUserRoles: dispatch.sys.setUserRoles,
 });
 export default connect(mapState, mapDispatch)(UserAdminContainer);

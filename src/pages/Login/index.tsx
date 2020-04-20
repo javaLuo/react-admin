@@ -21,7 +21,7 @@ import LogoImg from "@/assets/logo.png";
 // 类型声明
 // ==================
 import { RootState, Dispatch } from "@/store";
-import { IRole, IMenu, IPower, IUserBasicInfo, Res } from "@/models/index.type";
+import { Role, Menu, Power, UserBasicInfo, Res } from "@/models/index.type";
 import { CheckboxChangeEvent } from "antd/lib/checkbox";
 
 import { History } from "history";
@@ -77,10 +77,10 @@ function LoginContainer(props: Props): JSX.Element {
    * **/
   const loginIn = useCallback(
     async (username, password) => {
-      let userBasicInfo: IUserBasicInfo | null = null;
-      let roles: IRole[] = [];
-      let menus: IMenu[] = [];
-      let powers: IPower[] = [];
+      let userBasicInfo: UserBasicInfo | null = null;
+      let roles: Role[] = [];
+      let menus: Menu[] = [];
+      let powers: Power[] = [];
 
       /** 1.登录 （返回信息中有该用户拥有的角色id） **/
       const res1: Res | undefined = await props.onLogin({ username, password });
@@ -93,14 +93,14 @@ function LoginContainer(props: Props): JSX.Element {
 
       /** 2.根据角色id获取角色信息 (角色信息中有该角色拥有的菜单id和权限id) **/
       const res2 = await props.getRoleById({
-        id: (userBasicInfo as IUserBasicInfo).roles,
+        id: (userBasicInfo as UserBasicInfo).roles,
       });
       if (!res2 || res2.status !== 200) {
         // 角色查询失败
         return res2;
       }
 
-      roles = res2.data.filter((item: IRole) => item.conditions === 1); // conditions: 1启用 -1禁用
+      roles = res2.data.filter((item: Role) => item.conditions === 1); // conditions: 1启用 -1禁用
 
       /** 3.根据菜单id 获取菜单信息 **/
       const menuAndPowers = roles.reduce(
@@ -115,7 +115,7 @@ function LoginContainer(props: Props): JSX.Element {
         return res3;
       }
 
-      menus = res3.data.filter((item: IMenu) => item.conditions === 1);
+      menus = res3.data.filter((item: Menu) => item.conditions === 1);
 
       /** 4.根据权限id，获取权限信息 **/
       const res4 = await props.getPowerById({
@@ -127,7 +127,7 @@ function LoginContainer(props: Props): JSX.Element {
         // 权限查询失败
         return res4;
       }
-      powers = res4.data.filter((item: IPower) => item.conditions === 1);
+      powers = res4.data.filter((item: Power) => item.conditions === 1);
       return { status: 200, data: { userBasicInfo, roles, menus, powers } };
     },
     [props]

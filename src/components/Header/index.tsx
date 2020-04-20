@@ -26,7 +26,7 @@ import "./index.less";
 // ==================
 // 类型声明
 // ==================
-import { IUserInfo } from "@/models/index.type";
+import { UserInfo } from "@/models/index.type";
 
 type Element = {
   webkitRequestFullscreen?: Function;
@@ -41,7 +41,7 @@ interface Props {
   onToggle: Function; // 菜单收起与展开状态切换
   collapsed: boolean; // 菜单的状态
   onLogout: Function; // 退出登录
-  userinfo: IUserInfo; // 用户信息
+  userinfo: UserInfo; // 用户信息
 }
 
 export default function HeaderCom(props: Props): JSX.Element {

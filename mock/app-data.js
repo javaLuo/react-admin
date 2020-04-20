@@ -740,19 +740,6 @@ const delUser = function (p) {
     return { status: 204, data: null, message: "未找到该条数据" };
   }
 };
-// 给用户分配角色
-const setUserRoles = function (p) {
-  // const p = JSON.parse(request.body);
-  const oldIndex = users.findIndex(function (item) {
-    return item.id === p.id;
-  });
-  if (oldIndex !== -1) {
-    users.splice(oldIndex, 1);
-    return { status: 200, data: null, message: "success" };
-  } else {
-    return { status: 204, data: null, message: "未找到该条数据" };
-  }
-};
 
 exports.mockApi = function (obj) {
   const url = obj.url;
@@ -831,8 +818,6 @@ exports.mockApi = function (obj) {
       return upUser(params);
     case "/api/delUser":
       return delUser(params);
-    case "/api/setUserRoles":
-      return setUserRoles(params);
     default:
       return { status: 404, data: null, message: "api not found" };
   }

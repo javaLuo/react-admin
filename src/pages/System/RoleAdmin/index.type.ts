@@ -1,9 +1,9 @@
 /** 当前页面所需所有类型声明 **/
 
 import { PowerTreeDefault } from "@/components/TreeChose/PowerTreeTable";
-import { IRole } from "@/models/index.type";
+import { Role } from "@/models/index.type";
 
-export type { PowerTree, IRoleParam, IRole, Res } from "@/models/index.type";
+export type { PowerTree, RoleParam, Role, Res } from "@/models/index.type";
 // 分页相关参数控制
 export type Page = {
   pageNum: number; // 当前页码
@@ -12,7 +12,7 @@ export type Page = {
 };
 
 // 构建table所需数据
-export type TableRecordData = IRole & {
+export type TableRecordData = Role & {
   key: number;
   serial: number;
   control: number;

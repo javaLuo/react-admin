@@ -58,11 +58,10 @@ const formItemLayout = {
 // ==================
 import {
   TableRecordData,
-  IMenu,
+  Menu,
   ModalType,
   operateType,
-  IMenuParam,
-  IMenuLevel,
+  MenuParam,
 } from "./index.type";
 import { RootState, Dispatch } from "@/store";
 import { History } from "history";
@@ -82,7 +81,7 @@ function MenuAdminContainer(props: Props) {
   const p = props.powersCode;
   const [form] = Form.useForm();
 
-  const [data, setData] = useState<IMenu[]>([]); // 所有的菜单数据（未分层级）
+  const [data, setData] = useState<Menu[]>([]); // 所有的菜单数据（未分层级）
   const [loading, setLoading] = useState<boolean>(false); // 数据是否正在加载中
 
   // 模态框相关参数控制
@@ -124,11 +123,11 @@ function MenuAdminContainer(props: Props) {
     let kids;
     if (!one) {
       // 第1次递归
-      kids = data.filter((item: IMenu) => !item.parent);
+      kids = data.filter((item: Menu) => !item.parent);
     } else {
-      kids = data.filter((item: IMenu) => item.parent === one.id);
+      kids = data.filter((item: Menu) => item.parent === one.id);
     }
-    kids.forEach((item: IMenu) => (item.children = dataToJson(item, data)));
+    kids.forEach((item: Menu) => (item.children = dataToJson(item, data)));
     return kids.length ? kids : null;
   }, []);
 
@@ -192,7 +191,7 @@ function MenuAdminContainer(props: Props) {
     try {
       const values = await form.validateFields();
 
-      const params: IMenuParam = {
+      const params: MenuParam = {
         title: values.formTitle,
         url: values.formUrl,
         icon: values.formIcon,
@@ -264,8 +263,8 @@ function MenuAdminContainer(props: Props) {
 
   /** 处理原始数据，将原始数据处理为层级关系 **/
   const sourceData = useMemo(() => {
-    const d: IMenu[] = cloneDeep(data);
-    d.forEach((item: IMenuLevel) => {
+    const d: Menu[] = cloneDeep(data);
+    d.forEach((item: Menu & { key: string }) => {
       item.key = String(item.id);
     });
     // 按照sort排序
@@ -388,7 +387,7 @@ function MenuAdminContainer(props: Props) {
   /** 构建表格数据 **/
   const tableData = useMemo(() => {
     return data
-      .filter((item: IMenu) => item.parent === (Number(treeSelect.id) || null))
+      .filter((item: Menu) => item.parent === (Number(treeSelect.id) || null))
       .map((item, index) => {
         return {
           key: index,

@@ -7,16 +7,16 @@ import axios from "@/util/axios"; // 自己写的工具函数，封装了请求�
 import { message } from "antd";
 import { Dispatch, RootState } from "@/store";
 import {
-  IMenu,
-  IRole,
-  IPower,
-  IMenuAndPower,
-  IUserInfo,
-  appState,
+  Menu,
+  Role,
+  Power,
+  MenuAndPower,
+  UserInfo,
+  AppState,
   Res,
 } from "./index.type";
 
-const defaultState: appState = {
+const defaultState: AppState = {
   userinfo: {
     roles: [], // 当前用户拥有的角色
     menus: [], // 当前用户拥有的已授权的菜单
@@ -28,14 +28,14 @@ const defaultState: appState = {
 export default {
   state: defaultState,
   reducers: {
-    reducerUserInfo(state: appState, payload: IUserInfo) {
+    reducerUserInfo(state: AppState, payload: UserInfo) {
       return {
         ...state,
         userinfo: payload,
         powersCode: payload.powers.map((item) => item.code),
       };
     },
-    reducerLogout(state: appState) {
+    reducerLogout(state: AppState) {
       return {
         ...state,
         userinfo: {
@@ -80,7 +80,7 @@ export default {
      * 设置用户信息
      * @param: {*} params
      * **/
-    async setUserInfo(params: IUserInfo) {
+    async setUserInfo(params: UserInfo) {
       dispatch.app.reducerUserInfo(params);
       return "success";
     },
@@ -88,7 +88,7 @@ export default {
     /** 修改了角色/菜单/权限信息后需要更新用户的roles,menus,powers数据 **/
     async updateUserInfo(params: null, rootState: RootState) {
       /** 2.重新查询角色信息 **/
-      const userinfo: IUserInfo = rootState.app.userinfo;
+      const userinfo: UserInfo = rootState.app.userinfo;
 
       const res2: Res | undefined = await dispatch.sys.getRoleById({
         id: userinfo.roles.map((item) => item.id),
@@ -98,14 +98,14 @@ export default {
         return res2;
       }
 
-      const roles: IRole[] = res2.data.filter(
-        (item: IRole) => item.conditions === 1
+      const roles: Role[] = res2.data.filter(
+        (item: Role) => item.conditions === 1
       );
 
       /** 3.根据菜单id 获取菜单信息 **/
       const menuAndPowers = roles.reduce(
         (a, b) => [...a, ...b.menuAndPowers],
-        [] as IMenuAndPower[]
+        [] as MenuAndPower[]
       );
       const res3: Res | undefined = await dispatch.sys.getMenusById({
         id: Array.from(new Set(menuAndPowers.map((item) => item.menuId))),
@@ -114,8 +114,8 @@ export default {
         // 查询菜单信息失败
         return res3;
       }
-      const menus: IMenu[] = res3.data.filter(
-        (item: IMenu) => item.conditions === 1
+      const menus: Menu[] = res3.data.filter(
+        (item: Menu) => item.conditions === 1
       );
 
       /** 4.根据权限id，获取权限信息 **/
@@ -130,8 +130,8 @@ export default {
         // 权限查询失败
         return res4;
       }
-      const powers: IPower[] = res4.data.filter(
-        (item: IPower) => item.conditions === 1
+      const powers: Power[] = res4.data.filter(
+        (item: Power) => item.conditions === 1
       );
       this.setUserInfo({
         ...userinfo,

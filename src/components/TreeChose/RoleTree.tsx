@@ -2,21 +2,21 @@
 import React, { useState, useMemo, useEffect, useCallback } from "react";
 import { Tree, Modal } from "antd";
 import { cloneDeep } from "lodash";
-import { IRole } from "@/models/index.type";
+import { Role } from "@/models/index.type";
 
 // ==================
 // 类型声明
 // ==================
 
-type IRoleLevel = IRole & {
+type RoleLevel = Role & {
   key?: string;
-  parent?: IRole;
-  children?: IRole;
+  parent?: Role;
+  children?: Role;
 };
 
 interface Props {
   title: string; // 标题
-  data: IRole[]; //  原始数据
+  data: Role[]; //  原始数据
   defaultKeys: number[]; // 当前默认选中的key们
   visible: boolean; // 是否显示
   loading: boolean; // 确定按钮是否在等待中状态
@@ -39,13 +39,11 @@ export default function RoleTreeComponent(props: Props): JSX.Element {
     let kids;
     if (!one) {
       // 第1次递归
-      kids = data.filter((item: IRoleLevel) => !item.parent);
+      kids = data.filter((item: RoleLevel) => !item.parent);
     } else {
-      kids = data.filter((item: IRoleLevel) => item.parent === one.id);
+      kids = data.filter((item: RoleLevel) => item.parent === one.id);
     }
-    kids.forEach(
-      (item: IRoleLevel) => (item.children = dataToJson(item, data))
-    );
+    kids.forEach((item: RoleLevel) => (item.children = dataToJson(item, data)));
     return kids.length ? kids : null;
   }, []);
 
@@ -75,7 +73,7 @@ export default function RoleTreeComponent(props: Props): JSX.Element {
 
   // 处理原始数据，将原始数据处理为层级关系
   const sourceData = useMemo(() => {
-    const d: IRoleLevel[] = cloneDeep(props.data);
+    const d: RoleLevel[] = cloneDeep(props.data);
     d.forEach((item) => {
       item.key = String(item.id);
     });

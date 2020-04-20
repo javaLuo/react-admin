@@ -4,12 +4,12 @@
 // 第三方库
 // ==================
 import React, { useState, useEffect, useCallback, useMemo } from "react";
-import { Layout, Menu } from "antd";
+import { Layout, Menu as MenuAntd } from "antd";
 import { Link } from "react-router-dom";
 import { cloneDeep } from "lodash";
 
 const { Sider } = Layout;
-const { SubMenu, Item } = Menu;
+const { SubMenu, Item } = MenuAntd;
 
 // ==================
 // 自定义的东西
@@ -22,10 +22,10 @@ import Icon from "@/components/Icon";
 // 类型声明
 // ==================
 import { History } from "history";
-import { IMenu } from "@/models/index.type";
+import { Menu } from "@/models/index.type";
 
 interface Props {
-  data: IMenu[]; // 所有的菜单数据
+  data: Menu[]; // 所有的菜单数据
   collapsed: boolean; // 菜单咱开还是收起
   history: History;
   location: Location;
@@ -58,22 +58,22 @@ export default function MenuCom(props: Props): JSX.Element {
   );
 
   // 工具 - 递归将扁平数据转换为层级数据
-  const dataToJson = useCallback((one, data): IMenu[] => {
+  const dataToJson = useCallback((one, data): Menu[] => {
     let kids;
     if (!one) {
       // 第1次递归
-      kids = data.filter((item: IMenu) => !item.parent);
+      kids = data.filter((item: Menu) => !item.parent);
     } else {
-      kids = data.filter((item: IMenu) => item.parent === one.id);
+      kids = data.filter((item: Menu) => item.parent === one.id);
     }
-    kids.forEach((item: IMenu) => (item.children = dataToJson(item, data)));
+    kids.forEach((item: Menu) => (item.children = dataToJson(item, data)));
     return kids.length ? kids : null;
   }, []);
 
   // 构建树结构
   const makeTreeDom = useCallback(
-    (data: IMenu[], key: string): JSX.Element[] => {
-      return data.map((item: IMenu) => {
+    (data: Menu[], key: string): JSX.Element[] => {
+      return data.map((item: Menu) => {
         const newKey = `${key}/${item.url.replace(/\//, "")}`;
         if (item.children) {
           return (
@@ -112,12 +112,12 @@ export default function MenuCom(props: Props): JSX.Element {
 
   /** 处理原始数据，将原始数据处理为层级关系 **/
   const treeDom: JSX.Element[] = useMemo(() => {
-    const d: IMenu[] = cloneDeep(props.data);
+    const d: Menu[] = cloneDeep(props.data);
     // 按照sort排序
     d.sort((a, b) => {
       return a.sorts - b.sorts;
     });
-    const sourceData: IMenu[] = dataToJson(null, d) || [];
+    const sourceData: Menu[] = dataToJson(null, d) || [];
     const treeDom = makeTreeDom(sourceData, "");
     return treeDom;
   }, [props.data, dataToJson, makeTreeDom]);
@@ -136,7 +136,7 @@ export default function MenuCom(props: Props): JSX.Element {
           <div>React-Admin</div>
         </Link>
       </div>
-      <Menu
+      <MenuAntd
         theme="dark"
         mode="inline"
         selectedKeys={chosedKey}
@@ -145,7 +145,7 @@ export default function MenuCom(props: Props): JSX.Element {
         onSelect={onSelect}
       >
         {treeDom}
-      </Menu>
+      </MenuAntd>
     </Sider>
   );
 }
