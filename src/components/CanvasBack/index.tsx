@@ -7,13 +7,13 @@ interface Props {
   col: number; // 纵向密度
   row: number; // 横向密度
 }
-type BaseData = {
+interface BaseData {
   ctx: CanvasRenderingContext2D | null;
   dots: Dot[];
   width: number;
   height: number;
-};
-type Dot = {
+}
+interface Dot {
   x: number; // 原始坐标x
   y: number; // 原始坐标y
   sx: number; // 当前偏移量x
@@ -22,7 +22,7 @@ type Dot = {
   dy: boolean; // 当前方向y
   color: number; // b通道颜色值
   dcolor: boolean; // 颜色改变向量
-};
+}
 export default function CanvasBack(props: Props): JSX.Element {
   const myCanvas = useRef<HTMLCanvasElement | null>(null);
   const data = useRef<BaseData>({

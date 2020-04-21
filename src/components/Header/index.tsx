@@ -28,14 +28,14 @@ import "./index.less";
 // ==================
 import { UserInfo } from "@/models/index.type";
 
-type Element = {
+interface Element {
   webkitRequestFullscreen?: Function;
   webkitExitFullscreen?: Function;
   mozRequestFullScreen?: Function;
   mozCancelFullScreen?: Function;
   msRequestFullscreen?: Function;
   msExitFullscreen?: Function;
-};
+}
 
 interface Props {
   onToggle: Function; // 菜单收起与展开状态切换
@@ -93,8 +93,7 @@ export default function HeaderCom(props: Props): JSX.Element {
     <Header className="header">
       <Tooltip
         placement="bottom"
-        title={props.collapsed ? "展开菜单" : "收起菜单"}
-      >
+        title={props.collapsed ? "展开菜单" : "收起菜单"}>
         <MenuFoldOutlined
           className={props.collapsed ? "trigger fold" : "trigger"}
           onClick={() => props.onToggle()}
@@ -124,8 +123,7 @@ export default function HeaderCom(props: Props): JSX.Element {
                   <a
                     href="https://blog.isluo.com"
                     target="_blank"
-                    rel="noopener noreferrer"
-                  >
+                    rel="noopener noreferrer">
                     <ChromeOutlined />
                     blog.isluo.com
                   </a>
@@ -134,8 +132,7 @@ export default function HeaderCom(props: Props): JSX.Element {
                   <a
                     href="https://github.com/javaLuo/react-admin"
                     target="_blank"
-                    rel="noopener noreferrer"
-                  >
+                    rel="noopener noreferrer">
                     <GithubOutlined />
                     GitHub
                   </a>
@@ -147,8 +144,7 @@ export default function HeaderCom(props: Props): JSX.Element {
                 </Menu.Item>
               </Menu>
             }
-            placement="bottomRight"
-          >
+            placement="bottomRight">
             <div className="userhead all_center">
               <SmileOutlined />
               <span className="username">{u.username}</span>
