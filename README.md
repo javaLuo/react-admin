@@ -30,6 +30,7 @@ yarn distmac       // MacOS下运行正式打包后的最终代码，默认监�
 
 ## 最近更新
 
+- 在写jest测试用例，还没弄完
 - (2020/04/09) hooks/typescript
 - 不再需要`yarn dll`
 - (2020/03/13 正在进行) 升到 antd4, 使用@rematch, 修改权限、菜单、角色后需更新用
