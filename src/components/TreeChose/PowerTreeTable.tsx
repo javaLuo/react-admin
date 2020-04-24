@@ -202,7 +202,8 @@ export default function TreeTable(props: Props): JSX.Element {
                 <Checkbox
                   key={index}
                   checked={dtoIsChecked(item.id)}
-                  onChange={(e): void => onBtnDtoChange(e, item.id, record)}>
+                  onChange={(e): void => onBtnDtoChange(e, item.id, record)}
+                >
                   {item.title}
                 </Checkbox>
               );
@@ -223,7 +224,8 @@ export default function TreeTable(props: Props): JSX.Element {
       visible={props.modalShow}
       onOk={onOk}
       onCancel={onClose}
-      confirmLoading={props.loading}>
+      confirmLoading={props.loading}
+    >
       {props.initloading ? (
         <div style={{ textAlign: "center" }}>
           <Spin tip="加载中…" />

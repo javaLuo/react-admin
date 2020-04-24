@@ -265,6 +265,7 @@ function LoginContainer(props: Props): JSX.Element {
                 width={150}
                 onChange={onVcodeChange}
                 className="vcode"
+                style={{ color: "#f00" }}
                 options={{
                   lines: 16,
                 }}
