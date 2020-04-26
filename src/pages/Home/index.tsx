@@ -1,6 +1,6 @@
 /* 主页 */
 
-import React from "react";
+import React, { useEffect } from "react";
 import "./index.less";
 import ImgLogo from "@/assets/react-logo.jpg";
 

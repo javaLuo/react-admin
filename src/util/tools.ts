@@ -37,7 +37,7 @@ const tools = {
     const lenth = s.length;
     const howmuch = ((): number => {
       if (s.length <= 2) {
-        return s.length;
+        return 0;
       }
       const l = s.length - 2;
       if (l <= 6) {
@@ -86,7 +86,7 @@ const tools = {
 
   /** 正则 邮箱验证 **/
   checkEmail(str: string): boolean {
-    const rex = /^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/;
+    const rex = /^[a-zA-Z0-9]+([-_.][a-zA-Z0-9]+)*@[a-zA-Z0-9]+([-_.][a-zA-Z0-9]+)*\.[a-z]{2,}$/;
     return rex.test(str);
   },
   /**

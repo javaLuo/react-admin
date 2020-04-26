@@ -18,7 +18,9 @@
     "noImplicitAny": true,
     "strictNullChecks": true,
     "suppressImplicitAnyIndexErrors": true,
-    "noUnusedLocals": true,
+    "noUnusedLocals": false,
+    "allowUnusedLabels": false,
+    "noUnusedParameters": false,
     "jsx": "react",
     "baseUrl": "./",
     "paths": {

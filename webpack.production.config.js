@@ -88,7 +88,10 @@ module.exports = {
           MiniCssExtractPlugin.loader,
           "css-loader",
           "postcss-loader",
-          { loader: "less-loader", options: { javascriptEnabled: true } },
+          {
+            loader: "less-loader",
+            options: { lessOptions: { javascriptEnabled: true } },
+          },
         ],
       },
       {

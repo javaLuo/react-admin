@@ -202,8 +202,7 @@ function LoginContainer(props: Props): JSX.Element {
                   whitespace: true,
                   message: "请输入用户名",
                 },
-              ]}
-            >
+              ]}>
               <Input
                 prefix={<UserOutlined style={{ fontSize: 13 }} />}
                 size="large"
@@ -217,8 +216,7 @@ function LoginContainer(props: Props): JSX.Element {
               rules={[
                 { required: true, message: "请输入密码" },
                 { max: 18, message: "最大长度18个字符" },
-              ]}
-            >
+              ]}>
               <Input
                 prefix={<KeyOutlined style={{ fontSize: 13 }} />}
                 size="large"
@@ -250,8 +248,7 @@ function LoginContainer(props: Props): JSX.Element {
                       }
                     },
                   }),
-                ]}
-              >
+                ]}>
                 <Input
                   style={{ width: "200px" }}
                   size="large"
@@ -275,8 +272,7 @@ function LoginContainer(props: Props): JSX.Element {
               <Checkbox
                 className="remember"
                 checked={rememberPassword}
-                onChange={onRemember}
-              >
+                onChange={onRemember}>
                 记住密码
               </Checkbox>
               <Button
@@ -284,8 +280,7 @@ function LoginContainer(props: Props): JSX.Element {
                 size="large"
                 type="primary"
                 loading={loading}
-                onClick={onSubmit}
-              >
+                onClick={onSubmit}>
                 {loading ? "请稍后" : "登录"}
               </Button>
             </div>
