@@ -1,4 +1,7 @@
-# [React-admin](https://github.com/javaLuo/react-admin/) &middot; ![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)
+# [React-admin](https://github.com/javaLuo/react-admin/)<br/>
+![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg) 
+![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)
+![GitHub last commit](https://img.shields.io/github/last-commit/javaLuo/react-admin.svg?style=popout)
 
 标准后台管理系统解决方案<br/> 动态菜单配置，权限精确到按钮<br/>
 
@@ -27,6 +30,7 @@ yarn distmac       // MacOS下运行正式打包后的最终代码，默认监�
 
 ## 最近更新
 
+- 在写jest测试用例，还没弄完
 - (2020/04/09) hooks/typescript
 - 不再需要`yarn dll`
 - (2020/03/13 正在进行) 升到 antd4, 使用@rematch, 修改权限、菜单、角色后需更新用
