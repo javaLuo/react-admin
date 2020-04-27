@@ -1,9 +1,10 @@
 // Login页测试用例
+
 import React from "react";
-import { shallow, mount } from "enzyme";
+import { mount } from "enzyme";
 import Component from "@/pages/Login/index";
 import { Provider } from "react-redux";
-import { createHashHistory as createHistory } from "history"; // 锚点模式的history
+import { createHashHistory as createHistory } from "history";
 import { match } from "react-router-dom";
 import Store from "@/store";
 
@@ -27,8 +28,10 @@ it("是否正常渲染：", async () => {
   const { wrapper } = setup();
   // 如果正常渲染的话，结果中应该包含“记住密码”4个字
   expect(wrapper.text().includes("记住密码")).toBeTruthy();
+});
 
-  // 第1个input输入后，其值应该改变
+it("修改input框是否正常", async () => {
+  const { wrapper } = setup();
   await wrapper
     .find("input")
     .at(0)

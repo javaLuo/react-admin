@@ -9,9 +9,7 @@
     "dist": "set NODE_ENV=production&& node server.js",
     "distmac": "export NODE_ENV=production&& node server.js",
     "prettier": "prettier --write \"{src,mock}/**/*.{js,jsx,ts,tsx,css,less}\"",
-    "test": "jest",
-    "cover": "./node_modules/.bin/istanbul cover _mocha",
-    "coveralls": "npm run cover -- --report lcovonly && cat ./coverage/lcov.info | ./node_modules/.bin/coveralls"
+    "test": "jest"
   },
   "author": "L",
   "license": "ISC",
