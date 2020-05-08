@@ -14,9 +14,6 @@ const mock = require("./mock/app-data"); // mock模拟数据，模拟后台业�
 const app = express(); // 实例化express服务
 const PORT = 8888; // 服务启动端口号
 
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
-
 // 跨域设置 需要跨域请打开注释,自己设置对应的域名
 // app.use(
 //   "/proxy",
@@ -29,6 +26,10 @@ app.use(bodyParser.json());
 //     },
 //   })
 // );
+
+// bodyParser的配置需要放在Proxy代理的下面，否则post请求的代理参数无法处理
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 
 /** 监听POST请求，返回MOCK模拟数据 **/
 app.post(/\/api.*/, (req, res, next) => {

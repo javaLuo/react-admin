@@ -1,9 +1,8 @@
 /* 主页 */
 
-import React, { useEffect } from "react";
+import React from "react";
 import "./index.less";
 import ImgLogo from "@/assets/react-logo.jpg";
-
 export default function HomePageContainer(): JSX.Element {
   return (
     <div className="page-home all_nowarp">

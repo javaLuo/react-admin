@@ -94,7 +94,7 @@ function BasicLayoutCom(props: Props): JSX.Element {
       }
       return true;
     },
-    [props.userinfo.menus]
+    [props.userinfo]
   );
 
   // 切换路由时触发

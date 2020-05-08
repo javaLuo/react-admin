@@ -2,6 +2,7 @@
 
 const path = require("path"); // 获取绝对路径用
 const webpack = require("webpack"); // webpack核心
+const CopyWebpackPlugin = require("copy-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin"); // 动态生成html插件
 const AntdDayjsWebpackPlugin = require("antd-dayjs-webpack-plugin");
 const tsImportPluginFactory = require("ts-import-plugin");
@@ -124,6 +125,10 @@ module.exports = {
         NODE_ENV: "dev",
       }),
     }),
+    // 拷贝public中的文件到最终打包文件夹里
+    new CopyWebpackPlugin([
+      { from: "./public", to: "./", ignore: ["favicon.png", "index.html"] },
+    ]),
     new HtmlWebpackPlugin({
       // 根据模板插入css/js等生成最终HTML
       filename: "index.html", //生成的html存放路径，相对于 output.path
