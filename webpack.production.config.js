@@ -7,7 +7,7 @@ const HtmlWebpackPlugin = require("html-webpack-plugin"); // 生成html
 const AntdDayjsWebpackPlugin = require("antd-dayjs-webpack-plugin");
 const tsImportPluginFactory = require("ts-import-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin"); // 每次打包前清除旧的build文件夹
-const CopyWebpackPlugin = require("copy-webpack-plugin");
+const CopyPlugin = require("copy-webpack-plugin");
 const SWPrecacheWebpackPlugin = require("sw-precache-webpack-plugin"); // 生成一个server-worker用于缓存
 const FaviconsWebpackPlugin = require("favicons-webpack-plugin"); // 自动生成各尺寸的favicon图标
 const TerserPlugin = require("terser-webpack-plugin"); // 优化js
@@ -155,9 +155,17 @@ module.exports = {
       filename: "dist/[name].[chunkhash:8].css", // 生成的文件名
     }),
     // 拷贝public中的文件到最终打包文件夹里
-    new CopyWebpackPlugin([
-      { from: "./public", to: "./", ignore: ["favicon.png", "index.html"] },
-    ]),
+    new CopyPlugin({
+      patterns: [
+        {
+          from: "./public/**/*",
+          to: "./",
+          globOptions: {
+            ignore: ["**/favicon.png", "**/index.html"],
+          },
+        },
+      ],
+    }),
     // 生成一个server-work用于缓存资源（PWA）
     new SWPrecacheWebpackPlugin({
       dontCacheBustUrlsMatching: /\.\w{8}\./,
