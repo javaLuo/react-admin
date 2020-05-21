@@ -129,11 +129,12 @@ module.exports = {
     new CopyPlugin({
       patterns: [
         {
-          from: "./public/**/*",
+          from: "public/**/*",
           to: "./",
           globOptions: {
             ignore: ["**/favicon.png", "**/index.html"],
           },
+          noErrorOnMissing: true,
         },
       ],
     }),

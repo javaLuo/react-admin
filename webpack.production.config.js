@@ -140,6 +140,7 @@ module.exports = {
     new CleanWebpackPlugin(), // 打包前删除上一次留下的旧代码（根据output.path）
     new webpackbar(),
     new AntdDayjsWebpackPlugin(), // dayjs 替代 momentjs
+
     /**
      * 在window环境中注入全局变量
      * 这里这么做是因为src/registerServiceWorker.js中有用到，为了配置PWA
@@ -153,18 +154,6 @@ module.exports = {
     // 提取CSS等样式生成单独的CSS文件
     new MiniCssExtractPlugin({
       filename: "dist/[name].[chunkhash:8].css", // 生成的文件名
-    }),
-    // 拷贝public中的文件到最终打包文件夹里
-    new CopyPlugin({
-      patterns: [
-        {
-          from: "./public/**/*",
-          to: "./",
-          globOptions: {
-            ignore: ["**/favicon.png", "**/index.html"],
-          },
-        },
-      ],
     }),
     // 生成一个server-work用于缓存资源（PWA）
     new SWPrecacheWebpackPlugin({
@@ -186,6 +175,19 @@ module.exports = {
         /asset-manifest\.json$/,
         /\.cache$/,
       ], // 不缓存sourcemaps,它们太大了
+    }),
+    // 拷贝public中的文件到最终打包文件夹里
+    new CopyPlugin({
+      patterns: [
+        {
+          from: "./public/**/*",
+          to: "./",
+          globOptions: {
+            ignore: ["**/favicon.png", "**/index.html"],
+          },
+          noErrorOnMissing: true,
+        },
+      ],
     }),
     // 自动生成HTML，并注入各参数
     new HtmlWebpackPlugin({
