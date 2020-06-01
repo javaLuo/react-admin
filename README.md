@@ -9,6 +9,9 @@
 
 React+Redux 后台管理系统脚手架<br/> React Hooks / Redux / Typescript
 
+## DEMO 
+https://isluo.com/work/admin/
+
 <ul>
  <li>非服务端渲染</li>
  <li>仿antd-pro外观，但没有使用dva和roadhog</li>
