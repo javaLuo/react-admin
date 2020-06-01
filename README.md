@@ -9,9 +9,6 @@
 
 React+Redux 后台管理系统脚手架<br/> React Hooks / Redux / Typescript
 
-## DEMO 
-https://isluo.com/work/admin/
-
 <ul>
  <li>非服务端渲染</li>
  <li>仿antd-pro外观，但没有使用dva和roadhog</li>
@@ -59,8 +56,9 @@ JSP 那样。
 
 ## 预览地址 Demo
 
-https://isluo.com/work/admin/ <br/> 账号：admin / user<br/> 密码：123456 /
-123456
+https://isluo.com/work/admin/ <br/>
+账号：admin / user<br/>
+密码：123456 / 123456
 
 ## 参考
 
