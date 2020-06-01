@@ -232,8 +232,8 @@ function LoginContainer(props: Props): JSX.Element {
                 name="vcode"
                 noStyle
                 rules={[
-                  (): object => ({
-                    validator: (rule: object, value: string): object => {
+                  (): any => ({
+                    validator: (rule: any, value: string): Promise<any> => {
                       const v = tools.trim(value);
                       if (v) {
                         if (v.length > 4) {

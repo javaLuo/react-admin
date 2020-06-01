@@ -20,8 +20,8 @@ interface Props {
   defaultKeys: number[]; // 当前默认选中的key们
   visible: boolean; // 是否显示
   loading: boolean; // 确定按钮是否在等待中状态
-  onOk: Function; // 确定
-  onClose: Function; // 关闭
+  onOk: (keys: string[], role: Role[]) => Promise<void>; // 确定
+  onClose: () => void; // 关闭
 }
 
 // ==================

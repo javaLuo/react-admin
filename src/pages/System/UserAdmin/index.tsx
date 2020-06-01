@@ -304,7 +304,7 @@ function UserAdminContainer(props: Props): JSX.Element {
   };
 
   // 分配角色确定
-  const onRoleOk = async (keys: number[]): Promise<void> => {
+  const onRoleOk = async (keys: string[]): Promise<void> => {
     if (!modal.nowData?.id) {
       message.error("未获取到该条数据id");
       return;

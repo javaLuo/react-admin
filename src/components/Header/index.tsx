@@ -29,19 +29,19 @@ import "./index.less";
 import { UserInfo } from "@/models/index.type";
 
 interface Element {
-  webkitRequestFullscreen?: Function;
-  webkitExitFullscreen?: Function;
-  mozRequestFullScreen?: Function;
-  mozCancelFullScreen?: Function;
-  msRequestFullscreen?: Function;
-  msExitFullscreen?: Function;
+  webkitRequestFullscreen?: () => void;
+  webkitExitFullscreen?: () => void;
+  mozRequestFullScreen?: () => void;
+  mozCancelFullScreen?: () => void;
+  msRequestFullscreen?: () => void;
+  msExitFullscreen?: () => void;
 }
 
 interface Props {
-  onToggle: Function; // 菜单收起与展开状态切换
   collapsed: boolean; // 菜单的状态
-  onLogout: Function; // 退出登录
   userinfo: UserInfo; // 用户信息
+  onToggle: () => void; // 菜单收起与展开状态切换
+  onLogout: () => void; // 退出登录
 }
 
 export default function HeaderCom(props: Props): JSX.Element {
