@@ -14,6 +14,9 @@ React+Redux 后台管理系统脚手架<br/> React Hooks / Redux / Typescript
  <li>仿antd-pro外观，但没有使用dva和roadhog</li>
 </ul>
 
+## Node版本
+至少`10.12.0`
+
 ## 分支
 - master: React hooks + Typescript
 - [react-class](https://github.com/javaLuo/react-admin/tree/react-class) : 原版 React Class
