@@ -15,7 +15,7 @@ React+Redux 后台管理系统脚手架<br/> React Hooks / Redux / Typescript
 </ul>
 
 ## Node版本
-至少`10.12.0`
+至少`10.12.0`, 因为`@typescript-eslint 3.x`这个插件需要
 
 ## 分支
 - master: React hooks + Typescript
