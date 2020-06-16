@@ -18,7 +18,7 @@ React+Redux 后台管理系统脚手架<br/> React Hooks / Redux / Typescript
 至少`10.12.0`, 因为`@typescript-eslint 3.x`这个插件需要
 
 ## 分支
-- master: React hooks + Typescript
+- Default: React hooks + Typescript
 - [react-class](https://github.com/javaLuo/react-admin/tree/react-class) : 原版 React Class
 
 ## 构建 Start
