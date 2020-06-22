@@ -85,14 +85,12 @@ function BasicLayoutCom(props: Props): JSX.Element {
           tools.uncompile(sessionStorage.getItem("userinfo") || "[]")
         ).menus;
       }
-      const m: string[] = menus.map((item) => item.url.replace(/^\//, "")); // 当前用户拥有的所有菜单
-      const urls: string[] = pathname.split("/").filter((item) => !!item);
-      for (let i = 0; i < urls.length; i++) {
-        if (!m.includes(urls[i])) {
-          return false;
-        }
+      const m: string[] = menus.map((item) => item.url); // 当前用户拥有的所有菜单
+
+      if (m.includes(pathname)) {
+        return true;
       }
-      return true;
+      return false;
     },
     [props.userinfo]
   );

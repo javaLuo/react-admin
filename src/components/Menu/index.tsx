@@ -71,40 +71,36 @@ export default function MenuCom(props: Props): JSX.Element {
   }, []);
 
   // 构建树结构
-  const makeTreeDom = useCallback(
-    (data: Menu[], key: string): JSX.Element[] => {
-      return data.map((item: Menu) => {
-        const newKey = `${key}/${item.url.replace(/\//, "")}`;
-        if (item.children) {
-          return (
-            <SubMenu
-              key={newKey}
-              title={
-                !item.parent && item.icon ? (
-                  <span>
-                    <Icon type={item.icon} />
-                    <span>{item.title}</span>
-                  </span>
-                ) : (
-                  item.title
-                )
-              }
-            >
-              {makeTreeDom(item.children, newKey)}
-            </SubMenu>
-          );
-        } else {
-          return (
-            <Item key={newKey}>
-              {!item.parent && item.icon ? <Icon type={item.icon} /> : null}
-              <span>{item.title}</span>
-            </Item>
-          );
-        }
-      });
-    },
-    []
-  );
+  const makeTreeDom = useCallback((data: Menu[]): JSX.Element[] => {
+    return data.map((item: Menu) => {
+      if (item.children) {
+        return (
+          <SubMenu
+            key={item.url}
+            title={
+              !item.parent && item.icon ? (
+                <span>
+                  <Icon type={item.icon} />
+                  <span>{item.title}</span>
+                </span>
+              ) : (
+                item.title
+              )
+            }
+          >
+            {makeTreeDom(item.children)}
+          </SubMenu>
+        );
+      } else {
+        return (
+          <Item key={item.url}>
+            {!item.parent && item.icon ? <Icon type={item.icon} /> : null}
+            <span>{item.title}</span>
+          </Item>
+        );
+      }
+    });
+  }, []);
 
   // ==================
   // 计算属性 memo
@@ -118,7 +114,7 @@ export default function MenuCom(props: Props): JSX.Element {
       return a.sorts - b.sorts;
     });
     const sourceData: Menu[] = dataToJson(null, d) || [];
-    const treeDom = makeTreeDom(sourceData, "");
+    const treeDom = makeTreeDom(sourceData);
     return treeDom;
   }, [props.data, dataToJson, makeTreeDom]);
 
