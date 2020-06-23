@@ -21,9 +21,11 @@ import "./BasicLayout.less";
 import Header from "@/components/Header";
 import MenuCom from "@/components/Menu";
 import Footer from "@/components/Footer";
-import Bread from "@/components/Bread";
 import Loading from "@/components/Loading";
 import ErrorBoundary from "@/components/ErrorBoundary";
+
+import Bread from "@/components/Bread";
+//import BreadTab from "@/components/BreadTab"; // Tab方式的导航
 
 const { Content } = Layout;
 
@@ -126,7 +128,14 @@ function BasicLayoutCom(props: Props): JSX.Element {
           onToggle={() => setCollapsed(!collapsed)}
           onLogout={onLogout}
         />
+        {/* 普通面包屑导航 */}
         <Bread menus={props.userinfo.menus} location={props.location} />
+        {/* Tab方式的导航 */}
+        {/* <BreadTab
+          menus={props.userinfo.menus}
+          location={props.location}
+          history={props.history}
+        /> */}
         <Content className="content">
           <ErrorBoundary location={props.location}>
             <Switch>

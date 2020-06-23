@@ -4,7 +4,6 @@ import { Breadcrumb } from "antd";
 import { EnvironmentOutlined } from "@ant-design/icons";
 import "./index.less";
 import { Menu } from "@/models/index.type";
-import { lte } from "lodash";
 
 interface Props {
   location: Location;
