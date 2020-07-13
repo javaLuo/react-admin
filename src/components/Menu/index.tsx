@@ -137,7 +137,7 @@ export default function MenuCom(props: Props): JSX.Element {
         mode="inline"
         selectedKeys={chosedKey}
         {...(props.collapsed ? {} : { openKeys })}
-        onOpenChange={setOpenKeys}
+        onOpenChange={(keys: string[]) => setOpenKeys(keys)}
         onSelect={onSelect}
       >
         {treeDom}
