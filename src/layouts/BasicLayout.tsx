@@ -5,7 +5,8 @@
 // ==================
 import React, { useState, useCallback } from "react";
 import { connect } from "react-redux";
-import { Route, Switch, Redirect } from "react-router-dom";
+import { Route, Redirect } from "react-router-dom";
+import CacheRoute, { CacheSwitch } from "react-router-cache-route";
 import loadable from "@loadable/component";
 import { Layout, message } from "antd";
 
@@ -138,7 +139,7 @@ function BasicLayoutCom(props: Props): JSX.Element {
         /> */}
         <Content className="content">
           <ErrorBoundary location={props.location}>
-            <Switch>
+            <CacheSwitch>
               <Redirect exact from="/" to="/home" />
               <Route
                 exact
@@ -161,14 +162,15 @@ function BasicLayoutCom(props: Props): JSX.Element {
                 path="/system/roleadmin"
                 render={(props) => onEnter(RoleAdmin, props)}
               />
-              <Route
+              {/*<!-- 使用CacheRoute可以缓存该页面，类似Keep-alive -->*/}
+              <CacheRoute
                 exact
                 path="/system/useradmin"
                 render={(props) => onEnter(UserAdmin, props)}
               />
               <Route exact path="/nopower" component={NoPower} />
               <Route component={NotFound} />
-            </Switch>
+            </CacheSwitch>
           </ErrorBoundary>
         </Content>
         <Footer />
