@@ -14,7 +14,7 @@ import axios from "axios";
 /**
  * 根据不同环境设置不同的请求地址
  * 把返回值赋给axios.defaults.baseURL即可
-*/
+ */
 // function setBaseUrl(){
 //   switch(process.env.NODE_ENV){
 //     case 'development': return 'http://development.com';
