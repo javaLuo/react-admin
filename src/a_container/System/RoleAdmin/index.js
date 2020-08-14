@@ -17,7 +17,7 @@ import {
   Tooltip,
   Divider,
   Select,
-  InputNumber
+  InputNumber,
 } from "antd";
 import {
   EyeOutlined,
@@ -25,7 +25,7 @@ import {
   ToolOutlined,
   DeleteOutlined,
   PlusCircleOutlined,
-  SearchOutlined
+  SearchOutlined,
 } from "@ant-design/icons";
 import "./index.less";
 import tools from "@/util/tools"; // 工具
@@ -39,11 +39,11 @@ import TreeTable from "@/a_component/TreeChose/PowerTreeTable";
 const { TextArea } = Input;
 const { Option } = Select;
 @connect(
-  state => ({
+  (state) => ({
     powersCode: state.app.powersCode,
-    powerTreeData: state.sys.powerTreeData
+    powerTreeData: state.sys.powerTreeData,
   }),
-  dispatch => ({
+  (dispatch) => ({
     getAllPowers: dispatch.sys.getAllPowers,
     getRoles: dispatch.sys.getRoles,
     addRole: dispatch.sys.addRole,
@@ -51,7 +51,7 @@ const { Option } = Select;
     delRole: dispatch.sys.delRole,
     setPowersByRoleId: dispatch.sys.setPowersByRoleId,
     findAllPowerByRoleId: dispatch.sys.findAllPowerByRoleId,
-    updateUserInfo: dispatch.app.updateUserInfo
+    updateUserInfo: dispatch.app.updateUserInfo,
   })
 )
 export default class RoleAdminContainer extends React.Component {
@@ -73,7 +73,7 @@ export default class RoleAdminContainer extends React.Component {
       pageSize: 10, // 每页多少条
       total: 0, // 数据库总共多少条数据
       treeLoading: false, // 控制树的loading状态，因为要先加载当前role的菜单，才能显示树
-      treeOnOkLoading: false // 是否正在分配菜单
+      treeOnOkLoading: false, // 是否正在分配菜单
     };
   }
 
@@ -98,18 +98,18 @@ export default class RoleAdminContainer extends React.Component {
       pageNum,
       pageSize,
       title: this.state.searchTitle,
-      conditions: this.state.searchConditions
+      conditions: this.state.searchConditions,
     };
     this.setState({ loading: true });
     this.props
       .getRoles(tools.clearNull(params))
-      .then(res => {
+      .then((res) => {
         if (res.status === 200) {
           this.setState({
             data: res.data.list,
             total: res.data.total,
             pageNum,
-            pageSize
+            pageSize,
           });
         } else {
           message.error(res.message);
@@ -125,7 +125,7 @@ export default class RoleAdminContainer extends React.Component {
   searchTitleChange(e) {
     if (e.target.value.length < 20) {
       this.setState({
-        searchTitle: e.target.value
+        searchTitle: e.target.value,
       });
     }
   }
@@ -133,7 +133,7 @@ export default class RoleAdminContainer extends React.Component {
   // 搜索 - 状态下拉框选择时触发
   searchConditionsChange(v) {
     this.setState({
-      searchConditions: v
+      searchConditions: v,
     });
   }
 
@@ -151,7 +151,7 @@ export default class RoleAdminContainer extends React.Component {
     this.setState({
       modalShow: true,
       nowData: data,
-      operateType: type
+      operateType: type,
     });
     setTimeout(() => {
       if (type === "add") {
@@ -163,7 +163,7 @@ export default class RoleAdminContainer extends React.Component {
           formConditions: data.conditions,
           formDesc: data.desc,
           formSorts: data.sorts,
-          formTitle: data.title
+          formTitle: data.title,
         });
       }
     });
@@ -184,13 +184,13 @@ export default class RoleAdminContainer extends React.Component {
         title: values.formTitle,
         desc: values.formDesc,
         sorts: values.formSorts,
-        conditions: values.formConditions
+        conditions: values.formConditions,
       };
       if (this.state.operateType === "add") {
         // 新增
         me.props
           .addRole(params)
-          .then(res => {
+          .then((res) => {
             if (res.status === 200) {
               message.success("添加成功");
               this.onGetData(this.state.pageNum, this.state.pageSize);
@@ -209,7 +209,7 @@ export default class RoleAdminContainer extends React.Component {
         params.id = this.state.nowData.id;
         me.props
           .upRole(params)
-          .then(res => {
+          .then((res) => {
             if (res.status === 200) {
               message.success("修改成功");
               this.onGetData(this.state.pageNum, this.state.pageSize);
@@ -234,7 +234,7 @@ export default class RoleAdminContainer extends React.Component {
     this.setState({ loading: true });
     this.props
       .delRole({ id })
-      .then(res => {
+      .then((res) => {
         if (res.status === 200) {
           message.success("删除成功");
           this.onGetData(this.state.pageNum, this.state.pageSize);
@@ -252,14 +252,14 @@ export default class RoleAdminContainer extends React.Component {
   /** 模态框关闭 **/
   onClose() {
     this.setState({
-      modalShow: false
+      modalShow: false,
     });
   }
 
   /** 分配权限按钮点击，权限控件出现 **/
   onAllotPowerClick(record) {
     console.log("record:", record);
-    const menus = record.menuAndPowers.map(item => item.menuId); // 需默认选中的菜单项ID
+    const menus = record.menuAndPowers.map((item) => item.menuId); // 需默认选中的菜单项ID
     const powers = record.menuAndPowers.reduce(
       (v1, v2) => [...v1, ...v2.powers],
       []
@@ -267,14 +267,14 @@ export default class RoleAdminContainer extends React.Component {
     this.setState({
       nowData: record,
       powerTreeShow: true,
-      powerTreeDefault: { menus, powers }
+      powerTreeDefault: { menus, powers },
     });
   }
 
   // 关闭菜单树
   onMenuTreeClose() {
     this.setState({
-      powerTreeShow: false
+      powerTreeShow: false,
     });
   }
 
@@ -283,14 +283,14 @@ export default class RoleAdminContainer extends React.Component {
     const params = {
       id: this.state.nowData.id,
       menus: arr.menus,
-      powers: arr.powers
+      powers: arr.powers,
     };
     this.setState({
-      treeOnOkLoading: true
+      treeOnOkLoading: true,
     });
     this.props
       .setPowersByRoleId(params)
-      .then(res => {
+      .then((res) => {
         if (res.status === 200) {
           this.onGetData(this.state.pageNum, this.state.pageSize);
           this.props.updateUserInfo();
@@ -299,12 +299,12 @@ export default class RoleAdminContainer extends React.Component {
           message.error(res.message || "权限分配失败");
         }
         this.setState({
-          treeOnOkLoading: false
+          treeOnOkLoading: false,
         });
       })
       .catch(() => {
         this.setState({
-          treeOnOkLoading: false
+          treeOnOkLoading: false,
         });
       });
   }
@@ -320,22 +320,22 @@ export default class RoleAdminContainer extends React.Component {
       {
         title: "序号",
         dataIndex: "serial",
-        key: "serial"
+        key: "serial",
       },
       {
         title: "角色名",
         dataIndex: "title",
-        key: "title"
+        key: "title",
       },
       {
         title: "描述",
         dataIndex: "desc",
-        key: "desc"
+        key: "desc",
       },
       {
         title: "排序",
         dataIndex: "sorts",
-        key: "sorts"
+        key: "sorts",
       },
       {
         title: "状态",
@@ -346,7 +346,7 @@ export default class RoleAdminContainer extends React.Component {
             <span style={{ color: "green" }}>启用</span>
           ) : (
             <span style={{ color: "red" }}>禁用</span>
-          )
+          ),
       },
       {
         title: "操作",
@@ -416,8 +416,8 @@ export default class RoleAdminContainer extends React.Component {
             result.push(item);
           });
           return result;
-        }
-      }
+        },
+      },
     ];
     return columns;
   }
@@ -434,7 +434,7 @@ export default class RoleAdminContainer extends React.Component {
         sorts: item.sorts,
         conditions: item.conditions,
         control: item.id,
-        menuAndPowers: item.menuAndPowers
+        menuAndPowers: item.menuAndPowers,
       };
     });
   }
@@ -444,12 +444,12 @@ export default class RoleAdminContainer extends React.Component {
     const formItemLayout = {
       labelCol: {
         xs: { span: 24 },
-        sm: { span: 4 }
+        sm: { span: 4 },
       },
       wrapperCol: {
         xs: { span: 24 },
-        sm: { span: 19 }
-      }
+        sm: { span: 19 },
+      },
     };
 
     return (
@@ -473,7 +473,7 @@ export default class RoleAdminContainer extends React.Component {
               <li>
                 <Input
                   placeholder="请输入角色名"
-                  onChange={e => this.searchTitleChange(e)}
+                  onChange={(e) => this.searchTitleChange(e)}
                   value={this.state.searchTitle}
                 />
               </li>
@@ -482,7 +482,7 @@ export default class RoleAdminContainer extends React.Component {
                   placeholder="请选择状态"
                   allowClear
                   style={{ width: "200px" }}
-                  onChange={e => this.searchConditionsChange(e)}
+                  onChange={(e) => this.searchConditionsChange(e)}
                   value={this.state.searchConditions}
                 >
                   <Option value={1}>启用</Option>
@@ -513,7 +513,7 @@ export default class RoleAdminContainer extends React.Component {
               showQuickJumper: true,
               showTotal: (total, range) => `共 ${total} 条数据`,
               onChange: (page, pageSize) =>
-                this.onTablePageChange(page, pageSize)
+                this.onTablePageChange(page, pageSize),
             }}
           />
         </div>
@@ -530,7 +530,7 @@ export default class RoleAdminContainer extends React.Component {
           <Form
             ref={this.form}
             initialValues={{
-              formConditions: 1
+              formConditions: 1,
             }}
           >
             <Form.Item
@@ -539,7 +539,7 @@ export default class RoleAdminContainer extends React.Component {
               {...formItemLayout}
               rules={[
                 { required: true, whitespace: true, message: "必填" },
-                { max: 12, message: "最多输入12位字符" }
+                { max: 12, message: "最多输入12位字符" },
               ]}
             >
               <Input
@@ -601,7 +601,7 @@ export default class RoleAdminContainer extends React.Component {
           initloading={this.state.treeLoading}
           loading={this.state.treeOnOkLoading}
           modalShow={this.state.powerTreeShow}
-          onOk={arr => this.onMenuTreeOk(arr)}
+          onOk={(arr) => this.onMenuTreeOk(arr)}
           onClose={() => this.onMenuTreeClose()}
         />
       </div>

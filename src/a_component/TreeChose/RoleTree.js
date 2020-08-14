@@ -19,7 +19,7 @@ export default class RoleTreeComponent extends React.PureComponent {
     super(props);
     this.state = {
       sourceData: [], // 原始数据，有层级关系
-      nowKeys: [] // 当前选中的keys
+      nowKeys: [], // 当前选中的keys
     };
   }
 
@@ -33,7 +33,7 @@ export default class RoleTreeComponent extends React.PureComponent {
     }
     if (this.props.defaultKeys !== prevP.defaultKeys) {
       this.setState({
-        nowKeys: this.props.defaultKeys.map(item => `${item}`)
+        nowKeys: this.props.defaultKeys.map((item) => `${item}`),
       });
     }
   }
@@ -41,14 +41,14 @@ export default class RoleTreeComponent extends React.PureComponent {
   /** 处理原始数据，将原始数据处理为层级关系 **/
   makeSourceData(data) {
     const d = _.cloneDeep(data);
-    d.forEach(item => {
+    d.forEach((item) => {
       item.key = String(item.id);
     });
     // 按照sort排序
     const sourceData = this.dataToJson(null, d) || [];
     console.log("处理后的数据：", sourceData);
     this.setState({
-      sourceData
+      sourceData,
     });
   }
 
@@ -57,11 +57,11 @@ export default class RoleTreeComponent extends React.PureComponent {
     let kids;
     if (!one) {
       // 第1次递归
-      kids = data.filter(item => !item.parent);
+      kids = data.filter((item) => !item.parent);
     } else {
-      kids = data.filter(item => item.parent === one.id);
+      kids = data.filter((item) => item.parent === one.id);
     }
-    kids.forEach(item => (item.children = this.dataToJson(item, data)));
+    kids.forEach((item) => (item.children = this.dataToJson(item, data)));
     return kids.length ? kids : null;
   }
 
@@ -95,7 +95,7 @@ export default class RoleTreeComponent extends React.PureComponent {
   /** 点击确定时触发 **/
   onOk = () => {
     // 通过key返回指定的数据
-    const res = this.props.data.filter(item => {
+    const res = this.props.data.filter((item) => {
       return this.state.nowKeys.includes(`${item.id}`);
     });
     // 返回选中的keys和选中的具体数据
@@ -108,10 +108,10 @@ export default class RoleTreeComponent extends React.PureComponent {
   };
 
   /** 选中或取消选中时触发 **/
-  onCheck = keys => {
+  onCheck = (keys) => {
     console.log("onCheck", keys);
     this.setState({
-      nowKeys: keys
+      nowKeys: keys,
     });
   };
 
@@ -129,7 +129,7 @@ export default class RoleTreeComponent extends React.PureComponent {
           checkable
           selectable={false}
           checkedKeys={this.state.nowKeys}
-          onCheck={keys => this.onCheck(keys)}
+          onCheck={(keys) => this.onCheck(keys)}
           treeData={this.state.sourceData}
         ></Tree>
       </Modal>

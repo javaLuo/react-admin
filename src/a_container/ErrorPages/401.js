@@ -6,22 +6,19 @@ import { Button } from "antd";
 import "./index.less";
 import Img from "@/assets/error.gif";
 
-@connect(
-  state => ({}),
-  dispatch => ({})
-)
+@connect((state) => ({}), (dispatch) => ({}))
 export default class NoPowerContainer extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      show: false
+      show: false,
     };
   }
 
   componentDidMount() {
     setTimeout(() =>
       this.setState({
-        show: true
+        show: true,
       })
     );
   }

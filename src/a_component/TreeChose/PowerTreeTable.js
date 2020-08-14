@@ -21,7 +21,7 @@ export default class TreeTable extends React.PureComponent {
       sourceData0: [], // 原始数据 - 扁平数据
       sourceData: [], // 原始数据 - 层级数据
       btnDtoChecked: [], // 受控，所有被选中的btnDto数据
-      treeChecked: [] // 受控，所有被选中的表格行
+      treeChecked: [], // 受控，所有被选中的表格行
     };
   }
 
@@ -43,7 +43,7 @@ export default class TreeTable extends React.PureComponent {
     this.props.onOk &&
       this.props.onOk({
         menus: this.state.treeChecked,
-        powers: this.state.btnDtoChecked
+        powers: this.state.btnDtoChecked,
       });
   }
 
@@ -73,7 +73,7 @@ export default class TreeTable extends React.PureComponent {
       sourceData0: data,
       sourceData,
       treeChecked,
-      btnDtoChecked
+      btnDtoChecked,
     });
   }
 
@@ -82,11 +82,11 @@ export default class TreeTable extends React.PureComponent {
     let kids;
     if (!one) {
       // 第1次递归
-      kids = data.filter(item => !item.parent);
+      kids = data.filter((item) => !item.parent);
     } else {
-      kids = data.filter(item => item.parent === one.id);
+      kids = data.filter((item) => item.parent === one.id);
     }
-    kids.forEach(item => {
+    kids.forEach((item) => {
       item.children = this.dataToJson(item, data);
       item.key = item.id;
     });
@@ -95,7 +95,7 @@ export default class TreeTable extends React.PureComponent {
 
   // Dto受控
   dtoIsChecked(id) {
-    return !!this.state.btnDtoChecked.find(item => item === id);
+    return !!this.state.btnDtoChecked.find((item) => item === id);
   }
   // TABLE 字段
   makeColumns() {
@@ -104,7 +104,7 @@ export default class TreeTable extends React.PureComponent {
         title: "菜单",
         dataIndex: "title",
         key: "title",
-        width: "30%"
+        width: "30%",
       },
       {
         title: "权限",
@@ -118,15 +118,15 @@ export default class TreeTable extends React.PureComponent {
                 <Checkbox
                   key={index}
                   checked={this.dtoIsChecked(item.id)}
-                  onChange={e => this.onBtnDtoChange(e, item.id, record)}
+                  onChange={(e) => this.onBtnDtoChange(e, item.id, record)}
                 >
                   {item.title}
                 </Checkbox>
               );
             });
           }
-        }
-      }
+        },
+      },
     ];
     return columns;
   }
@@ -136,33 +136,33 @@ export default class TreeTable extends React.PureComponent {
     return {
       onChange: (selectedRowKeys, selectedRows) => {
         this.setState({
-          treeChecked: selectedRowKeys
+          treeChecked: selectedRowKeys,
         });
       },
       onSelect: (record, selected, selectedRows) => {
-        const t = this.state.sourceData0.find(item => item.id === record.id);
+        const t = this.state.sourceData0.find((item) => item.id === record.id);
         if (selected) {
           // 选中，连带其权限全部勾选
           if (t && Array.isArray(t.powers)) {
             const temp = Array.from(
               new Set([
-                ...t.powers.map(item => item.id),
-                ...this.state.btnDtoChecked
+                ...t.powers.map((item) => item.id),
+                ...this.state.btnDtoChecked,
               ])
             );
             this.setState({
-              btnDtoChecked: temp
+              btnDtoChecked: temp,
             });
           }
         } else {
           // 取消选中，连带其权限全部取消勾选
           if (t && Array.isArray(t.powers)) {
-            const mapTemp = t.powers.map(item => item.id);
+            const mapTemp = t.powers.map((item) => item.id);
             const temp = this.state.btnDtoChecked.filter(
-              item => mapTemp.indexOf(item) < 0
+              (item) => mapTemp.indexOf(item) < 0
             );
             this.setState({
-              btnDtoChecked: temp
+              btnDtoChecked: temp,
             });
           }
         }
@@ -173,17 +173,17 @@ export default class TreeTable extends React.PureComponent {
           this.setState({
             // treeChecked: this.state.sourceData0.map((item) => item.id),
             btnDtoChecked: this.state.sourceData0.reduce((v1, v2) => {
-              return [...v1, ...v2.powers.map(k => k.id)];
-            }, [])
+              return [...v1, ...v2.powers.map((k) => k.id)];
+            }, []),
           });
         } else {
           this.setState({
             // treeChecked: [],
-            btnDtoChecked: []
+            btnDtoChecked: [],
           });
         }
       },
-      selectedRowKeys: this.state.treeChecked
+      selectedRowKeys: this.state.treeChecked,
     };
   }
 
@@ -200,10 +200,10 @@ export default class TreeTable extends React.PureComponent {
       console.log("取消啊兄弟", old, id);
       old.splice(old.indexOf(id), 1);
       // 判断当前这一行的权限中是否还有被选中的，如果全都没有选中，那当前菜单也要取消选中
-      const tempMap = record.powers.map(item => item.id);
+      const tempMap = record.powers.map((item) => item.id);
       if (
         !this.state.btnDtoChecked.some(
-          item => item !== id && tempMap.indexOf(item) >= 0
+          (item) => item !== id && tempMap.indexOf(item) >= 0
         )
       ) {
         treeChecked.splice(treeChecked.indexOf(record.id), 1);
@@ -211,7 +211,7 @@ export default class TreeTable extends React.PureComponent {
     }
     this.setState({
       btnDtoChecked: old,
-      treeChecked
+      treeChecked,
     });
   }
 

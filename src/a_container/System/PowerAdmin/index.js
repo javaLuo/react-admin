@@ -12,20 +12,39 @@ import "./index.less";
 // 所需的所有组件
 // ==================
 
-import { Tree, Button, Table, Tooltip, Popconfirm, Modal, Form, Select, Input, InputNumber, message, Divider, Checkbox } from "antd";
-import { EyeOutlined, ToolOutlined, DeleteOutlined, PlusCircleOutlined } from "@ant-design/icons";
+import {
+  Tree,
+  Button,
+  Table,
+  Tooltip,
+  Popconfirm,
+  Modal,
+  Form,
+  Select,
+  Input,
+  InputNumber,
+  message,
+  Divider,
+  Checkbox,
+} from "antd";
+import {
+  EyeOutlined,
+  ToolOutlined,
+  DeleteOutlined,
+  PlusCircleOutlined,
+} from "@ant-design/icons";
 
 const { TreeNode } = Tree;
 const { Option } = Select;
 const { TextArea } = Input;
 
 @connect(
-  state => ({
+  (state) => ({
     userinfo: state.app.userinfo,
     powersCode: state.app.powersCode,
     roles: state.sys.roles,
   }),
-  dispatch => ({
+  (dispatch) => ({
     addPower: dispatch.sys.addPower,
     getMenus: dispatch.sys.getMenus,
     upPower: dispatch.sys.upPower,
@@ -34,7 +53,7 @@ const { TextArea } = Input;
     updateUserInfo: dispatch.app.updateUserInfo,
     setPowersByRoleIds: dispatch.sys.setPowersByRoleIds,
     getAllRoles: dispatch.sys.getAllRoles,
-  }),
+  })
 )
 export default class PowerAdminContainer extends React.Component {
   constructor(props) {
@@ -86,7 +105,7 @@ export default class PowerAdminContainer extends React.Component {
     };
     this.props
       .getPowerDataByMenuId(params)
-      .then(res => {
+      .then((res) => {
         if (res.status === 200) {
           this.setState({
             data: res.data,
@@ -111,7 +130,7 @@ export default class PowerAdminContainer extends React.Component {
   /** 处理原始数据，将原始数据处理为层级关系 **/
   makeSourceData(data) {
     const d = _.cloneDeep(data);
-    d.forEach(item => {
+    d.forEach((item) => {
       item.key = String(item.id);
     });
     // 按照sort排序
@@ -129,17 +148,17 @@ export default class PowerAdminContainer extends React.Component {
     let kids;
     if (!one) {
       // 第1次递归
-      kids = data.filter(item => !item.parent);
+      kids = data.filter((item) => !item.parent);
     } else {
-      kids = data.filter(item => item.parent === one.id);
+      kids = data.filter((item) => item.parent === one.id);
     }
-    kids.forEach(item => (item.children = this.dataToJson(item, data)));
+    kids.forEach((item) => (item.children = this.dataToJson(item, data)));
     return kids.length ? kids : null;
   }
 
   /** 递归构建树结构 **/
   makeTreeDom(data) {
-    return data.map(item => {
+    return data.map((item) => {
       if (item.children) {
         return (
           <TreeNode title={item.title} key={`${item.id}`} p={item.parent}>
@@ -147,7 +166,14 @@ export default class PowerAdminContainer extends React.Component {
           </TreeNode>
         );
       } else {
-        return <TreeNode title={item.title} key={`${item.id}`} id={item.id} p={item.parent} />;
+        return (
+          <TreeNode
+            title={item.title}
+            key={`${item.id}`}
+            id={item.id}
+            p={item.parent}
+          />
+        );
       }
     });
   }
@@ -170,8 +196,8 @@ export default class PowerAdminContainer extends React.Component {
   };
 
   /** 工具 - 根据parentID返回parentName **/
-  getNameByParentId = id => {
-    const p = this.state.data.find(item => item.id === id);
+  getNameByParentId = (id) => {
+    const p = this.state.data.find((item) => item.id === id);
     return p ? p.title : undefined;
   };
 
@@ -181,19 +207,24 @@ export default class PowerAdminContainer extends React.Component {
       modalShow: true,
       nowData: data,
       operateType: type,
-      formParent: type === "add" ? { label: undefined, value: undefined } : { label: this.getNameByParentId(data.parent), value: data.parent },
+      formParent:
+        type === "add"
+          ? { label: undefined, value: undefined }
+          : { label: this.getNameByParentId(data.parent), value: data.parent },
       rolesCheckboxChose:
         data && data.id
           ? this.props.roles
-              .filter(item => {
-                const theMenuPower = item.menuAndPowers.find(item2 => item2.menuId === data.menu);
+              .filter((item) => {
+                const theMenuPower = item.menuAndPowers.find(
+                  (item2) => item2.menuId === data.menu
+                );
                 if (theMenuPower) {
                   console.log(theMenuPower, data.id);
                   return theMenuPower.powers.includes(data.id);
                 }
                 return false;
               })
-              .map(item => item.id)
+              .map((item) => item.id)
           : [],
     });
 
@@ -249,7 +280,10 @@ export default class PowerAdminContainer extends React.Component {
             this.getData(this.state.treeSelect.id);
             this.onClose();
 
-            await this.setPowersByRoleIds(res.data.id, this.state.rolesCheckboxChose);
+            await this.setPowersByRoleIds(
+              res.data.id,
+              this.state.rolesCheckboxChose
+            );
             this.props.updateUserInfo();
             this.props.getAllRoles();
           } else {
@@ -268,7 +302,10 @@ export default class PowerAdminContainer extends React.Component {
             this.getData(this.state.treeSelect.id);
             this.onClose();
 
-            await this.setPowersByRoleIds(params.id, this.state.rolesCheckboxChose);
+            await this.setPowersByRoleIds(
+              params.id,
+              this.state.rolesCheckboxChose
+            );
             this.props.getAllRoles();
             this.props.updateUserInfo();
           } else {
@@ -284,10 +321,10 @@ export default class PowerAdminContainer extends React.Component {
   }
 
   /** 删除一条数据 **/
-  onDel = record => {
+  onDel = (record) => {
     const params = { id: record.id };
     this.setState({ loading: true });
-    this.props.delPower(params).then(res => {
+    this.props.delPower(params).then((res) => {
       if (res.status === 200) {
         this.getData(this.state.treeSelect.id);
         this.props.updateUserInfo();
@@ -306,8 +343,10 @@ export default class PowerAdminContainer extends React.Component {
   setPowersByRoleIds(id, roleIds) {
     console.log("come;", id, roleIds, this.props.userinfo);
     const userinfo = this.props.userinfo;
-    const params = this.props.roles.map(item => {
-      const powersTemp = new Set(item.menuAndPowers.reduce((a, b) => [...a, ...b.powers], []));
+    const params = this.props.roles.map((item) => {
+      const powersTemp = new Set(
+        item.menuAndPowers.reduce((a, b) => [...a, ...b.powers], [])
+      );
       if (roleIds.includes(item.id)) {
         powersTemp.add(id);
       } else {
@@ -315,7 +354,7 @@ export default class PowerAdminContainer extends React.Component {
       }
       return {
         id: item.id,
-        menus: item.menuAndPowers.map(item => item.menuId),
+        menus: item.menuAndPowers.map((item) => item.menuId),
         powers: Array.from(powersTemp),
       };
     });
@@ -350,7 +389,12 @@ export default class PowerAdminContainer extends React.Component {
         title: "状态",
         dataIndex: "conditions",
         key: "conditions",
-        render: (text, record) => (text === 1 ? <span style={{ color: "green" }}>启用</span> : <span style={{ color: "red" }}>禁用</span>),
+        render: (text, record) =>
+          text === 1 ? (
+            <span style={{ color: "green" }}>启用</span>
+          ) : (
+            <span style={{ color: "red" }}>禁用</span>
+          ),
       },
       {
         title: "操作",
@@ -361,29 +405,43 @@ export default class PowerAdminContainer extends React.Component {
           const p = this.props.powersCode;
           p.includes("power:query") &&
             controls.push(
-              <span key="0" className="control-btn green" onClick={() => this.onModalShow(record, "see")}>
+              <span
+                key="0"
+                className="control-btn green"
+                onClick={() => this.onModalShow(record, "see")}
+              >
                 <Tooltip placement="top" title="查看">
                   <EyeOutlined />
                 </Tooltip>
-              </span>,
+              </span>
             );
           p.includes("power:up") &&
             controls.push(
-              <span key="1" className="control-btn blue" onClick={() => this.onModalShow(record, "up")}>
+              <span
+                key="1"
+                className="control-btn blue"
+                onClick={() => this.onModalShow(record, "up")}
+              >
                 <Tooltip placement="top" title="修改">
                   <ToolOutlined />
                 </Tooltip>
-              </span>,
+              </span>
             );
           p.includes("power:del") &&
             controls.push(
-              <Popconfirm key="2" title="确定删除吗?" okText="确定" cancelText="取消" onConfirm={() => this.onDel(record)}>
+              <Popconfirm
+                key="2"
+                title="确定删除吗?"
+                okText="确定"
+                cancelText="取消"
+                onConfirm={() => this.onDel(record)}
+              >
                 <span className="control-btn red">
                   <Tooltip placement="top" title="删除">
                     <DeleteOutlined />
                   </Tooltip>
                 </span>
-              </Popconfirm>,
+              </Popconfirm>
             );
           const result = [];
           controls.forEach((item, index) => {
@@ -421,13 +479,13 @@ export default class PowerAdminContainer extends React.Component {
 
   /** 新增或修改时 构建‘赋予’项数据 **/
   makeRolesCheckbox = () => {
-    return this.props.roles.map(item => ({
+    return this.props.roles.map((item) => ({
       label: item.title,
       value: item.id,
     }));
   };
 
-  onRolesCheckboxChange = values => {
+  onRolesCheckboxChange = (values) => {
     this.setState({
       rolesCheckboxChose: values,
     });
@@ -452,7 +510,10 @@ export default class PowerAdminContainer extends React.Component {
         <div className="l">
           <div className="title">目录结构</div>
           <div>
-            <Tree onSelect={this.onTreeSelect} treeData={this.state.sourceData}></Tree>
+            <Tree
+              onSelect={this.onTreeSelect}
+              treeData={this.state.sourceData}
+            ></Tree>
           </div>
         </div>
         <div className="r">
@@ -463,7 +524,10 @@ export default class PowerAdminContainer extends React.Component {
                   type="primary"
                   icon={<PlusCircleOutlined />}
                   onClick={() => this.onModalShow(null, "add")}
-                  disabled={!(this.state.treeSelect.id && p.includes("power:add"))}>
+                  disabled={
+                    !(this.state.treeSelect.id && p.includes("power:add"))
+                  }
+                >
                   {`添加${this.state.treeSelect.title || ""}权限`}
                 </Button>
               </li>
@@ -482,12 +546,16 @@ export default class PowerAdminContainer extends React.Component {
         </div>
         {/** 查看&新增&修改用户模态框 **/}
         <Modal
-          title={`${{ add: "新增", up: "修改", see: "查看" }[this.state.operateType]}权限: ${this.state.treeSelect.title}->${this.state.nowData
-            ?.title ?? ""}`}
+          title={`${
+            { add: "新增", up: "修改", see: "查看" }[this.state.operateType]
+          }权限: ${this.state.treeSelect.title}->${
+            this.state.nowData?.title ?? ""
+          }`}
           visible={this.state.modalShow}
           onOk={() => this.onOk()}
           onCancel={this.onClose}
-          confirmLoading={this.state.modalLoading}>
+          confirmLoading={this.state.modalLoading}
+        >
           <Form ref={this.form} initialValues={{ formConditions: 1 }}>
             <Form.Item
               label="权限名"
@@ -496,8 +564,12 @@ export default class PowerAdminContainer extends React.Component {
               rules={[
                 { required: true, whitespace: true, message: "必填" },
                 { max: 12, message: "最多输入12位字符" },
-              ]}>
-              <Input placeholder="请输入权限名" disabled={this.state.operateType === "see"} />
+              ]}
+            >
+              <Input
+                placeholder="请输入权限名"
+                disabled={this.state.operateType === "see"}
+              />
             </Form.Item>
             <Form.Item
               label="Code"
@@ -506,16 +578,45 @@ export default class PowerAdminContainer extends React.Component {
               rules={[
                 { required: true, whitespace: true, message: "必填" },
                 { max: 12, message: "最多输入12位字符" },
-              ]}>
-              <Input placeholder="请输入权限Code" disabled={this.state.operateType === "see"} />
+              ]}
+            >
+              <Input
+                placeholder="请输入权限Code"
+                disabled={this.state.operateType === "see"}
+              />
             </Form.Item>
-            <Form.Item label="描述" name="formDesc" {...formItemLayout} rules={[{ max: 100, message: "最多输入100位字符" }]}>
-              <TextArea rows={4} disabled={this.state.operateType === "see"} placeholoder="请输入描述" autosize={{ minRows: 2, maxRows: 6 }} />
+            <Form.Item
+              label="描述"
+              name="formDesc"
+              {...formItemLayout}
+              rules={[{ max: 100, message: "最多输入100位字符" }]}
+            >
+              <TextArea
+                rows={4}
+                disabled={this.state.operateType === "see"}
+                placeholoder="请输入描述"
+                autosize={{ minRows: 2, maxRows: 6 }}
+              />
             </Form.Item>
-            <Form.Item label="排序" name="formSorts" {...formItemLayout} rules={[{ required: true, message: "请输入排序号" }]}>
-              <InputNumber min={0} max={99999} style={{ width: "100%" }} disabled={this.state.operateType === "see"} />
+            <Form.Item
+              label="排序"
+              name="formSorts"
+              {...formItemLayout}
+              rules={[{ required: true, message: "请输入排序号" }]}
+            >
+              <InputNumber
+                min={0}
+                max={99999}
+                style={{ width: "100%" }}
+                disabled={this.state.operateType === "see"}
+              />
             </Form.Item>
-            <Form.Item label="状态" name="formConditions" {...formItemLayout} rules={[{ required: true, message: "请选择状态" }]}>
+            <Form.Item
+              label="状态"
+              name="formConditions"
+              {...formItemLayout}
+              rules={[{ required: true, message: "请选择状态" }]}
+            >
               <Select disabled={this.state.operateType === "see"}>
                 <Option key={1} value={1}>
                   启用

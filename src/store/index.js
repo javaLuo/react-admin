@@ -6,8 +6,8 @@ import sys from "@/models/sys";
 const store = init({
   models: {
     app,
-    sys
-  }
+    sys,
+  },
 });
 
 export default store;

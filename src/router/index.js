@@ -13,14 +13,14 @@ import UserLayout from "@/layouts/UserLayout";
 import { message } from "antd";
 message.config({
   // 全局提示只显示2秒
-  duration: 2
+  duration: 2,
 });
 
 const history = createHistory();
 @connect(
-  state => ({ userinfo: state.app.userinfo }),
-  dispatch => ({
-    setUserInfo: dispatch.app.setUserInfo
+  (state) => ({ userinfo: state.app.userinfo }),
+  (dispatch) => ({
+    setUserInfo: dispatch.app.setUserInfo,
   })
 )
 export default class RouterContainer extends React.Component {
@@ -56,13 +56,13 @@ export default class RouterContainer extends React.Component {
     return (
       <Router history={history}>
         <Route
-          render={props => {
+          render={(props) => {
             return (
               <Switch>
                 <Route path="/user" component={UserLayout} />
                 <Route
                   path="/"
-                  render={props => this.onEnter(BasicLayout, props)}
+                  render={(props) => this.onEnter(BasicLayout, props)}
                 />
               </Switch>
             );

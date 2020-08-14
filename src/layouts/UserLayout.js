@@ -22,11 +22,11 @@ import "./UserLayout.less";
 // ==================
 const [NotFound, Login] = [
   () => import("../a_container/ErrorPages/404"),
-  () => import("../a_container/Login")
-].map(item => {
+  () => import("../a_container/Login"),
+].map((item) => {
   return Loadable({
     loader: item,
-    loading: Loading
+    loading: Loading,
   });
 });
 
@@ -34,22 +34,19 @@ const [NotFound, Login] = [
 // Class
 // ==================
 const { Content } = Layout;
-@connect(
-  state => ({}),
-  dispatch => ({})
-)
+@connect((state) => ({}), (dispatch) => ({}))
 export default class AppContainer extends React.PureComponent {
   constructor(props) {
     super(props);
     this.state = {
-      collapsed: false // 侧边栏是否收起
+      collapsed: false, // 侧边栏是否收起
     };
   }
 
   // 点击切换
   onToggle = () => {
     this.setState({
-      collapsed: !this.state.collapsed
+      collapsed: !this.state.collapsed,
     });
   };
 

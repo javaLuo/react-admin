@@ -18,13 +18,13 @@ import CanvasBack from "@/a_component/CanvasBack";
 import LogoImg from "@/assets/logo.png";
 
 @connect(
-  state => ({}),
-  dispatch => ({
+  (state) => ({}),
+  (dispatch) => ({
     onLogin: dispatch.app.onLogin,
     setUserInfo: dispatch.app.setUserInfo,
     getRoleById: dispatch.sys.getRoleById,
     getPowerById: dispatch.sys.getPowerById,
-    getMenusById: dispatch.sys.getMenusById
+    getMenusById: dispatch.sys.getMenusById,
   })
 )
 export default class LoginContainer extends React.Component {
@@ -35,7 +35,7 @@ export default class LoginContainer extends React.Component {
       loading: false, // 是否正在登录中
       rememberPassword: false, // 是否记住密码
       codeValue: "00000", // 当前验证码的值
-      show: false // 加载完毕时触发动画
+      show: false, // 加载完毕时触发动画
     };
   }
 
@@ -45,13 +45,13 @@ export default class LoginContainer extends React.Component {
     if (userLoginInfo) {
       userLoginInfo = JSON.parse(userLoginInfo);
       this.setState({
-        rememberPassword: true
+        rememberPassword: true,
       });
 
       console.log("what:", this.form);
       this.form.current.setFieldsValue({
         username: userLoginInfo.username,
-        password: tools.uncompile(userLoginInfo.password)
+        password: tools.uncompile(userLoginInfo.password),
       });
     }
     if (!userLoginInfo) {
@@ -60,7 +60,7 @@ export default class LoginContainer extends React.Component {
       document.getElementById("vcode").focus();
     }
     this.setState({
-      show: true
+      show: true,
     });
   }
 
@@ -70,7 +70,7 @@ export default class LoginContainer extends React.Component {
       const values = await this.form.current.validateFields();
       this.setState({ loading: true });
       this.loginIn(values.username, values.password)
-        .then(res => {
+        .then((res) => {
           console.log("lo:", res);
           if (res.status === 200) {
             message.success("登录成功");
@@ -79,7 +79,7 @@ export default class LoginContainer extends React.Component {
                 "userLoginInfo",
                 JSON.stringify({
                   username: values.username,
-                  password: tools.compile(values.password) // 密码简单加密一下再存到localStorage
+                  password: tools.compile(values.password), // 密码简单加密一下再存到localStorage
                 })
               ); // 保存用户名和密码
             } else {
@@ -97,7 +97,7 @@ export default class LoginContainer extends React.Component {
             message.error(res.message);
           }
         })
-        .finally(err => {
+        .finally((err) => {
           this.setState({ loading: false });
         });
     } catch (e) {
@@ -137,7 +137,7 @@ export default class LoginContainer extends React.Component {
       return res2;
     }
 
-    roles = res2.data.filter(item => item.conditions === 1); // conditions: 1启用 -1禁用
+    roles = res2.data.filter((item) => item.conditions === 1); // conditions: 1启用 -1禁用
 
     /** 3.根据菜单id 获取菜单信息 **/
     const menuAndPowers = roles.reduce(
@@ -145,26 +145,26 @@ export default class LoginContainer extends React.Component {
       []
     );
     const res3 = await this.props.getMenusById({
-      id: Array.from(new Set(menuAndPowers.map(item => item.menuId)))
+      id: Array.from(new Set(menuAndPowers.map((item) => item.menuId))),
     });
     if (!res3 || res3.status !== 200) {
       // 查询菜单信息失败
       return res3;
     }
 
-    menus = res3.data.filter(item => item.conditions === 1);
+    menus = res3.data.filter((item) => item.conditions === 1);
 
     /** 4.根据权限id，获取权限信息 **/
     const res4 = await this.props.getPowerById({
       id: Array.from(
         new Set(menuAndPowers.reduce((a, b) => [...a, ...b.powers], []))
-      )
+      ),
     });
     if (!res4 || res4.status !== 200) {
       // 权限查询失败
       return res4;
     }
-    powers = res4.data.filter(item => item.conditions === 1);
+    powers = res4.data.filter((item) => item.conditions === 1);
     console.log("搞笑？");
     return { status: 200, data: { userBasicInfo, roles, menus, powers } };
   }
@@ -172,7 +172,7 @@ export default class LoginContainer extends React.Component {
   // 记住密码按钮点击
   onRemember(e) {
     this.setState({
-      rememberPassword: e.target.checked
+      rememberPassword: e.target.checked,
     });
   }
 
@@ -181,10 +181,10 @@ export default class LoginContainer extends React.Component {
     console.log("why:", this.form);
     setTimeout(() => {
       this.form.current.setFieldsValue({
-        vcode: code // 开发模式自动赋值验证码，正式环境，这里应该赋值''
+        vcode: code, // 开发模式自动赋值验证码，正式环境，这里应该赋值''
       });
       this.setState({
-        codeValue: code
+        codeValue: code,
       });
     });
   }
@@ -213,8 +213,8 @@ export default class LoginContainer extends React.Component {
                   {
                     required: true,
                     whitespace: true,
-                    message: "请输入用户名"
-                  }
+                    message: "请输入用户名",
+                  },
                 ]}
               >
                 <Input
@@ -229,7 +229,7 @@ export default class LoginContainer extends React.Component {
                 name="password"
                 rules={[
                   { required: true, message: "请输入密码" },
-                  { max: 18, message: "最大长度18个字符" }
+                  { max: 18, message: "最大长度18个字符" },
                 ]}
               >
                 <Input
@@ -262,8 +262,8 @@ export default class LoginContainer extends React.Component {
                         } else {
                           return Promise.reject("请输入验证码");
                         }
-                      }
-                    })
+                      },
+                    }),
                   ]}
                 >
                   <Input
@@ -277,10 +277,10 @@ export default class LoginContainer extends React.Component {
                 <Vcode
                   height={40}
                   width={150}
-                  onChange={code => this.onVcodeChange(code)}
+                  onChange={(code) => this.onVcodeChange(code)}
                   className="vcode"
                   options={{
-                    lines: 16
+                    lines: 16,
                   }}
                 />
               </Form.Item>
@@ -288,7 +288,7 @@ export default class LoginContainer extends React.Component {
                 <Checkbox
                   className="remember"
                   checked={this.state.rememberPassword}
-                  onChange={e => this.onRemember(e)}
+                  onChange={(e) => this.onRemember(e)}
                 >
                   记住密码
                 </Checkbox>

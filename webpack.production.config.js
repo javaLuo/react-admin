@@ -6,6 +6,7 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin"); // 为了单独
 const HtmlWebpackPlugin = require("html-webpack-plugin"); // 生成html
 const AntdDayjsWebpackPlugin = require("antd-dayjs-webpack-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin"); // 每次打包前清除旧的build文件夹
+const CopyPlugin = require("copy-webpack-plugin"); // 用于直接复制public中的文件到打包的最终文件夹中
 const SWPrecacheWebpackPlugin = require("sw-precache-webpack-plugin"); // 生成一个server-worker用于缓存
 const FaviconsWebpackPlugin = require("favicons-webpack-plugin"); // 自动生成各尺寸的favicon图标
 const TerserPlugin = require("terser-webpack-plugin"); // 优化js
@@ -40,8 +41,9 @@ module.exports = {
           // https://github.com/terser/terser#minify-options
           compress: {
             warnings: false, // 删除无用代码时是否给出警告
-            drop_console: true, // 删除所有的console.*
+            // drop_console: true, // 删除所有的console.*
             drop_debugger: true, // 删除所有的debugger
+            pure_funcs: ["console.log"], // 删除所有的console.log
           },
         },
       }),
@@ -67,7 +69,7 @@ module.exports = {
       {
         // .less 解析
         test: /\.less$/,
-        use: [MiniCssExtractPlugin.loader, "css-loader", "postcss-loader", { loader: "less-loader", options: { javascriptEnabled: true } }],
+        use: [MiniCssExtractPlugin.loader, "css-loader", "postcss-loader", { loader: "less-loader", options: { lessOptions:{javascriptEnabled: true} } }],
       },
       {
         // 文件解析
@@ -124,6 +126,7 @@ module.exports = {
     new webpack.DefinePlugin({
       "process.env": JSON.stringify({
         PUBLIC_URL: PUBLIC_PATH.replace(/\/$/, ""),
+        NODE_ENV: "production",
       }),
     }),
     /**
@@ -151,6 +154,19 @@ module.exports = {
       navigateFallback: PUBLIC_PATH, // 遇到不存在的URL时，跳转到主页
       navigateFallbackWhitelist: [/^(?!\/__).*/], // 忽略从/__开始的网址，参考 https://github.com/facebookincubator/create-react-app/issues/2237#issuecomment-302693219
       staticFileGlobsIgnorePatterns: [/\.map$/, /asset-manifest\.json$/, /\.cache$/], // 不缓存sourcemaps,它们太大了
+    }),
+    // 拷贝public中的文件到最终打包文件夹里
+    new CopyPlugin({
+      patterns: [
+        {
+          from: "./public/**/*",
+          to: "./",
+          globOptions: {
+            ignore: ["**/favicon.png", "**/index.html"],
+          },
+          noErrorOnMissing: true,
+        },
+      ],
     }),
     /**
      * 自动生成HTML，并注入各参数

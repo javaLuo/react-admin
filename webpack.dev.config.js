@@ -2,6 +2,7 @@
 
 const path = require("path"); // 获取绝对路径用
 const webpack = require("webpack"); // webpack核心
+const CopyPlugin = require("copy-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin"); // 动态生成html插件
 const AntdDayjsWebpackPlugin = require("antd-dayjs-webpack-plugin");
 const HappyPack = require("happypack"); // 多线程编译
@@ -47,7 +48,7 @@ module.exports = {
       {
         // .less 解析
         test: /\.less$/,
-        use: ["style-loader", "css-loader", "postcss-loader", { loader: "less-loader", options: { javascriptEnabled: true } }],
+        use: ["style-loader", "css-loader", "postcss-loader", { loader: "less-loader", options: { lessOptions: {javascriptEnabled: true} } }],
       },
       {
         // 文件解析
@@ -97,7 +98,21 @@ module.exports = {
     new webpack.DefinePlugin({
       "process.env": JSON.stringify({
         PUBLIC_URL: PUBLIC_PATH,
+        NODE_ENV: "dev",
       }),
+    }),
+    // 拷贝public中的文件到最终打包文件夹里
+    new CopyPlugin({
+      patterns: [
+        {
+          from: "public/**/*",
+          to: "./",
+          globOptions: {
+            ignore: ["**/favicon.png", "**/index.html"],
+          },
+          noErrorOnMissing: true,
+        },
+      ],
     }),
     new HappyPack({
       loaders: ["babel-loader"],

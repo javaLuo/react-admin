@@ -120,13 +120,13 @@ const tools = {
    * **/
   clearNull(obj) {
     const temp = {};
-    Object.keys(obj).forEach(item => {
+    Object.keys(obj).forEach((item) => {
       if (obj[item] === 0 || !!obj[item]) {
         temp[item] = obj[item];
       }
     });
     return temp;
-  }
+  },
 };
 
 export default tools;

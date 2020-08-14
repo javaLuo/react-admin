@@ -23,7 +23,7 @@ export default class MenuCom extends React.PureComponent {
       sourceData: [], // 菜单数据（层级）
       treeDom: [], // 生成的菜单结构
       chosedKey: [], // 当前选中
-      openKeys: [] // 当前需要被展开的项
+      openKeys: [], // 当前需要被展开的项
     };
   }
 
@@ -44,20 +44,20 @@ export default class MenuCom extends React.PureComponent {
 
   /** 处理当前选中 **/
   nowChosed(location) {
-    const paths = location.pathname.split("/").filter(item => !!item);
+    const paths = location.pathname.split("/").filter((item) => !!item);
     this.setState({
       chosedKey: [location.pathname],
-      openKeys: paths.map(item => `/${item}`)
+      openKeys: paths.map((item) => `/${item}`),
     });
   }
 
   /** 菜单展开和关闭时触发 **/
   onOpenChange(keys) {
     this.setState({
-      openKeys: keys
+      openKeys: keys,
     });
   }
-  onSelect = e => {
+  onSelect = (e) => {
     console.log("被选中：", e);
     this.props.history.push(e.key);
   };
@@ -73,7 +73,7 @@ export default class MenuCom extends React.PureComponent {
     const treeDom = this.makeTreeDom(sourceData, "");
     this.setState({
       sourceData,
-      treeDom
+      treeDom,
     });
   }
 
@@ -82,11 +82,11 @@ export default class MenuCom extends React.PureComponent {
     let kids;
     if (!one) {
       // 第1次递归
-      kids = data.filter(item => !item.parent);
+      kids = data.filter((item) => !item.parent);
     } else {
-      kids = data.filter(item => item.parent === one.id);
+      kids = data.filter((item) => item.parent === one.id);
     }
-    kids.forEach(item => (item.children = this.dataToJson(item, data)));
+    kids.forEach((item) => (item.children = this.dataToJson(item, data)));
     return kids.length ? kids : null;
   }
 
@@ -143,7 +143,7 @@ export default class MenuCom extends React.PureComponent {
           mode="inline"
           selectedKeys={this.state.chosedKey}
           {...(this.props.collapsed ? {} : { openKeys: this.state.openKeys })}
-          onOpenChange={e => this.onOpenChange(e)}
+          onOpenChange={(e) => this.onOpenChange(e)}
           onSelect={this.onSelect}
         >
           {this.state.treeDom}
