@@ -110,7 +110,6 @@ export default class AppContainer extends React.Component {
   }
 
   render() {
-    console.log("smqk:", this.props.userinfo);
     return (
       <Layout className="page-basic">
         <Menu

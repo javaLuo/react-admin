@@ -48,7 +48,6 @@ export default class LoginContainer extends React.Component {
         rememberPassword: true,
       });
 
-      console.log("what:", this.form);
       this.form.current.setFieldsValue({
         username: userLoginInfo.username,
         password: tools.uncompile(userLoginInfo.password),
@@ -71,7 +70,6 @@ export default class LoginContainer extends React.Component {
       this.setState({ loading: true });
       this.loginIn(values.username, values.password)
         .then((res) => {
-          console.log("lo:", res);
           if (res.status === 200) {
             message.success("登录成功");
             if (this.state.rememberPassword) {
@@ -86,7 +84,6 @@ export default class LoginContainer extends React.Component {
               localStorage.removeItem("userLoginInfo");
             }
             /** 将这些信息加密后存入sessionStorage,并存入store **/
-            console.log("准备存：", res.data);
             sessionStorage.setItem(
               "userinfo",
               tools.compile(JSON.stringify(res.data))
@@ -122,7 +119,6 @@ export default class LoginContainer extends React.Component {
 
     /** 1.登录 （返回信息中有该用户拥有的角色id） **/
     const res1 = await this.props.onLogin({ username, password });
-    console.log("userBasicInfo", res1);
     if (!res1 || res1.status !== 200) {
       // 登录失败
       return res1;
@@ -165,7 +161,6 @@ export default class LoginContainer extends React.Component {
       return res4;
     }
     powers = res4.data.filter((item) => item.conditions === 1);
-    console.log("搞笑？");
     return { status: 200, data: { userBasicInfo, roles, menus, powers } };
   }
 
@@ -178,7 +173,6 @@ export default class LoginContainer extends React.Component {
 
   // 验证码改变时触发
   onVcodeChange(code) {
-    console.log("why:", this.form);
     setTimeout(() => {
       this.form.current.setFieldsValue({
         vcode: code, // 开发模式自动赋值验证码，正式环境，这里应该赋值''

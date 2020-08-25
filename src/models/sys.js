@@ -279,7 +279,6 @@ export default {
      * */
     async setPowersByRoleIds(params = {}) {
       try {
-        console.log("idsaaaa:", params);
         const res = await axios.post("/api/setPowersByRoleIds", params);
         return res;
       } catch (err) {

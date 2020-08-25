@@ -43,7 +43,6 @@ export default {
     async onLogin(params = {}) {
       try {
         const res = await axios.post("/api/login", params);
-        console.log("lo3:", res);
         return res;
       } catch (err) {
         message.error("网络错误，请重试");
@@ -68,7 +67,6 @@ export default {
      * @param: {*} params
      * **/
     async setUserInfo(params = {}) {
-      console.log("设置用户信息", params);
       this.reducerUserInfo(params);
       return "success";
     },

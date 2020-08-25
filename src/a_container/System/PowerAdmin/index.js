@@ -180,7 +180,6 @@ export default class PowerAdminContainer extends React.Component {
 
   /** 点击树目录时触发 **/
   onTreeSelect = (keys, e) => {
-    console.log("key", keys, e);
     if (e.selected) {
       // 选中时才触发
       this.getData(keys[0]);
@@ -219,7 +218,6 @@ export default class PowerAdminContainer extends React.Component {
                   (item2) => item2.menuId === data.menu
                 );
                 if (theMenuPower) {
-                  console.log(theMenuPower, data.id);
                   return theMenuPower.powers.includes(data.id);
                 }
                 return false;
@@ -341,7 +339,6 @@ export default class PowerAdminContainer extends React.Component {
    * @param roleIds 选中的角色的id们，要把当前权限赋给这些角色
    *  **/
   setPowersByRoleIds(id, roleIds) {
-    console.log("come;", id, roleIds, this.props.userinfo);
     const userinfo = this.props.userinfo;
     const params = this.props.roles.map((item) => {
       const powersTemp = new Set(
@@ -358,7 +355,6 @@ export default class PowerAdminContainer extends React.Component {
         powers: Array.from(powersTemp),
       };
     });
-    console.log("come2;", params);
     this.props.setPowersByRoleIds(params);
   }
 

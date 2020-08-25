@@ -258,7 +258,6 @@ export default class RoleAdminContainer extends React.Component {
 
   /** 分配权限按钮点击，权限控件出现 **/
   onAllotPowerClick(record) {
-    console.log("record:", record);
     const menus = record.menuAndPowers.map((item) => item.menuId); // 需默认选中的菜单项ID
     const powers = record.menuAndPowers.reduce(
       (v1, v2) => [...v1, ...v2.powers],
