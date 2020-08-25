@@ -17,9 +17,9 @@ axios.defaults.withCredentials = false;
 axios.defaults.baseUrl = baseUrl;
 // 对返回的结果做处理
 axios.interceptors.response.use((response) => {
-  // const code = response && response.data ? response.data.code : 200;
   // 没有权限，登录超时，登出，跳转登录
-  // if (code === 3) {
+  // const code = response && response.data ? response.data.code : 200;
+  // if (code === 401) {
   //   message.error("登录超时，请重新登录");
   //   sessionStorage.removeItem("userinfo");
   //   setTimeout(() => {
