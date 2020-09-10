@@ -36,7 +36,7 @@
     "react-router-cache-route": "^1.9.0",
     "react-router-dom": "^5.2.0",
     "react-use": "^15.3.3",
-    "react-vcode": "^1.0.7",
+    "react-vcode": "1.0.10",
     "redux": "^4.0.5"
   },
   "devDependencies": {
