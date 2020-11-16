@@ -6,7 +6,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { connect } from "react-redux";
 import tools from "@/util/tools";
-import "./index.less";
 
 // ==================
 // 所需的所有组件
@@ -37,6 +36,11 @@ type Props = ReturnType<typeof mapState> &
     location: Location;
     match: match;
   };
+
+// ==================
+// CSS
+// ==================
+import "./index.less";
 
 // ==================
 // 本组件

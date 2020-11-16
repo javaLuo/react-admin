@@ -3,15 +3,15 @@
 const path = require("path");
 const webpack = require("webpack"); // webpack核心
 const MiniCssExtractPlugin = require("mini-css-extract-plugin"); // 为了单独打包css
+const CssMinimizerPlugin = require("css-minimizer-webpack-plugin"); // 对CSS进行压缩
 const HtmlWebpackPlugin = require("html-webpack-plugin"); // 生成html
 const AntdDayjsWebpackPlugin = require("antd-dayjs-webpack-plugin"); // 使用day.js替代antd中的moment.js
 const tsImportPluginFactory = require("ts-import-plugin"); // 用于ts版本的按需加载
 const { CleanWebpackPlugin } = require("clean-webpack-plugin"); // 每次打包前清除旧的build文件夹
+const WorkboxPlugin = require("workbox-webpack-plugin");
 const CopyPlugin = require("copy-webpack-plugin"); // 用于直接复制public中的文件到打包的最终文件夹中
-const SWPrecacheWebpackPlugin = require("sw-precache-webpack-plugin"); // 生成一个server-worker用于缓存
 const FaviconsWebpackPlugin = require("favicons-webpack-plugin"); // 自动生成各尺寸的favicon图标
 const TerserPlugin = require("terser-webpack-plugin"); // 优化js
-const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin"); // 压缩CSS
 const webpackbar = require("webpackbar"); // 进度条
 /**
  * 基础路径
@@ -31,10 +31,10 @@ module.exports = {
     chunkFilename: "dist/[name].[chunkhash:8].chunk.js",
   },
   stats: {
-    warningsFilter: (warning) => /Conflicting order/gm.test(warning), // 不输出一些警告，多为因CSS引入顺序不同导致的警告
     children: false, // 不输出子模块的打包信息
   },
   optimization: {
+    minimize: true,
     minimizer: [
       new TerserPlugin({
         parallel: true, // 多线程并行构建
@@ -48,7 +48,7 @@ module.exports = {
           },
         },
       }),
-      new OptimizeCSSAssetsPlugin({}),
+      new CssMinimizerPlugin(),
     ],
     splitChunks: {
       chunks: "all",
@@ -146,35 +146,12 @@ module.exports = {
      * 这里这么做是因为src/registerServiceWorker.js中有用到，为了配置PWA
      * **/
     new webpack.DefinePlugin({
-      "process.env": JSON.stringify({
-        PUBLIC_URL: PUBLIC_PATH.replace(/\/$/, ""),
-        NODE_ENV: "production",
-      }),
+      "process.env": "prod",
     }),
     // 提取CSS等样式生成单独的CSS文件
     new MiniCssExtractPlugin({
       filename: "dist/[name].[chunkhash:8].css", // 生成的文件名
-    }),
-    // 生成一个server-work用于缓存资源（PWA）
-    new SWPrecacheWebpackPlugin({
-      dontCacheBustUrlsMatching: /\.\w{8}\./,
-      filename: "service-worker.js",
-      logger(message) {
-        if (message.indexOf("Total precache size is") === 0) {
-          return;
-        }
-        if (message.indexOf("Skipping static resource") === 0) {
-          return;
-        }
-      },
-      minify: true, // 压缩
-      navigateFallback: PUBLIC_PATH, // 遇到不存在的URL时，跳转到主页
-      navigateFallbackWhitelist: [/^(?!\/__).*/], // 忽略从/__开始的网址，参考 https://github.com/facebookincubator/create-react-app/issues/2237#issuecomment-302693219
-      staticFileGlobsIgnorePatterns: [
-        /\.map$/,
-        /asset-manifest\.json$/,
-        /\.cache$/,
-      ], // 不缓存sourcemaps,它们太大了
+      ignoreOrder: true, // 忽略因CSS文件引入顺序不一致而抛出的警告信息，多为antd内部css引起
     }),
     // 拷贝public中的文件到最终打包文件夹里
     new CopyPlugin({
@@ -230,6 +207,11 @@ module.exports = {
         },
       },
     }),
+    /**
+     * PWA - 自动生成server-worker.js
+     * https://developers.google.com/web/tools/workbox/reference-docs/latest/module-workbox-webpack-plugin.GenerateSW?hl=en
+     *  */
+    new WorkboxPlugin.GenerateSW(),
   ],
   resolve: {
     extensions: [".js", ".jsx", ".ts", ".tsx", ".less", ".css", ".wasm"], //后缀名自动补全

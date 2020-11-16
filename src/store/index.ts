@@ -1,11 +1,11 @@
 /** 全局唯一数据中心 **/
 
-import { init, RematchDispatch, RematchRootState } from "@rematch/core";
+import { init, Models, RematchDispatch, RematchRootState } from "@rematch/core";
 
 import app from "@/models/app";
 import sys from "@/models/sys";
 
-export interface RootModel {
+export interface RootModel extends Models<RootModel> {
   app: typeof app;
   sys: typeof sys;
 }

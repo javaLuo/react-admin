@@ -31,7 +31,6 @@ import {
 // ==================
 // 自定义的东西
 // ==================
-import "./index.less";
 import tools from "@/util/tools"; // 工具
 
 // ==================
@@ -74,6 +73,12 @@ type Props = ReturnType<typeof mapState> &
     history: History;
     location: Location;
   };
+
+// ==================
+// CSS
+// ==================
+import "./index.less";
+
 // ==================
 // 本组件
 // ==================

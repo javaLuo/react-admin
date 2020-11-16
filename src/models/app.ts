@@ -52,7 +52,7 @@ export default {
      * 登录
      * @param { username, password } params
      * */
-    async onLogin(params = {}) {
+    async onLogin(params: { username: string; password: string }) {
       try {
         const res: Res = await axios.post("/api/login", params);
         return res;
@@ -67,8 +67,9 @@ export default {
      * **/
     async onLogout() {
       try {
-        // 同 dispatch({ type: "app/reducerLogout", payload: null });
-        dispatch.app.reducerLogout();
+        // 同 dispatch.app.reducerLogout();
+
+        dispatch({ type: "app/reducerLogout", payload: null });
         sessionStorage.removeItem("userinfo");
         return "success";
       } catch (err) {
@@ -86,7 +87,7 @@ export default {
     },
 
     /** 修改了角色/菜单/权限信息后需要更新用户的roles,menus,powers数据 **/
-    async updateUserInfo(params: null, rootState: RootState) {
+    async updateUserInfo(params: undefined, rootState: RootState) {
       /** 2.重新查询角色信息 **/
       const userinfo: UserInfo = rootState.app.userinfo;
 

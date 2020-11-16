@@ -32,8 +32,6 @@ import { cloneDeep } from "lodash";
 // ==================
 // 自定义的东西
 // ==================
-import "./index.less";
-
 const { Option } = Select;
 const { TextArea } = Input;
 
@@ -69,6 +67,12 @@ type Props = ReturnType<typeof mapState> &
     history: History;
     location: Location;
   };
+
+// ==================
+// CSS
+// ==================
+import "./index.less";
+
 // ==================
 // 本组件
 // ==================

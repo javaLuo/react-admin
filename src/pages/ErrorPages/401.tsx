@@ -2,9 +2,10 @@
 
 import React from "react";
 import { Button } from "antd";
-import "./index.less";
 import Img from "@/assets/error.gif";
 import { History } from "history";
+
+import "./index.less";
 
 interface Props {
   history: History;

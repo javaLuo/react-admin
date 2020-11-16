@@ -62,9 +62,9 @@ export default {
     },
     /**
      * 根据菜单ID获取对应的菜单信息
-     * @param id 可以是一个数字也可以是一个数组
+     * @param {number} id 可以是一个数字也可以是一个数组
      * **/
-    async getMenusById(params: number[] | number = []) {
+    async getMenusById(params: { id: number | number[] }) {
       try {
         const res: Res = await axios.post(`/api/getMenusById`, params);
         return res;

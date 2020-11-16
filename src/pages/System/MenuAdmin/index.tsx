@@ -29,11 +29,6 @@ import {
 import { cloneDeep } from "lodash";
 
 // ==================
-// 自定义的东西
-// ==================
-import "./index.less";
-
-// ==================
 // 组件
 // ==================
 import { IconsData } from "@/util/json";
@@ -73,6 +68,11 @@ type Props = ReturnType<typeof mapState> &
     location: Location;
     match: match;
   };
+
+// ==================
+// CSS
+// ==================
+import "./index.less";
 
 // ==================
 // 本组件

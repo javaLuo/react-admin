@@ -30,7 +30,6 @@ import {
 // ==================
 // 所需的自定义的东西
 // ==================
-import "./index.less";
 import tools from "@/util/tools"; // 工具函数
 
 const { TextArea } = Input;
@@ -68,6 +67,12 @@ import {
 import { RootState, Dispatch } from "@/store";
 
 type Props = ReturnType<typeof mapState> & ReturnType<typeof mapDispatch>;
+
+// ==================
+// CSS
+// ==================
+import "./index.less";
+
 // ==================
 // 本组件
 // ==================
