@@ -12,7 +12,7 @@ const mock = require("./mock/app-data"); // mock模拟数据，模拟后台业�
 // const { createProxyMiddleware } = require("http-proxy-middleware"); // 跨域配置 需要跨域请打开注释即可
 
 const app = express(); // 实例化express服务
-const PORT = 8888; // 服务启动端口号
+let PORT = 8888; // 服务启动端口号
 
 // 跨域设置 需要跨域请打开注释,自己设置对应的域名
 // app.use(
@@ -43,6 +43,7 @@ app.get(/\/api.*/, (req, res, next) => {
 
 if (env === "production") {
   // 如果是生产环境，则运行build文件夹中的代码
+  PORT = 8889;
   app.use(express.static("build"));
   app.get("*", function (req, res) {
     res.sendFile(path.join(__dirname, "build", "index.html"));
@@ -58,7 +59,7 @@ if (env === "production") {
       //   colors: true, // 不同信息不同颜色
       //   timings: true, // 输出各步骤消耗的时间
       // },
-    })
+    }),
   );
   // 挂载HMR热更新中间件
   app.use(webpackHotMiddleware(compiler));

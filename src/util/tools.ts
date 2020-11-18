@@ -20,7 +20,8 @@ const tools = {
   },
 
   /**
-     去掉字符串两端空格
+   * 去掉字符串两端空格
+   * @param str - 待处理的字符串
   */
   trim(str: string): string {
     const reg = /^\s*|\s*$/g;
@@ -28,9 +29,10 @@ const tools = {
   },
 
   /**
-    给字符串打马赛克
-    如：将123456转换为1****6，最多将字符串中间6个字符变成*
-    如果字符串长度小于等于2，将不会有效果
+  * 给字符串打马赛克
+  * 如：将123456转换为1****6，最多将字符串中间6个字符变成*
+  * 如果字符串长度小于等于2，将不会有效果
+  * @param str - 待处理的字符串
   */
   addMosaic(str: string): string {
     const s = String(str);
@@ -54,10 +56,12 @@ const tools = {
     });
     return ret.join("");
   },
+
   /**
    * 验证字符串
    * 只能为字母、数字、下划线
    * 可以为空
+   * @param str - 待处理的字符串
    * **/
   checkStr(str: string): boolean {
     if (str === "") {
@@ -66,10 +70,12 @@ const tools = {
     const rex = /^[_a-zA-Z0-9]+$/;
     return rex.test(str);
   },
+
   /**
    * 验证字符串
    * 只能为数字
    * 可以为空
+   * @param str - 待处理的字符串
    * **/
   checkNumber(str: string): boolean {
     if (!str) {
@@ -78,20 +84,29 @@ const tools = {
     const rex = /^\d*$/;
     return rex.test(str);
   },
-  /** 正则 手机号验证 **/
+
+  /**
+   * 正则 手机号验证
+   * @param str - 待处理的字符串或数字
+   * **/
   checkPhone(str: string | number): boolean {
     const rex = /^1[34578]\d{9}$/;
     return rex.test(String(str));
   },
 
-  /** 正则 邮箱验证 **/
+  /**
+   * 正则 邮箱验证
+   * @param str - 待处理的字符串
+   * **/
   checkEmail(str: string): boolean {
     const rex = /^[a-zA-Z0-9]+([-_.][a-zA-Z0-9]+)*@[a-zA-Z0-9]+([-_.][a-zA-Z0-9]+)*\.[a-z]{2,}$/;
     return rex.test(str);
   },
+
   /**
-    字符串加密
-    简单的加密方法
+  * 字符串加密
+  * 简单的加密方法
+  * @param code - 待处理的字符串
   */
   compile(code: string): string {
     let c = String.fromCharCode(code.charCodeAt(0) + code.length);
@@ -102,8 +117,9 @@ const tools = {
   },
 
   /**
-    字符串解谜
-    对应上面的字符串加密方法
+  * 字符串解谜
+  * 对应上面的字符串加密方法
+  * @param code - 待处理的字符串
   */
   uncompile(code: string): string {
     let c = String.fromCharCode(code.charCodeAt(0) - code.length);
@@ -116,6 +132,7 @@ const tools = {
   /**
    * 清除一个对象中那些属性为空值的属性
    * 0 算有效值
+   * @param {Object} obj  待处理的对象
    * **/
   clearNull<T>(obj: T): T {
     const temp: T = { ...obj };
