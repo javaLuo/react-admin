@@ -22,18 +22,18 @@ const tools = {
   /**
    * 去掉字符串两端空格
    * @param str - 待处理的字符串
-  */
+   */
   trim(str: string): string {
     const reg = /^\s*|\s*$/g;
     return str.replace(reg, "");
   },
 
   /**
-  * 给字符串打马赛克
-  * 如：将123456转换为1****6，最多将字符串中间6个字符变成*
-  * 如果字符串长度小于等于2，将不会有效果
-  * @param str - 待处理的字符串
-  */
+   * 给字符串打马赛克
+   * 如：将123456转换为1****6，最多将字符串中间6个字符变成*
+   * 如果字符串长度小于等于2，将不会有效果
+   * @param str - 待处理的字符串
+   */
   addMosaic(str: string): string {
     const s = String(str);
     const lenth = s.length;
@@ -104,10 +104,10 @@ const tools = {
   },
 
   /**
-  * 字符串加密
-  * 简单的加密方法
-  * @param code - 待处理的字符串
-  */
+   * 字符串加密
+   * 简单的加密方法
+   * @param code - 待处理的字符串
+   */
   compile(code: string): string {
     let c = String.fromCharCode(code.charCodeAt(0) + code.length);
     for (let i = 1; i < code.length; i++) {
@@ -117,10 +117,10 @@ const tools = {
   },
 
   /**
-  * 字符串解谜
-  * 对应上面的字符串加密方法
-  * @param code - 待处理的字符串
-  */
+   * 字符串解谜
+   * 对应上面的字符串加密方法
+   * @param code - 待处理的字符串
+   */
   uncompile(code: string): string {
     let c = String.fromCharCode(code.charCodeAt(0) - code.length);
     for (let i = 1; i < code.length; i++) {
