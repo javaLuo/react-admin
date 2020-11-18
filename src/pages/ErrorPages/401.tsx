@@ -26,7 +26,7 @@ export default function NoPowerContainer(props: Props): JSX.Element {
           返回首页
         </Button>
       </div>
-      <img src={Img + `?${new Date().getTime()}`} />
+      <img src={Img + `?${Date.now()}`} />
     </div>
   );
 }
