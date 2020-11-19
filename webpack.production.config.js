@@ -172,6 +172,14 @@ module.exports = {
       template: "./public/index.html", // html模板路径
       hash: false, // 防止缓存，在引入的文件后面加hash (PWA就是要缓存，这里设置为false)
       inject: true, // 是否将js放在body的末尾
+      // 正式环境，把注册service-worker的代码加入到index.html中
+      registerServiceWorker: `<script>
+        if ("serviceWorker" in navigator) {
+          window.addEventListener("load", () => {
+            navigator.serviceWorker.register("/service-worker.js");
+          });
+        }
+      </script>`,
     }),
     /**
      * 自动生成各种类型的favicon图标
