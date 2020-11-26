@@ -48,7 +48,7 @@ export default {
     /**
      * 获取所有菜单
      * **/
-    async getMenus() {
+    async getMenus(): Promise<Res> {
       try {
         const res: Res = await axios.get("/api/getmenus");
         if (res && res.status === 200) {
@@ -142,7 +142,7 @@ export default {
     },
 
     /** 获取所有角色 **/
-    async getAllRoles() {
+    async getAllRoles(): Promise<Res> {
       try {
         const res: Res = await axios.get("/api/getAllRoles");
         if (res && res.status === 200) {
@@ -284,7 +284,7 @@ export default {
     /**
      * 获取所有的菜单及权限详细信息
      * **/
-    async getAllMenusAndPowers() {
+    async getAllMenusAndPowers(): Promise<Res> {
       try {
         const res: Res = await axios.get(`/api/getAllMenusAndPowers`);
         if (res && res.status === 200) {

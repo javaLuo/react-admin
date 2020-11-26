@@ -219,7 +219,9 @@ module.exports = {
      * PWA - 自动生成server-worker.js
      * https://developers.google.com/web/tools/workbox/reference-docs/latest/module-workbox-webpack-plugin.GenerateSW?hl=en
      *  */
-    new WorkboxPlugin.GenerateSW(),
+    new WorkboxPlugin.GenerateSW({
+      skipWaiting: true,
+    }),
   ],
   resolve: {
     extensions: [".js", ".jsx", ".ts", ".tsx", ".less", ".css", ".wasm"], //后缀名自动补全
