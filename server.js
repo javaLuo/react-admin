@@ -54,11 +54,6 @@ if (env === "production") {
     // 挂载webpack小型服务器
     webpackDevMiddleware(compiler, {
       publicPath: webpackConfig.output.publicPath, // 对应webpack配置中的publicPath
-      // quiet: true, // 是否不输出启动时的相关信息
-      // stats: {
-      //   colors: true, // 不同信息不同颜色
-      //   timings: true, // 输出各步骤消耗的时间
-      // },
     }),
   );
   // 挂载HMR热更新中间件
