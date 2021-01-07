@@ -3,9 +3,6 @@
 import React from "react";
 import ImgLogo from "@/assets/react-logo.jpg";
 
-// ==================
-// CSS
-// ==================
 import "./index.less";
 
 export default function HomePageContainer(): JSX.Element {
