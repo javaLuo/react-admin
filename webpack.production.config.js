@@ -1,18 +1,18 @@
 /** 这是用于生产环境的webpack配置文件 **/
 
 const path = require("path");
-const webpack = require("webpack"); // webpack核心
 const MiniCssExtractPlugin = require("mini-css-extract-plugin"); // 为了单独打包css
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin"); // 对CSS进行压缩
 const HtmlWebpackPlugin = require("html-webpack-plugin"); // 生成html
 const AntdDayjsWebpackPlugin = require("antd-dayjs-webpack-plugin"); // 使用day.js替代antd中的moment.js
 const tsImportPluginFactory = require("ts-import-plugin"); // 用于ts版本的按需加载
 const { CleanWebpackPlugin } = require("clean-webpack-plugin"); // 每次打包前清除旧的build文件夹
-const WorkboxPlugin = require("workbox-webpack-plugin");
+const WorkboxPlugin = require("workbox-webpack-plugin"); // 用于生成PWA servers-worker.js
 const CopyPlugin = require("copy-webpack-plugin"); // 用于直接复制public中的文件到打包的最终文件夹中
 const FaviconsWebpackPlugin = require("favicons-webpack-plugin"); // 自动生成各尺寸的favicon图标
 const TerserPlugin = require("terser-webpack-plugin"); // 优化js
-const webpackbar = require("webpackbar"); // 进度条
+const webpackbar = require("webpackbar"); // 美化终端构建时的进度条样式
+
 /**
  * 基础路径
  * 比如我上传到自己的服务器填写的是："/work/admin/"，最终访问为"https://isluo.com/work/admin/"
@@ -139,21 +139,11 @@ module.exports = {
   plugins: [
     new CleanWebpackPlugin(), // 打包前删除上一次留下的旧代码（根据output.path）
     new webpackbar(),
-    new AntdDayjsWebpackPlugin(), // dayjs 替代 momentjs
-
-    /**
-     * 在window环境中注入全局变量
-     * 这里这么做是因为src/registerServiceWorker.js中有用到，为了配置PWA
-     * **/
-    new webpack.DefinePlugin({
-      "process.env": "prod",
-    }),
-    // 提取CSS等样式生成单独的CSS文件
+    new AntdDayjsWebpackPlugin(),
     new MiniCssExtractPlugin({
       filename: "dist/[name].[chunkhash:8].css", // 生成的文件名
       ignoreOrder: true, // 忽略因CSS文件引入顺序不一致而抛出的警告信息，多为antd内部css引起
     }),
-    // 拷贝public中的文件到最终打包文件夹里
     new CopyPlugin({
       patterns: [
         {
@@ -166,7 +156,6 @@ module.exports = {
         },
       ],
     }),
-    // 自动生成HTML，并注入各参数
     new HtmlWebpackPlugin({
       filename: "index.html", // 生成的html存放路径，相对于 output.path
       template: "./public/index.html", // html模板路径
