@@ -349,6 +349,20 @@ const roles = [
 ];
 
 /**
+ * 工具 - decode
+ * **/
+const decode = function (str) {
+  if (!str) {
+    return str;
+  }
+  try {
+    return decodeURIComponent(str);
+  } catch (e) {
+    return str;
+  }
+};
+
+/**
  * 方法
  * **/
 // 登录
@@ -502,10 +516,12 @@ const delPower = function (p) {
 const getRoles = function (p) {
   const map = roles.filter(function (item) {
     let yeah = true;
-    if (p.title && !item.title.includes(p.title)) {
+    const title = decode(p.title);
+    const conditions = Number(p.conditions);
+    if (title && !item.title.includes(title)) {
       yeah = false;
     }
-    if (p.conditions && item.conditions != p.conditions) {
+    if (conditions && item.conditions !== conditions) {
       yeah = false;
     }
     return yeah;
@@ -689,10 +705,12 @@ const setPowersByRoleIds = function (ps) {
 const getUserList = function (p) {
   const map = users.filter(function (item) {
     let yeah = true;
-    if (p.username && !item.username.includes(p.username)) {
+    const username = decode(p.username);
+    const conditions = Number(p.conditions);
+    if (username && !item.username.includes(username)) {
       yeah = false;
     }
-    if (p.conditions && item.conditions != p.conditions) {
+    if (conditions && item.conditions != conditions) {
       yeah = false;
     }
     return yeah;
@@ -761,10 +779,7 @@ exports.mockApi = function (obj) {
     }
   }
   if (path.includes("http")) {
-    path = path.replace(
-      globalThis.location.protocol + "//" + globalThis.location.host,
-      ""
-    );
+    path = path.replace(globalThis.location.protocol + "//" + globalThis.location.host, "");
   }
   console.info("请求接口：", path, params);
   switch (path) {
