@@ -19,7 +19,7 @@ const webpackbar = require("webpackbar"); // 美化终端构建时的进度条�
  * 根据你自己的需求填写
  * "/" 就是根路径，假如最终项目上线的地址为：https://isluo.com/， 那就可以直接写"/"
  * **/
-const PUBLIC_PATH = "/";
+const PUBLIC_PATH = "/work/admin/";
 
 module.exports = {
   mode: "production",

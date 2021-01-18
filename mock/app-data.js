@@ -1,8 +1,8 @@
 // 不需要下面这几行，只是本地发布DEMO用
-// const Mock = require("mockjs");
-// Mock.setup({
-//   timeout: "0-500",
-// });
+const Mock = require("mockjs");
+Mock.setup({
+  timeout: "0-500",
+});
 
 /**
  * 模拟数据
