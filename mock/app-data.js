@@ -779,7 +779,10 @@ exports.mockApi = function (obj) {
     }
   }
   if (path.includes("http")) {
-    path = path.replace(globalThis.location.protocol + "//" + globalThis.location.host, "");
+    path = path.replace(
+      globalThis.location.protocol + "//" + globalThis.location.host,
+      ""
+    );
   }
   console.info("请求接口：", path, params);
   switch (path) {
