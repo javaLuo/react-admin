@@ -10,14 +10,13 @@ export interface RootModel extends Models<RootModel> {
   sys: typeof sys;
 }
 
-export type Dispatch = RematchDispatch<RootModel>;
-export type RootState = RematchRootState<RootModel>;
-
 const rootModel: RootModel = { app, sys };
 const store = init({
   models: rootModel,
 });
 
 export type Store = typeof store;
+export type Dispatch = RematchDispatch<RootModel>;
+export type RootState = RematchRootState<RootModel>;
 
 export default store;
