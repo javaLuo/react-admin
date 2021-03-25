@@ -52,7 +52,10 @@ export default {
      * 登录
      * @param { username, password } params
      * */
-    async onLogin(params: { username: string; password: string }) {
+    async onLogin(params: {
+      username: string;
+      password: string;
+    }): Promise<any> {
       try {
         const res: Res = await axios.post("/api/login", params);
         return res;
@@ -65,7 +68,7 @@ export default {
      * 退出登录
      * @param null
      * **/
-    async onLogout() {
+    async onLogout(): Promise<any> {
       try {
         // 同 dispatch.app.reducerLogout();
 
@@ -81,13 +84,16 @@ export default {
      * 设置用户信息
      * @param: {*} params
      * **/
-    async setUserInfo(params: UserInfo) {
+    async setUserInfo(params: UserInfo): Promise<string> {
       dispatch.app.reducerUserInfo(params);
       return "success";
     },
 
     /** 修改了角色/菜单/权限信息后需要更新用户的roles,menus,powers数据 **/
-    async updateUserInfo(params: undefined, rootState: RootState) {
+    async updateUserInfo(
+      params: undefined,
+      rootState: RootState
+    ): Promise<any> {
       /** 2.重新查询角色信息 **/
       const userinfo: UserInfo = rootState.app.userinfo;
 

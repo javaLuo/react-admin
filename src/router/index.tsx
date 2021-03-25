@@ -5,7 +5,7 @@
 // ==================
 import React, { useEffect, useCallback } from "react";
 import { Router, Route, Switch, Redirect } from "react-router-dom";
-import { connect } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 // import {createBrowserHistory as createHistory} from "history"; // URL模式的history
 import { createHashHistory as createHistory } from "history"; // 锚点模式的history
 import { message } from "antd";
@@ -33,31 +33,28 @@ const history = createHistory();
 // ==================
 import { RootState, Dispatch } from "@/store";
 
-type Props = ReturnType<typeof mapState> & ReturnType<typeof mapDispatch>;
-
 // ==================
 // 本组件
 // ==================
-function RouterCom(props: Props): JSX.Element {
+function RouterCom(props: any): JSX.Element {
+  const dispatch = useDispatch<Dispatch>();
+  const userinfo = useSelector((state: RootState) => state.app.userinfo);
+
   useEffect(() => {
-    const userinfo = sessionStorage.getItem("userinfo");
+    const userTemp = sessionStorage.getItem("userinfo");
     /**
      * sessionStorage中有user信息，但store中没有
      * 说明刷新了页面，需要重新同步user数据到store
      * **/
-    if (userinfo && !props.userinfo.userBasicInfo) {
-      props.setUserInfo(JSON.parse(tools.uncompile(userinfo)));
+    if (userTemp && !userinfo.userBasicInfo) {
+      dispatch.app.setUserInfo(JSON.parse(tools.uncompile(userTemp)));
     }
-  }, [props]);
+  }, [dispatch.app, userinfo.userBasicInfo]);
 
   /** 跳转到某个路由之前触发 **/
   const onEnter = useCallback((Component, props) => {
-    /**
-     *  有用户信息，说明已登录
-     *  没有，则跳转至登录页
-     * **/
-    const userinfo = sessionStorage.getItem("userinfo");
-    if (userinfo) {
+    const userTemp = sessionStorage.getItem("userinfo");
+    if (userTemp) {
       return <Component {...props} />;
     }
     return <Redirect to="/user/login" />;
@@ -82,9 +79,4 @@ function RouterCom(props: Props): JSX.Element {
   );
 }
 
-const mapState = (state: RootState) => ({ userinfo: state.app.userinfo });
-const mapDispatch = (dispatch: Dispatch) => ({
-  setUserInfo: dispatch.app.setUserInfo,
-});
-
-export default connect(mapState, mapDispatch)(RouterCom);
+export default RouterCom;

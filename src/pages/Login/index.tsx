@@ -4,7 +4,7 @@
 // 所需的各种插件
 // ==================
 import React, { useState, useEffect, useCallback } from "react";
-import { connect } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import tools from "@/util/tools";
 
 // ==================
@@ -30,12 +30,11 @@ import { match } from "react-router-dom";
  * 除了mapState和mapDispatch
  * 每个页面都自动被注入history,location,match 3个对象
  */
-type Props = ReturnType<typeof mapState> &
-  ReturnType<typeof mapDispatch> & {
-    history: History;
-    location: Location;
-    match: match;
-  };
+type Props = {
+  history: History;
+  location: Location;
+  match: match;
+};
 
 // ==================
 // CSS
@@ -46,6 +45,9 @@ import "./index.less";
 // 本组件
 // ==================
 function LoginContainer(props: Props): JSX.Element {
+  const dispatch = useDispatch<Dispatch>();
+  const p = useSelector((state: RootState) => state.app.powersCode);
+
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false); // 是否正在登录中
   const [rememberPassword, setRememberPassword] = useState(false); // 是否记住密码
@@ -87,7 +89,10 @@ function LoginContainer(props: Props): JSX.Element {
       let powers: Power[] = [];
 
       /** 1.登录 （返回信息中有该用户拥有的角色id） **/
-      const res1: Res | undefined = await props.onLogin({ username, password });
+      const res1: Res | undefined = await dispatch.app.onLogin({
+        username,
+        password,
+      });
       if (!res1 || res1.status !== 200 || !res1.data) {
         // 登录失败
         return res1;
@@ -96,7 +101,7 @@ function LoginContainer(props: Props): JSX.Element {
       userBasicInfo = res1.data;
 
       /** 2.根据角色id获取角色信息 (角色信息中有该角色拥有的菜单id和权限id) **/
-      const res2 = await props.getRoleById({
+      const res2 = await dispatch.sys.getRoleById({
         id: (userBasicInfo as UserBasicInfo).roles,
       });
       if (!res2 || res2.status !== 200) {
@@ -111,7 +116,7 @@ function LoginContainer(props: Props): JSX.Element {
         (a, b) => [...a, ...b.menuAndPowers],
         []
       );
-      const res3 = await props.getMenusById({
+      const res3 = await dispatch.sys.getMenusById({
         id: Array.from(new Set(menuAndPowers.map((item) => item.menuId))),
       });
       if (!res3 || res3.status !== 200) {
@@ -122,7 +127,7 @@ function LoginContainer(props: Props): JSX.Element {
       menus = res3.data.filter((item: Menu) => item.conditions === 1);
 
       /** 4.根据权限id，获取权限信息 **/
-      const res4 = await props.getPowerById({
+      const res4 = await dispatch.sys.getPowerById({
         id: Array.from(
           new Set(menuAndPowers.reduce((a, b) => [...a, ...b.powers], []))
         ),
@@ -134,7 +139,7 @@ function LoginContainer(props: Props): JSX.Element {
       powers = res4.data.filter((item: Power) => item.conditions === 1);
       return { status: 200, data: { userBasicInfo, roles, menus, powers } };
     },
-    [props]
+    [dispatch.sys, dispatch.app]
   );
 
   // 用户提交登录
@@ -161,7 +166,7 @@ function LoginContainer(props: Props): JSX.Element {
           "userinfo",
           tools.compile(JSON.stringify(res.data))
         );
-        await props.setUserInfo(res.data);
+        await dispatch.app.setUserInfo(res.data);
         props.history.replace("/"); // 跳转到主页
       } else {
         message.error(res?.message ?? "登录失败");
@@ -300,13 +305,4 @@ function LoginContainer(props: Props): JSX.Element {
   );
 }
 
-const mapState = (state: RootState) => ({});
-const mapDispatch = (dispatch: Dispatch) => ({
-  onLogin: dispatch.app.onLogin,
-  getRoleById: dispatch.sys.getRoleById,
-  getMenusById: dispatch.sys.getMenusById,
-  getPowerById: dispatch.sys.getPowerById,
-  setUserInfo: dispatch.app.setUserInfo,
-});
-
-export default connect(mapState, mapDispatch)(LoginContainer);
+export default LoginContainer;

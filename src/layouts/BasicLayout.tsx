@@ -4,7 +4,7 @@
 // 第三方库
 // ==================
 import React, { useState, useCallback } from "react";
-import { connect } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { Route, Redirect } from "react-router-dom";
 import CacheRoute, { CacheSwitch } from "react-router-cache-route";
 import loadable from "@loadable/component";
@@ -42,7 +42,7 @@ const [NotFound, NoPower, Home, MenuAdmin, PowerAdmin, RoleAdmin, UserAdmin] = [
   () => import(`../pages/System/RoleAdmin`),
   () => import(`../pages/System/UserAdmin`),
 ].map((item) => {
-  return loadable(item, {
+  return loadable(item as any, {
     fallback: <Loading />,
   });
 });
@@ -54,25 +54,26 @@ import { RootState, Dispatch } from "@/store";
 import { Menu } from "@/models/index.type";
 import { History } from "history";
 
-type Props = ReturnType<typeof mapState> &
-  ReturnType<typeof mapDispatch> & {
-    history: History;
-    location: Location;
-  };
+type Props = {
+  history: History;
+  location: Location;
+};
 
 // ==================
 // 本组件
 // ==================
 function BasicLayoutCom(props: Props): JSX.Element {
+  const dispatch = useDispatch<Dispatch>();
+  const userinfo = useSelector((state: RootState) => state.app.userinfo);
   const [collapsed, setCollapsed] = useState(false); // 菜单栏是否收起
 
   // 退出登录
   const onLogout = useCallback(() => {
-    props.onLogout().then(() => {
+    dispatch.app.onLogout().then(() => {
       message.success("退出成功");
       props.history.push("/user/login");
     });
-  }, [props]);
+  }, [props, dispatch.app]);
 
   /**
    * 工具 - 判断当前用户是否有该路由权限，如果没有就跳转至401页
@@ -81,8 +82,8 @@ function BasicLayoutCom(props: Props): JSX.Element {
   const checkRouterPower = useCallback(
     (pathname: string) => {
       let menus: Menu[] = [];
-      if (props.userinfo.menus && props.userinfo.menus.length) {
-        menus = props.userinfo.menus;
+      if (userinfo.menus && userinfo.menus.length) {
+        menus = userinfo.menus;
       } else if (sessionStorage.getItem("userinfo")) {
         menus = JSON.parse(
           tools.uncompile(sessionStorage.getItem("userinfo") || "[]")
@@ -95,7 +96,7 @@ function BasicLayoutCom(props: Props): JSX.Element {
       }
       return false;
     },
-    [props.userinfo]
+    [userinfo]
   );
 
   // 切换路由时触发
@@ -116,7 +117,7 @@ function BasicLayoutCom(props: Props): JSX.Element {
   return (
     <Layout className="page-basic" hasSider>
       <MenuCom
-        data={props.userinfo.menus}
+        data={userinfo.menus}
         collapsed={collapsed}
         location={props.location}
         history={props.history}
@@ -125,15 +126,15 @@ function BasicLayoutCom(props: Props): JSX.Element {
       <Layout>
         <Header
           collapsed={collapsed}
-          userinfo={props.userinfo}
+          userinfo={userinfo}
           onToggle={() => setCollapsed(!collapsed)}
           onLogout={onLogout}
         />
         {/* 普通面包屑导航 */}
-        <Bread menus={props.userinfo.menus} location={props.location} />
+        <Bread menus={userinfo.menus} location={props.location} />
         {/* Tab方式的导航 */}
         {/* <BreadTab
-          menus={props.userinfo.menus}
+          menus={userinfo.menus}
           location={props.location}
           history={props.history}
         /> */}
@@ -179,10 +180,4 @@ function BasicLayoutCom(props: Props): JSX.Element {
   );
 }
 
-const mapState = (state: RootState) => ({
-  userinfo: state.app.userinfo,
-});
-const mapDispatch = (dispatch: Dispatch) => ({
-  onLogout: dispatch.app.onLogout,
-});
-export default connect(mapState, mapDispatch)(BasicLayoutCom);
+export default BasicLayoutCom;

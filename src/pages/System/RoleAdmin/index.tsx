@@ -4,7 +4,7 @@
 // 第三方库
 // ==================
 import React, { useState, useMemo } from "react";
-import { connect } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { useSetState, useMount } from "react-use";
 import {
   Form,
@@ -66,13 +66,8 @@ import {
   RoleParam,
   Role,
   Res,
+  Props,
 } from "./index.type";
-
-type Props = ReturnType<typeof mapState> &
-  ReturnType<typeof mapDispatch> & {
-    history: History;
-    location: Location;
-  };
 
 // ==================
 // CSS
@@ -83,7 +78,12 @@ import "./index.less";
 // 本组件
 // ==================
 function RoleAdminContainer(props: Props) {
-  const p = props.powersCode;
+  const dispatch = useDispatch<Dispatch>();
+  const p = useSelector((state: RootState) => state.app.powersCode);
+  const powerTreeData = useSelector(
+    (state: RootState) => state.sys.powerTreeData
+  );
+
   const [form] = Form.useForm();
 
   const [data, setData] = useState<Role[]>([]); // 当前页面列表数据
@@ -125,12 +125,11 @@ function RoleAdminContainer(props: Props) {
 
   // 函数 - 获取所有的菜单权限数据，用于分配权限控件的原始数据
   const getPowerTreeData = () => {
-    props.getAllMenusAndPowers();
+    dispatch.sys.getAllMenusAndPowers();
   };
 
   // 函数- 查询当前页面所需列表数据
   const getData = async (page: { pageNum: number; pageSize: number }) => {
-    const p = props.powersCode;
     if (!p.includes("role:query")) {
       return;
     }
@@ -142,7 +141,7 @@ function RoleAdminContainer(props: Props) {
     };
     setLoading(true);
     try {
-      const res: Res = await props.getRoles(tools.clearNull(params));
+      const res: Res = await dispatch.sys.getRoles(tools.clearNull(params));
       if (res && res.status === 200) {
         setData(res.data.list);
         setPage({
@@ -223,11 +222,11 @@ function RoleAdminContainer(props: Props) {
       if (modal.operateType === "add") {
         // 新增
         try {
-          const res: Res = await props.addRole(params);
+          const res: Res = await dispatch.sys.addRole(params);
           if (res && res.status === 200) {
             message.success("添加成功");
             getData(page);
-            props.updateUserInfo(); // 角色信息有变化，立即更新当前用户信息
+            dispatch.app.updateUserInfo(); // 角色信息有变化，立即更新当前用户信息
             onClose();
           }
         } finally {
@@ -239,11 +238,11 @@ function RoleAdminContainer(props: Props) {
         // 修改
         params.id = modal?.nowData?.id;
         try {
-          const res: Res = await props.upRole(params);
+          const res: Res = await dispatch.sys.upRole(params);
           if (res && res.status === 200) {
             message.success("修改成功");
             getData(page);
-            props.updateUserInfo();
+            dispatch.app.updateUserInfo();
             onClose();
           }
         } finally {
@@ -261,11 +260,11 @@ function RoleAdminContainer(props: Props) {
   const onDel = async (id: number) => {
     setLoading(true);
     try {
-      const res = await props.delRole({ id });
+      const res = await dispatch.sys.delRole({ id });
       if (res && res.status === 200) {
         message.success("删除成功");
         getData(page);
-        props.updateUserInfo();
+        dispatch.app.updateUserInfo();
       } else {
         message.error(res?.message ?? "操作失败");
       }
@@ -308,10 +307,10 @@ function RoleAdminContainer(props: Props) {
 
     setPower({ treeOnOkLoading: true });
     try {
-      const res: Res = await props.setPowersByRoleId(params);
+      const res: Res = await dispatch.sys.setPowersByRoleId(params);
       if (res && res.status === 200) {
         getData(page);
-        props.updateUserInfo();
+        dispatch.app.updateUserInfo();
         onPowerTreeClose();
       } else {
         message.error(res?.message ?? "权限分配失败");
@@ -591,7 +590,7 @@ function RoleAdminContainer(props: Props) {
       </Modal>
       <PowerTreeCom
         title={modal.nowData ? `分配权限：${modal.nowData.title}` : "分配权限"}
-        data={props.powerTreeData}
+        data={powerTreeData}
         defaultChecked={power.powerTreeDefault}
         loading={power.treeOnOkLoading}
         modalShow={power.powerTreeShow}
@@ -602,18 +601,4 @@ function RoleAdminContainer(props: Props) {
   );
 }
 
-const mapState = (state: RootState) => ({
-  powersCode: state.app.powersCode,
-  powerTreeData: state.sys.powerTreeData,
-});
-const mapDispatch = (dispatch: Dispatch) => ({
-  getAllMenusAndPowers: dispatch.sys.getAllMenusAndPowers,
-  getRoles: dispatch.sys.getRoles,
-  addRole: dispatch.sys.addRole,
-  upRole: dispatch.sys.upRole,
-  delRole: dispatch.sys.delRole,
-  setPowersByRoleId: dispatch.sys.setPowersByRoleId,
-  findAllPowerByRoleId: dispatch.sys.findAllPowerByRoleId,
-  updateUserInfo: dispatch.app.updateUserInfo,
-});
-export default connect(mapState, mapDispatch)(RoleAdminContainer);
+export default RoleAdminContainer;

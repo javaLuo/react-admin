@@ -6,7 +6,7 @@
 import React, { useState, useCallback, useMemo } from "react";
 
 import { useSetState, useMount } from "react-use";
-import { connect } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import {
   Tree,
   Button,
@@ -63,11 +63,10 @@ import { RootState, Dispatch } from "@/store";
 import { CheckboxValueType } from "antd/lib/checkbox/Group";
 import { EventDataNode, DataNode } from "rc-tree/lib/interface";
 
-type Props = ReturnType<typeof mapState> &
-  ReturnType<typeof mapDispatch> & {
-    history: History;
-    location: Location;
-  };
+type Props = {
+  history: History;
+  location: Location;
+};
 
 // ==================
 // CSS
@@ -78,7 +77,10 @@ import "./index.less";
 // 本组件
 // ==================
 function PowerAdminContainer(props: Props) {
-  const p = props.powersCode; // 用户拥有的所有权限code
+  const dispatch = useDispatch<Dispatch>();
+  const p = useSelector((state: RootState) => state.app.powersCode);
+  const roles = useSelector((state: RootState) => state.sys.roles);
+  const userinfo = useSelector((state: RootState) => state.app.userinfo);
   const [form] = Form.useForm();
 
   const [data, setData] = useState<Power[]>([]); // 当前所选菜单下的权限数据
@@ -100,16 +102,15 @@ function PowerAdminContainer(props: Props) {
 
   // 生命周期 - 首次加载组件时触发
   useMount(() => {
-    if (props.userinfo.menus.length === 0) {
-      props.getMenus();
+    if (userinfo.menus.length === 0) {
+      dispatch.sys.getMenus();
     }
-    props.getAllRoles();
+    dispatch.sys.getAllRoles();
     getData();
   });
 
   // 根据所选菜单id获取其下权限数据
   const getData = async (menuId: string | number | null = null) => {
-    const p = props.powersCode;
     if (!p.includes("power:query")) {
       return;
     }
@@ -120,7 +121,7 @@ function PowerAdminContainer(props: Props) {
     };
 
     try {
-      const res: Res = await props.getPowerDataByMenuId(params);
+      const res: Res = await dispatch.sys.getPowerDataByMenuId(params);
 
       if (res && res.status === 200) {
         setData(res.data);
@@ -176,7 +177,7 @@ function PowerAdminContainer(props: Props) {
     });
     setRolesCheckboxChose(
       data && data.id
-        ? props.roles
+        ? roles
             .filter((item) => {
               const theMenuPower = item.menuAndPowers?.find(
                 (item2) => item2.menuId === data.menu
@@ -236,15 +237,15 @@ function PowerAdminContainer(props: Props) {
       if (modal.operateType === "add") {
         // 新增
         try {
-          const res: Res = await props.addPower(params);
+          const res: Res = await dispatch.sys.addPower(params);
           if (res && res.status === 200) {
             message.success("添加成功");
             getData(treeSelect.id);
             onClose();
 
             await setPowersByRoleIds(res.data.id, rolesCheckboxChose);
-            props.updateUserInfo();
-            props.getAllRoles();
+            dispatch.app.updateUserInfo();
+            dispatch.sys.getAllRoles();
           } else {
             message.error("添加失败");
           }
@@ -262,15 +263,15 @@ function PowerAdminContainer(props: Props) {
           }
           params.id = modal.nowData.id;
 
-          const res: Res = await props.upPower(params);
+          const res: Res = await dispatch.sys.upPower(params);
           if (res && res.status === 200) {
             message.success("修改成功");
             getData(treeSelect.id);
             onClose();
 
             await setPowersByRoleIds(params.id, rolesCheckboxChose);
-            props.getAllRoles();
-            props.updateUserInfo();
+            dispatch.sys.getAllRoles();
+            dispatch.app.updateUserInfo();
           } else {
             message.error("修改失败");
           }
@@ -289,10 +290,10 @@ function PowerAdminContainer(props: Props) {
   const onDel = async (record: TableRecordData) => {
     const params = { id: record.id };
     setLoading(true);
-    const res = await props.delPower(params);
+    const res = await dispatch.sys.delPower(params);
     if (res && res.status === 200) {
       getData(treeSelect.id);
-      props.updateUserInfo();
+      dispatch.app.updateUserInfo();
       message.success("删除成功");
     } else {
       message.error(res?.message ?? "操作失败");
@@ -305,7 +306,7 @@ function PowerAdminContainer(props: Props) {
    * @param roleIds 选中的角色的id们，要把当前权限赋给这些角色
    *  **/
   const setPowersByRoleIds = (id: number, roleIds: number[]) => {
-    const params = props.roles.map((item) => {
+    const params = roles.map((item) => {
       const powersTemp = new Set(
         item.menuAndPowers.reduce((a, b) => [...a, ...b.powers], [])
       );
@@ -320,7 +321,7 @@ function PowerAdminContainer(props: Props) {
         powers: Array.from(powersTemp),
       };
     });
-    props.setPowersByRoleIds(params);
+    dispatch.sys.setPowersByRoleIds(params);
   };
 
   // ==================
@@ -329,7 +330,7 @@ function PowerAdminContainer(props: Props) {
 
   // 处理原始数据，将原始数据处理为层级关系
   const sourceData = useMemo(() => {
-    const d: Menu[] = cloneDeep(props.userinfo.menus);
+    const d: Menu[] = cloneDeep(userinfo.menus);
     d.forEach((item: Menu & { key: string }) => {
       item.key = String(item.id);
     });
@@ -338,7 +339,7 @@ function PowerAdminContainer(props: Props) {
       return a.sorts - b.sorts;
     });
     return dataToJson(null, d) || [];
-  }, [props.userinfo.menus, dataToJson]);
+  }, [userinfo.menus, dataToJson]);
 
   // 构建表格字段
   const tableColumns = [
@@ -379,7 +380,6 @@ function PowerAdminContainer(props: Props) {
       width: 120,
       render: (v: number, record: TableRecordData) => {
         const controls = [];
-        const p = props.powersCode;
         p.includes("power:query") &&
           controls.push(
             <span
@@ -451,11 +451,11 @@ function PowerAdminContainer(props: Props) {
 
   // 新增或修改时 构建‘赋予’项数据
   const rolesCheckboxData = useMemo(() => {
-    return props.roles.map((item) => ({
+    return roles.map((item) => ({
       label: item.title,
       value: item.id,
     }));
-  }, [props.roles]);
+  }, [roles]);
 
   return (
     <div className="page-power-admin">
@@ -586,20 +586,4 @@ function PowerAdminContainer(props: Props) {
   );
 }
 
-const mapState = (state: RootState) => ({
-  userinfo: state.app.userinfo,
-  powersCode: state.app.powersCode,
-  roles: state.sys.roles,
-});
-const mapDispatch = (dispatch: Dispatch) => ({
-  addPower: dispatch.sys.addPower,
-  getMenus: dispatch.sys.getMenus,
-  upPower: dispatch.sys.upPower,
-  delPower: dispatch.sys.delPower,
-  getPowerDataByMenuId: dispatch.sys.getPowerDataByMenuId,
-  updateUserInfo: dispatch.app.updateUserInfo,
-  setPowersByRoleIds: dispatch.sys.setPowersByRoleIds,
-  getAllRoles: dispatch.sys.getAllRoles,
-});
-
-export default connect(mapState, mapDispatch)(PowerAdminContainer);
+export default PowerAdminContainer;

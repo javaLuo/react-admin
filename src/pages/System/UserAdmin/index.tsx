@@ -5,7 +5,7 @@
 // ==================
 import React, { useState, useMemo } from "react";
 import { useSetState, useMount } from "react-use";
-import { connect } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import {
   Form,
   Button,
@@ -63,10 +63,9 @@ import {
   RoleTreeInfo,
   UserBasicInfoParam,
   Res,
+  Props,
 } from "./index.type";
 import { RootState, Dispatch } from "@/store";
-
-type Props = ReturnType<typeof mapState> & ReturnType<typeof mapDispatch>;
 
 // ==================
 // CSS
@@ -77,9 +76,13 @@ import "./index.less";
 // 本组件
 // ==================
 function UserAdminContainer(props: Props): JSX.Element {
-  const p = props.powersCode; // 用户拥有的所有权限code
+  const dispatch = useDispatch<Dispatch>();
+  const powerTreeData = useSelector(
+    (state: RootState) => state.sys.powerTreeData
+  );
+  const userinfo = useSelector((state: RootState) => state.app.userinfo);
+  const p = useSelector((state: RootState) => state.app.powersCode);
   const [form] = Form.useForm();
-
   const [data, setData] = useState<TableRecordData[]>([]); // 当前页面列表数据
   const [loading, setLoading] = useState(false); // 数据是否正在加载中
 
@@ -121,7 +124,7 @@ function UserAdminContainer(props: Props): JSX.Element {
   // 函数 - 获取所有的角色数据，用于分配角色控件的原始数据
   const getAllRolesData = async (): Promise<void> => {
     try {
-      const res = await props.getAllRoles();
+      const res = await dispatch.sys.getAllRoles();
       if (res && res.status === 200) {
         setRole({
           roleData: res.data,
@@ -135,7 +138,6 @@ function UserAdminContainer(props: Props): JSX.Element {
     pageNum: number;
     pageSize: number;
   }): Promise<void> {
-    const p = props.powersCode;
     if (!p.includes("user:query")) {
       return;
     }
@@ -148,7 +150,7 @@ function UserAdminContainer(props: Props): JSX.Element {
     };
     setLoading(true);
     try {
-      const res = await props.getUserList(tools.clearNull(params));
+      const res = await dispatch.sys.getUserList(tools.clearNull(params));
       if (res && res.status === 200) {
         setData(res.data.list);
         setPage({
@@ -238,7 +240,7 @@ function UserAdminContainer(props: Props): JSX.Element {
       if (modal.operateType === "add") {
         // 新增
         try {
-          const res: Res | undefined = await props.addUser(params);
+          const res: Res | undefined = await dispatch.sys.addUser(params);
           if (res && res.status === 200) {
             message.success("添加成功");
             onGetData(page);
@@ -255,7 +257,7 @@ function UserAdminContainer(props: Props): JSX.Element {
         // 修改
         params.id = modal.nowData?.id;
         try {
-          const res: Res | undefined = await props.upUser(params);
+          const res: Res | undefined = await dispatch.sys.upUser(params);
           if (res && res.status === 200) {
             message.success("修改成功");
             onGetData(page);
@@ -278,7 +280,7 @@ function UserAdminContainer(props: Props): JSX.Element {
   const onDel = async (id: number): Promise<void> => {
     setLoading(true);
     try {
-      const res = await props.delUser({ id });
+      const res = await dispatch.sys.delUser({ id });
       if (res && res.status === 200) {
         message.success("删除成功");
         onGetData(page);
@@ -322,7 +324,7 @@ function UserAdminContainer(props: Props): JSX.Element {
       roleTreeLoading: true,
     });
     try {
-      const res: Res = await props.setUserRoles(params);
+      const res: Res = await dispatch.sys.setUserRoles(params);
       if (res && res.status === 200) {
         message.success("分配成功");
         onGetData(page);
@@ -397,8 +399,7 @@ function UserAdminContainer(props: Props): JSX.Element {
       width: 200,
       render: (v: null, record: TableRecordData) => {
         const controls = [];
-        const u = props.userinfo.userBasicInfo || { id: -1 };
-        const p = props.powersCode;
+        const u = userinfo.userBasicInfo || { id: -1 };
         p.includes("user:query") &&
           controls.push(
             <span
@@ -682,17 +683,4 @@ function UserAdminContainer(props: Props): JSX.Element {
   );
 }
 
-const mapState = (state: RootState) => ({
-  powerTreeData: state.sys.powerTreeData,
-  userinfo: state.app.userinfo,
-  powersCode: state.app.powersCode,
-});
-const mapDispatch = (dispatch: Dispatch) => ({
-  getAllRoles: dispatch.sys.getAllRoles,
-  addUser: dispatch.sys.addUser,
-  upUser: dispatch.sys.upUser,
-  delUser: dispatch.sys.delUser,
-  getUserList: dispatch.sys.getUserList,
-  setUserRoles: dispatch.sys.setUserRoles,
-});
-export default connect(mapState, mapDispatch)(UserAdminContainer);
+export default UserAdminContainer;

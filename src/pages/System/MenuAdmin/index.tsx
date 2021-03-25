@@ -5,7 +5,7 @@
 // ==================
 import React, { useState, useCallback, useMemo } from "react";
 import { useSetState, useMount } from "react-use";
-import { connect } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import {
   Tree,
   Button,
@@ -57,17 +57,9 @@ import {
   ModalType,
   operateType,
   MenuParam,
+  Props,
 } from "./index.type";
 import { RootState, Dispatch } from "@/store";
-import { History } from "history";
-import { match } from "react-router-dom";
-
-type Props = ReturnType<typeof mapState> &
-  ReturnType<typeof mapDispatch> & {
-    history: History;
-    location: Location;
-    match: match;
-  };
 
 // ==================
 // CSS
@@ -78,7 +70,9 @@ import "./index.less";
 // 本组件
 // ==================
 function MenuAdminContainer(props: Props) {
-  const p = props.powersCode;
+  const p = useSelector((state: RootState) => state.app.powersCode);
+  const dispatch = useDispatch<Dispatch>();
+
   const [form] = Form.useForm();
 
   const [data, setData] = useState<Menu[]>([]); // 所有的菜单数据（未分层级）
@@ -103,13 +97,12 @@ function MenuAdminContainer(props: Props) {
 
   // 获取本页面所需数据
   const getData = async () => {
-    const p = props.powersCode;
     if (!p.includes("menu:query")) {
       return;
     }
     setLoading(true);
     try {
-      const res = await props.getMenus();
+      const res = await dispatch.sys.getMenus();
       if (res && res.status === 200) {
         setData(res.data);
       }
@@ -157,10 +150,8 @@ function MenuAdminContainer(props: Props) {
 
     setTimeout(() => {
       if (type === "add") {
-        // 新增，需重置表单各控件的值
         form.resetFields();
       } else {
-        // 查看或修改，需设置表单各控件的值为当前所选中行的数据
         if (data) {
           form.setFieldsValue({
             formConditions: data.conditions,
@@ -204,14 +195,13 @@ function MenuAdminContainer(props: Props) {
         modalLoading: true,
       });
       if (modal.operateType === "add") {
-        // 新增
         try {
-          const res = await props.addMenu(params);
+          const res = await dispatch.sys.addMenu(params);
           if (res && res.status === 200) {
             message.success("添加成功");
             getData();
             onClose();
-            props.updateUserInfo();
+            dispatch.app.updateUserInfo();
           } else {
             message.error("添加失败");
           }
@@ -221,15 +211,14 @@ function MenuAdminContainer(props: Props) {
           });
         }
       } else {
-        // 修改
         try {
           params.id = modal?.nowData?.id;
-          const res = await props.upMenu(params);
+          const res = await dispatch.sys.upMenu(params);
           if (res && res.status === 200) {
             message.success("修改成功");
             getData();
             onClose();
-            props.updateUserInfo();
+            dispatch.app.updateUserInfo();
           } else {
             message.error("修改失败");
           }
@@ -247,10 +236,10 @@ function MenuAdminContainer(props: Props) {
   /** 删除一条数据 **/
   const onDel = async (record: TableRecordData) => {
     const params = { id: record.id };
-    const res = await props.delMenu(params);
+    const res = await dispatch.sys.delMenu(params);
     if (res && res.status === 200) {
       getData();
-      props.updateUserInfo();
+      dispatch.app.updateUserInfo();
       message.success("删除成功");
     } else {
       message.error(res?.message ?? "操作失败");
@@ -329,7 +318,6 @@ function MenuAdminContainer(props: Props) {
       key: "control",
       width: 120,
       render: (v: number, record: TableRecordData) => {
-        const p = props.powersCode;
         const controls = [];
 
         p.includes("menu:query") &&
@@ -443,7 +431,7 @@ function MenuAdminContainer(props: Props) {
           }}
         />
       </div>
-      {/** 查看&新增&修改用户模态框 **/}
+
       <Modal
         title={`${{ add: "新增", up: "修改", see: "查看" }[modal.operateType]}`}
         visible={modal.modalShow}
@@ -544,17 +532,4 @@ function MenuAdminContainer(props: Props) {
   );
 }
 
-const mapState = (state: RootState) => ({
-  roles: state.sys.roles,
-  powersCode: state.app.powersCode,
-});
-
-const mapDispatch = (dispatch: Dispatch) => ({
-  addMenu: dispatch.sys.addMenu,
-  getMenus: dispatch.sys.getMenus,
-  upMenu: dispatch.sys.upMenu,
-  delMenu: dispatch.sys.delMenu,
-  updateUserInfo: dispatch.app.updateUserInfo,
-});
-
-export default connect(mapState, mapDispatch)(MenuAdminContainer);
+export default MenuAdminContainer;
