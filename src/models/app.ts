@@ -52,10 +52,7 @@ export default {
      * 登录
      * @param { username, password } params
      * */
-    async onLogin(params: {
-      username: string;
-      password: string;
-    }): Promise<any> {
+    async onLogin(params: { username: string; password: string }) {
       try {
         const res: Res = await axios.post("/api/login", params);
         return res;
@@ -68,7 +65,7 @@ export default {
      * 退出登录
      * @param null
      * **/
-    async onLogout(): Promise<any> {
+    async onLogout() {
       try {
         // 同 dispatch.app.reducerLogout();
 
@@ -84,7 +81,7 @@ export default {
      * 设置用户信息
      * @param: {*} params
      * **/
-    async setUserInfo(params: UserInfo): Promise<string> {
+    async setUserInfo(params: UserInfo) {
       dispatch.app.reducerUserInfo(params);
       return "success";
     },

@@ -64,7 +64,7 @@ export default {
      * 根据菜单ID获取对应的菜单信息
      * @param {number} id 可以是一个数字也可以是一个数组
      * **/
-    async getMenusById(params: { id: number | number[] }): Promise<any> {
+    async getMenusById(params: { id: number | number[] }) {
       try {
         const res: Res = await axios.post(`/api/getMenusById`, params);
         return res;
@@ -78,7 +78,7 @@ export default {
      * 添加菜单
      * @param params MenuParam
      */
-    async addMenu(params: MenuParam): Promise<any> {
+    async addMenu(params: MenuParam) {
       try {
         const res: Res = await axios.post("/api/addmenu", params);
         return res;
@@ -90,7 +90,7 @@ export default {
     /**
      * 修改菜单
      * **/
-    async upMenu(params: MenuParam): Promise<any> {
+    async upMenu(params: MenuParam) {
       try {
         const res: Res = await axios.post("/api/upmenu", params);
         return res;
@@ -102,7 +102,7 @@ export default {
     /**
      * 删除菜单
      * **/
-    async delMenu(params: { id: number }): Promise<any> {
+    async delMenu(params: { id: number }) {
       try {
         const res: Res = await axios.post("/api/delmenu", params);
         return res;
@@ -115,9 +115,7 @@ export default {
     /**
      * 根据菜单ID查询其下的权限数据
      * **/
-    async getPowerDataByMenuId(params: {
-      menuId: number | null;
-    }): Promise<any> {
+    async getPowerDataByMenuId(params: { menuId: number | null }) {
       try {
         const res: Res = await axios.get(
           `/api/getpowerbymenuid?${qs.stringify(params)}`
@@ -133,7 +131,7 @@ export default {
      * 根据权限ID查询对应的权限数据
      * @param id 可以是一个数字也可以是一个数组
      * **/
-    async getPowerById(params: { id: number | number[] }): Promise<any> {
+    async getPowerById(params: { id: number | number[] }) {
       try {
         const res: Res = await axios.post(`/api/getPowerById`, params);
         return res;
@@ -159,7 +157,7 @@ export default {
     /**
      * 添加权限
      * **/
-    async addPower(params: PowerParam): Promise<Res> {
+    async addPower(params: PowerParam) {
       try {
         const res: Res = await axios.post("/api/addpower", params);
         return res;
@@ -172,7 +170,7 @@ export default {
     /**
      * 修改权限
      * **/
-    async upPower(params: PowerParam): Promise<Res> {
+    async upPower(params: PowerParam) {
       try {
         const res: Res = await axios.post("/api/uppower", params);
         return res;
@@ -185,7 +183,7 @@ export default {
     /**
      * 删除权限
      * **/
-    async delPower(params: { id: number }): Promise<Res> {
+    async delPower(params: { id: number }) {
       try {
         const res: Res = await axios.post("/api/delpower", params);
         return res;
@@ -203,7 +201,7 @@ export default {
       pageSize: number;
       title?: string;
       conditions?: number;
-    }): Promise<Res> {
+    }) {
       try {
         const res: Res = await axios.get(
           `/api/getroles?${qs.stringify(params)}`
@@ -220,7 +218,7 @@ export default {
      * @param id 可以是一个数字，也可以是一个数组
      * @return 返回值是数组
      * **/
-    async getRoleById(params: { id: number | number[] }): Promise<Res> {
+    async getRoleById(params: { id: number | number[] }) {
       try {
         const res: Res = await axios.post(`/api/getRoleById`, params);
         return res;
@@ -233,7 +231,7 @@ export default {
     /**
      * 添加角色
      * **/
-    async addRole(params: RoleParam): Promise<Res> {
+    async addRole(params: RoleParam) {
       try {
         const res: Res = await axios.post("/api/addrole", params);
         return res;
@@ -245,7 +243,7 @@ export default {
     /**
      * 修改角色
      * **/
-    async upRole(params: RoleParam): Promise<Res> {
+    async upRole(params: RoleParam) {
       try {
         const res: Res = await axios.post("/api/uprole", params);
         return res;
@@ -258,7 +256,7 @@ export default {
     /**
      * 删除角色
      * **/
-    async delRole(params: { id: number }): Promise<Res> {
+    async delRole(params: { id: number }) {
       try {
         const res: Res = await axios.post("/api/delrole", params);
         return res;
@@ -271,7 +269,7 @@ export default {
     /**
      * 通过角色ID查询该角色拥有的所有菜单和权限详细信息
      * **/
-    async findAllPowerByRoleId(params: { id: number }): Promise<Res> {
+    async findAllPowerByRoleId(params: { id: number }) {
       try {
         const res: Res = await axios.get(
           `/api/findAllPowerByRoleId?${qs.stringify(params)}`
@@ -285,6 +283,7 @@ export default {
 
     /**
      * 获取所有的菜单及权限详细信息
+     * 如果你在sys.ts中引用了sys本身，则需要显式的注明返回值的类型
      * **/
     async getAllMenusAndPowers(): Promise<Res> {
       try {
@@ -306,7 +305,7 @@ export default {
       id: number;
       menus: number[];
       powers: number[];
-    }): Promise<Res> {
+    }) {
       try {
         const res: Res = await axios.post("/api/setPowersByRoleId", params);
         return res;
@@ -326,7 +325,7 @@ export default {
         menus: number[];
         powers: number[];
       }[]
-    ): Promise<Res> {
+    ) {
       try {
         const res: Res = await axios.post("/api/setPowersByRoleIds", params);
         return res;
@@ -344,7 +343,7 @@ export default {
       pageSize: number;
       username?: string;
       conditions?: number;
-    }): Promise<Res> {
+    }) {
       try {
         const res: Res = await axios.get(
           `/api/getUserList?${qs.stringify(params)}`
@@ -359,7 +358,7 @@ export default {
     /**
      * 添加用户
      * **/
-    async addUser(params: UserBasicInfoParam): Promise<Res> {
+    async addUser(params: UserBasicInfoParam) {
       try {
         const res: Res = await axios.post("/api/addUser", params);
         return res;
@@ -372,7 +371,7 @@ export default {
     /**
      * 修改用户
      * **/
-    async upUser(params: UserBasicInfoParam): Promise<Res> {
+    async upUser(params: UserBasicInfoParam) {
       try {
         const res: Res = await axios.post("/api/upUser", params);
         return res;
@@ -385,7 +384,7 @@ export default {
     /**
      * 删除用户
      * **/
-    async delUser(params: { id: number }): Promise<Res> {
+    async delUser(params: { id: number }) {
       try {
         const res: Res = await axios.post("/api/delUser", params);
         return res;
@@ -399,7 +398,7 @@ export default {
      * 给用户分配角色
      * 用的也是upUser接口
      * **/
-    async setUserRoles(params: { id: number; roles: number[] }): Promise<Res> {
+    async setUserRoles(params: { id: number; roles: number[] }) {
       try {
         const res: Res = await axios.post("/api/upUser", params);
         return res;
