@@ -13,12 +13,8 @@ export default class Com extends React.PureComponent {
   render() {
     return (
       <Footer className={`footer ${this.props.className}`}>
-        © 2018-2020{" "}
-        <a
-          href="https://blog.isluo.com"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
+        © 2018-{new Date().getFullYear()}{" "}
+        <a href="https://blog.isluo.com" target="_blank" rel="noopener noreferrer">
           blog.isluo.com
         </a>
         , Inc.

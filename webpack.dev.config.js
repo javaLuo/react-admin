@@ -8,6 +8,7 @@ const AntdDayjsWebpackPlugin = require("antd-dayjs-webpack-plugin");
 const HappyPack = require("happypack"); // 多线程编译
 const webpackbar = require("webpackbar");
 const PUBLIC_PATH = "/"; // 基础路径
+
 module.exports = {
   mode: "development",
   entry: [
@@ -17,7 +18,7 @@ module.exports = {
   output: {
     path: __dirname + "/", // 将打包好的文件放在此路径下，dev模式中，只会在内存中存在，不会真正的打包到此路径
     publicPath: PUBLIC_PATH, // 文件解析路径，index.html中引用的路径会被设置为相对于此路径
-    filename: "bundle.js", // 编译后的文件名字
+    filename: "bundle-[contenthash].js", // 编译后的文件名字
   },
   devtool: "eval-source-map", // 报错的时候在控制台输出哪一行报错
   optimization: {
@@ -31,7 +32,7 @@ module.exports = {
         // 编译前通过eslint检查代码 (注释掉即可取消eslint检测)
         test: /\.js?$/,
         enforce: "pre",
-        use: ["eslint-loader"],
+        use: ["source-map-loader", "eslint-loader"],
         include: path.resolve(__dirname, "src"),
       },
       {
@@ -48,7 +49,7 @@ module.exports = {
       {
         // .less 解析
         test: /\.less$/,
-        use: ["style-loader", "css-loader", "postcss-loader", { loader: "less-loader", options: { lessOptions: {javascriptEnabled: true} } }],
+        use: ["style-loader", "css-loader", "postcss-loader", { loader: "less-loader", options: { lessOptions: { javascriptEnabled: true } } }],
       },
       {
         // 文件解析

@@ -84,8 +84,9 @@ export default class AppContainer extends React.Component {
     if (this.props.userinfo.menus && this.props.userinfo.menus.length) {
       menus = this.props.userinfo.menus;
     } else if (sessionStorage.getItem("userinfo")) {
-      menus = JSON.parse(tools.uncompile(sessionStorage.getItem("userinfo")))
-        .menus;
+      menus = JSON.parse(
+        tools.uncompile(sessionStorage.getItem("userinfo"))
+      ).menus;
     }
     const m = menus.map((item) => item.url.replace(/^\//, "")); // 当前用户拥有的所有菜单
     const urls = pathname.split("/").filter((item) => !!item);
