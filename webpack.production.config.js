@@ -3,14 +3,14 @@
 const path = require("path");
 const webpack = require("webpack"); // webpack核心
 const MiniCssExtractPlugin = require("mini-css-extract-plugin"); // 为了单独打包css
+const CssMinimizerPlugin = require("css-minimizer-webpack-plugin"); // 对CSS进行压缩
 const HtmlWebpackPlugin = require("html-webpack-plugin"); // 生成html
 const AntdDayjsWebpackPlugin = require("antd-dayjs-webpack-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin"); // 每次打包前清除旧的build文件夹
+const WorkboxPlugin = require("workbox-webpack-plugin"); // 用于生成PWA servers-worker.js
 const CopyPlugin = require("copy-webpack-plugin"); // 用于直接复制public中的文件到打包的最终文件夹中
-const SWPrecacheWebpackPlugin = require("sw-precache-webpack-plugin"); // 生成一个server-worker用于缓存
 const FaviconsWebpackPlugin = require("favicons-webpack-plugin"); // 自动生成各尺寸的favicon图标
 const TerserPlugin = require("terser-webpack-plugin"); // 优化js
-const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin"); // 压缩CSS
 const webpackbar = require("webpackbar"); // 进度条
 /**
  * 基础路径
@@ -30,10 +30,11 @@ module.exports = {
     chunkFilename: "dist/[name].[chunkhash:8].chunk.js",
   },
   stats: {
-    warningsFilter: warning => /Conflicting order/gm.test(warning), // 不输出一些警告，多为因CSS引入顺序不同导致的警告
+    // warningsFilter: warning => /Conflicting order/gm.test(warning), // 不输出一些警告，多为因CSS引入顺序不同导致的警告
     children: false, // 不输出子模块的打包信息
   },
   optimization: {
+    minimize: true,
     minimizer: [
       new TerserPlugin({
         parallel: true, // 多线程并行构建
@@ -47,7 +48,7 @@ module.exports = {
           },
         },
       }),
-      new OptimizeCSSAssetsPlugin({}),
+      new CssMinimizerPlugin(),
     ],
     splitChunks: {
       chunks: "all",
@@ -69,7 +70,7 @@ module.exports = {
       {
         // .less 解析
         test: /\.less$/,
-        use: [MiniCssExtractPlugin.loader, "css-loader", "postcss-loader", { loader: "less-loader", options: { lessOptions:{javascriptEnabled: true} } }],
+        use: [MiniCssExtractPlugin.loader, "css-loader", "postcss-loader", { loader: "less-loader", options: { lessOptions: { javascriptEnabled: true } } }],
       },
       {
         // 文件解析
@@ -134,26 +135,7 @@ module.exports = {
      * **/
     new MiniCssExtractPlugin({
       filename: "dist/[name].[chunkhash:8].css", // 生成的文件名
-    }),
-    /**
-     * 生成一个server-work用于缓存资源（PWA）
-     * */
-    new SWPrecacheWebpackPlugin({
-      dontCacheBustUrlsMatching: /\.\w{8}\./,
-      filename: "service-worker.js",
-      logger(message) {
-        if (message.indexOf("Total precache size is") === 0) {
-          return;
-        }
-        if (message.indexOf("Skipping static resource") === 0) {
-          return;
-        }
-        console.log(message);
-      },
-      minify: true, // 压缩
-      navigateFallback: PUBLIC_PATH, // 遇到不存在的URL时，跳转到主页
-      navigateFallbackWhitelist: [/^(?!\/__).*/], // 忽略从/__开始的网址，参考 https://github.com/facebookincubator/create-react-app/issues/2237#issuecomment-302693219
-      staticFileGlobsIgnorePatterns: [/\.map$/, /asset-manifest\.json$/, /\.cache$/], // 不缓存sourcemaps,它们太大了
+      ignoreOrder: true, // 忽略因CSS文件引入顺序不一致而抛出的警告信息，多为antd内部css引起
     }),
     // 拷贝public中的文件到最终打包文件夹里
     new CopyPlugin({
@@ -176,6 +158,14 @@ module.exports = {
       template: "./public/index.html", // html模板路径
       hash: false, // 防止缓存，在引入的文件后面加hash (PWA就是要缓存，这里设置为false)
       inject: true, // 是否将js放在body的末尾
+      // 正式环境，把注册service-worker的代码加入到index.html中
+      registerServiceWorker: `<script>
+        if ("serviceWorker" in navigator) {
+          window.addEventListener("load", () => {
+            navigator.serviceWorker.register("./service-worker.js");
+          });
+        }
+      </script>`,
     }),
     /**
      * 自动生成各种类型的favicon图标
@@ -210,6 +200,13 @@ module.exports = {
           yandex: false, // Yandex浏览器
         },
       },
+    }),
+    /**
+     * PWA - 自动生成server-worker.js
+     * https://developers.google.com/web/tools/workbox/reference-docs/latest/module-workbox-webpack-plugin.GenerateSW?hl=en
+     *  */
+    new WorkboxPlugin.GenerateSW({
+      skipWaiting: true,
     }),
   ],
   resolve: {
