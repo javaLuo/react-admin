@@ -99,7 +99,8 @@ const tools = {
    * @param str - 待处理的字符串
    * **/
   checkEmail(str: string): boolean {
-    const rex = /^[a-zA-Z0-9]+([-_.][a-zA-Z0-9]+)*@[a-zA-Z0-9]+([-_.][a-zA-Z0-9]+)*\.[a-z]{2,}$/;
+    const rex =
+      /^[a-zA-Z0-9]+([-_.][a-zA-Z0-9]+)*@[a-zA-Z0-9]+([-_.][a-zA-Z0-9]+)*\.[a-z]{2,}$/;
     return rex.test(str);
   },
 

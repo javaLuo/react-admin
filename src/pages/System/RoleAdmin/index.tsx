@@ -437,21 +437,19 @@ function RoleAdminContainer(props: Props) {
   ];
 
   const tableData = useMemo(() => {
-    return data.map(
-      (item, index): TableRecordData => {
-        return {
-          key: index,
-          id: item.id,
-          serial: index + 1 + (page.pageNum - 1) * page.pageSize,
-          title: item.title,
-          desc: item.desc,
-          sorts: item.sorts,
-          conditions: item.conditions,
-          control: item.id,
-          menuAndPowers: item.menuAndPowers,
-        };
-      }
-    );
+    return data.map((item, index): TableRecordData => {
+      return {
+        key: index,
+        id: item.id,
+        serial: index + 1 + (page.pageNum - 1) * page.pageSize,
+        title: item.title,
+        desc: item.desc,
+        sorts: item.sorts,
+        conditions: item.conditions,
+        control: item.id,
+        menuAndPowers: item.menuAndPowers,
+      };
+    });
   }, [page, data]);
 
   return (
