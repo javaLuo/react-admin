@@ -61,3 +61,4 @@ typings/
 yarn.lock
 .vscode/
 .idea/
+pnpm-lock.yaml
