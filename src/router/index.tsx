@@ -32,11 +32,12 @@ const history = createHistory();
 // 类型声明
 // ==================
 import { RootState, Dispatch } from "@/store";
+import type { RouteComponentProps } from "react-router-dom";
 
 // ==================
 // 本组件
 // ==================
-function RouterCom(props: any): JSX.Element {
+function RouterCom(): JSX.Element {
   const dispatch = useDispatch<Dispatch>();
   const userinfo = useSelector((state: RootState) => state.app.userinfo);
 
@@ -52,13 +53,13 @@ function RouterCom(props: any): JSX.Element {
   }, [dispatch.app, userinfo.userBasicInfo]);
 
   /** 跳转到某个路由之前触发 **/
-  const onEnter = useCallback((Component, props) => {
+  const onEnter = (Component: React.FC<any>, props: RouteComponentProps) => {
     const userTemp = sessionStorage.getItem("userinfo");
     if (userTemp) {
       return <Component {...props} />;
     }
     return <Redirect to="/user/login" />;
-  }, []);
+  };
 
   return (
     <Router history={history}>

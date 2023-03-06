@@ -34,13 +34,13 @@ const { Content } = Layout;
 // 异步加载各路由模块
 // ==================
 const [NotFound, NoPower, Home, MenuAdmin, PowerAdmin, RoleAdmin, UserAdmin] = [
-  () => import(`../pages/ErrorPages/404`),
-  () => import(`../pages/ErrorPages/401`),
-  () => import(`../pages/Home`),
-  () => import(`../pages/System/MenuAdmin`),
-  () => import(`../pages/System/PowerAdmin`),
-  () => import(`../pages/System/RoleAdmin`),
-  () => import(`../pages/System/UserAdmin`),
+  () => import("../pages/ErrorPages/404"),
+  () => import("../pages/ErrorPages/401"),
+  () => import("../pages/Home"),
+  () => import("../pages/System/MenuAdmin"),
+  () => import("../pages/System/PowerAdmin"),
+  () => import("../pages/System/RoleAdmin"),
+  () => import("../pages/System/UserAdmin"),
 ].map((item) => {
   return loadable(item as any, {
     fallback: <Loading />,
@@ -50,9 +50,10 @@ const [NotFound, NoPower, Home, MenuAdmin, PowerAdmin, RoleAdmin, UserAdmin] = [
 // ==================
 // 类型声明
 // ==================
-import { RootState, Dispatch } from "@/store";
-import { Menu } from "@/models/index.type";
-import { History } from "history";
+import type { RootState, Dispatch } from "@/store";
+import type { Menu } from "@/models/index.type";
+import type { History } from "history";
+import type { RouteComponentProps } from "react-router-dom";
 
 type Props = {
   history: History;
@@ -101,7 +102,7 @@ function BasicLayoutCom(props: Props): JSX.Element {
 
   // 切换路由时触发
   const onEnter = useCallback(
-    (Component, props) => {
+    (Component, props: RouteComponentProps) => {
       /**
        * 检查当前用户是否有该路由页面的权限
        * 没有则跳转至401页

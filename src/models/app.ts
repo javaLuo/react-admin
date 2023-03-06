@@ -88,7 +88,7 @@ export default {
 
     /** 修改了角色/菜单/权限信息后需要更新用户的roles,menus,powers数据 **/
     async updateUserInfo(
-      params: undefined,
+      payload: null,
       rootState: RootState
     ): Promise<any> {
       /** 2.重新查询角色信息 **/

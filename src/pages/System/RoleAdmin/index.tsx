@@ -73,6 +73,7 @@ import {
 // CSS
 // ==================
 import "./index.less";
+import { MenuAndPower } from "@/models/index.type";
 
 // ==================
 // 本组件
@@ -226,7 +227,7 @@ function RoleAdminContainer(props: Props) {
           if (res && res.status === 200) {
             message.success("添加成功");
             getData(page);
-            dispatch.app.updateUserInfo(); // 角色信息有变化，立即更新当前用户信息
+            dispatch.app.updateUserInfo(null); // 角色信息有变化，立即更新当前用户信息
             onClose();
           }
         } finally {
@@ -242,7 +243,7 @@ function RoleAdminContainer(props: Props) {
           if (res && res.status === 200) {
             message.success("修改成功");
             getData(page);
-            dispatch.app.updateUserInfo();
+            dispatch.app.updateUserInfo(null);
             onClose();
           }
         } finally {
@@ -264,7 +265,7 @@ function RoleAdminContainer(props: Props) {
       if (res && res.status === 200) {
         message.success("删除成功");
         getData(page);
-        dispatch.app.updateUserInfo();
+        dispatch.app.updateUserInfo(null);
       } else {
         message.error(res?.message ?? "操作失败");
       }
@@ -284,7 +285,7 @@ function RoleAdminContainer(props: Props) {
     // 需默认选中的权限ID
     const powers = record.menuAndPowers.reduce(
       (v1, v2) => [...v1, ...v2.powers],
-      []
+      [] as number[]
     );
     setModal({ nowData: record });
     setPower({
@@ -310,7 +311,7 @@ function RoleAdminContainer(props: Props) {
       const res: Res = await dispatch.sys.setPowersByRoleId(params);
       if (res && res.status === 200) {
         getData(page);
-        dispatch.app.updateUserInfo();
+        dispatch.app.updateUserInfo(null);
         onPowerTreeClose();
       } else {
         message.error(res?.message ?? "权限分配失败");

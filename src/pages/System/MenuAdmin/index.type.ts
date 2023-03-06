@@ -25,3 +25,16 @@ export type Props = {
   location: Location;
   match: match;
 };
+
+export interface TreeSourceData {
+  id: number; // ID,添加时可以没有id
+  key: string|number;
+  title: string; // 标题
+  icon: string; // 图标
+  url: string; // 链接路径
+  parent: number | null; // 父级ID
+  desc: string; // 描述
+  sorts: number; // 排序编号
+  conditions: number; // 状态，1启用，-1禁用
+  children?: TreeSourceData[]; // 子菜单
+}

@@ -4,6 +4,7 @@
 // 所需的第三方库
 // ==================
 import React from "react";
+import { useSelector } from "react-redux";
 import loadable from "@loadable/component";
 import { Route, Switch, Redirect } from "react-router-dom";
 import { Layout } from "antd";
@@ -12,6 +13,12 @@ import { Layout } from "antd";
 // 自定义的东西
 // ==================
 import "./UserLayout.less";
+
+// ==================
+// 类型声明
+// ==================
+import type { RootState } from "@/store";
+import type { RouteComponentProps } from "react-router-dom";
 
 // ==================
 // 组件
@@ -37,12 +44,26 @@ const [NotFound, Login] = [
 // 本组件
 // ==================
 export default function AppContainer(): JSX.Element {
+  const userinfo = useSelector((state: RootState) => state.app.userinfo);
+
+  // 切换路由时触发
+  const onEnter = (Component: any, props: RouteComponentProps) => {
+    if (userinfo.userBasicInfo) {
+      return <Redirect to="/home" />;
+    }
+    return <Component {...props} />;
+  };
+
   return (
     <Layout className="page-user">
       <Content className="content">
         <Switch>
           <Redirect exact from="/user" to="/user/login" />
-          <Route exact path="/user/login" component={Login} />
+          <Route
+            exact
+            path="/user/login"
+            render={(props) => onEnter(Login, props)}
+          />
           <Route component={NotFound} />
         </Switch>
       </Content>

@@ -58,8 +58,10 @@ import {
   operateType,
   MenuParam,
   Props,
+  TreeSourceData,
 } from "./index.type";
 import { RootState, Dispatch } from "@/store";
+import type { EventDataNode, DataNode } from "rc-tree/lib/interface";
 
 // ==================
 // CSS
@@ -112,27 +114,61 @@ function MenuAdminContainer(props: Props) {
   };
 
   /** 工具 - 递归将扁平数据转换为层级数据 **/
-  const dataToJson = useCallback((one, data) => {
-    let kids;
-    if (!one) {
-      // 第1次递归
-      kids = data.filter((item: Menu) => !item.parent);
-    } else {
-      kids = data.filter((item: Menu) => item.parent === one.id);
+  const dataToJson = useCallback(
+    (one: TreeSourceData | null, data: TreeSourceData[]) => {
+      let kids: TreeSourceData[];
+      if (!one) {
+        // 第1次递归
+        kids = data.filter((item: TreeSourceData) => !item.parent);
+      } else {
+        kids = data.filter((item: TreeSourceData) => item.parent === one.id);
+      }
+      kids.forEach(
+        (item: TreeSourceData) => (item.children = dataToJson(item, data))
+      );
+      return kids.length ? kids : undefined;
+    },
+    []
+  );
+
+  // 工具 - 赋值Key
+  const makeKey = useCallback((data: Menu[]) => {
+    const newData: TreeSourceData[] = [];
+    for (let i = 0; i < data.length; i++) {
+      const item: any = { ...data[i] };
+      if (item.children) {
+        item.children = makeKey(item.children);
+      }
+      const treeItem: TreeSourceData = {
+        ...(item as TreeSourceData),
+        key: item.id,
+      };
+      newData.push(treeItem);
     }
-    kids.forEach((item: Menu) => (item.children = dataToJson(item, data)));
-    return kids.length ? kids : null;
+    return newData;
   }, []);
 
   /** 点击树目录时触发 **/
-  const onTreeSelect = useCallback((keys, e) => {
-    let treeSelect = {};
-    if (e.selected) {
-      // 选中
-      treeSelect = { title: e.node.title, id: e.node.id };
-    }
-    setTreeSelect(treeSelect);
-  }, []);
+  const onTreeSelect = useCallback(
+    (
+      keys: React.Key[],
+      info: {
+        event: "select";
+        selected: boolean;
+        node: EventDataNode<DataNode> & { id: number; title: string };
+        selectedNodes: DataNode[];
+        nativeEvent: MouseEvent;
+      }
+    ) => {
+      let treeSelect = {};
+      if (info.selected) {
+        // 选中
+        treeSelect = { title: info.node.title, id: info.node.id };
+      }
+      setTreeSelect(treeSelect);
+    },
+    []
+  );
 
   /** 工具 - 根据parentID返回parentName **/
   const getNameByParentId = (id: number | null) => {
@@ -201,7 +237,7 @@ function MenuAdminContainer(props: Props) {
             message.success("添加成功");
             getData();
             onClose();
-            dispatch.app.updateUserInfo();
+            dispatch.app.updateUserInfo(null);
           } else {
             message.error("添加失败");
           }
@@ -218,7 +254,7 @@ function MenuAdminContainer(props: Props) {
             message.success("修改成功");
             getData();
             onClose();
-            dispatch.app.updateUserInfo();
+            dispatch.app.updateUserInfo(null);
           } else {
             message.error("修改失败");
           }
@@ -239,7 +275,7 @@ function MenuAdminContainer(props: Props) {
     const res = await dispatch.sys.delMenu(params);
     if (res && res.status === 200) {
       getData();
-      dispatch.app.updateUserInfo();
+      dispatch.app.updateUserInfo(null);
       message.success("删除成功");
     } else {
       message.error(res?.message ?? "操作失败");
@@ -252,10 +288,10 @@ function MenuAdminContainer(props: Props) {
 
   /** 处理原始数据，将原始数据处理为层级关系 **/
   const sourceData = useMemo(() => {
-    const d: Menu[] = cloneDeep(data);
-    d.forEach((item: Menu & { key: string }) => {
-      item.key = String(item.id);
-    });
+    const menuData: Menu[] = cloneDeep(data);
+    // 这应该递归，把children数据也赋值key
+    const d: TreeSourceData[] = makeKey(menuData);
+
     // 按照sort排序
     d.sort((a, b) => {
       return a.sorts - b.sorts;
@@ -388,6 +424,7 @@ function MenuAdminContainer(props: Props) {
           sorts: item.sorts,
           conditions: item.conditions,
           serial: index + 1,
+          control: item.id,
         };
       });
   }, [data, treeSelect.id]);

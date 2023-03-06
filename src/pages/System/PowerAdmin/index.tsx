@@ -58,10 +58,11 @@ import {
   Power,
   PowerParam,
   Res,
+  TreeSourceData,
 } from "./index.type";
 import { RootState, Dispatch } from "@/store";
 import { CheckboxValueType } from "antd/lib/checkbox/Group";
-import { EventDataNode, DataNode } from "rc-tree/lib/interface";
+import type { EventDataNode, DataNode } from "rc-tree/lib/interface";
 
 type Props = {
   history: History;
@@ -132,25 +133,47 @@ function PowerAdminContainer(props: Props) {
   };
 
   // 工具 - 递归将扁平数据转换为层级数据
-  const dataToJson = useCallback((one, data) => {
-    let kids;
-    if (!one) {
-      // 第1次递归
-      kids = data.filter((item: Menu) => !item.parent);
-    } else {
-      kids = data.filter((item: Menu) => item.parent === one.id);
+  const dataToJson = useCallback(
+    (one: TreeSourceData | null, data: TreeSourceData[]) => {
+      let kids: TreeSourceData[];
+      if (!one) {
+        // 第1次递归
+        kids = data.filter((item: TreeSourceData) => !item.parent);
+      } else {
+        kids = data.filter((item: TreeSourceData) => item.parent === one.id);
+      }
+      kids.forEach(
+        (item: TreeSourceData) => (item.children = dataToJson(item, data))
+      );
+      return kids.length ? kids : undefined;
+    },
+    []
+  );
+
+  // 工具 - 赋值Key
+  const makeKey = useCallback((data: Menu[]) => {
+    const newData: TreeSourceData[] = [];
+    for (let i = 0; i < data.length; i++) {
+      const item: any = { ...data[i] };
+      if (item.children) {
+        item.children = makeKey(item.children);
+      }
+      const treeItem: TreeSourceData = {
+        ...(item as TreeSourceData),
+        key: item.id,
+      };
+      newData.push(treeItem);
     }
-    kids.forEach((item: Menu) => (item.children = dataToJson(item, data)));
-    return kids.length ? kids : null;
+    return newData;
   }, []);
 
   // 点击树目录时触发
   const onTreeSelect = (
-    keys: React.ReactText[],
+    keys: React.Key[],
     info: {
       event: "select";
       selected: boolean;
-      node: EventDataNode & { id: number; title: string };
+      node: EventDataNode<DataNode> & { id: number; title: string };
       selectedNodes: DataNode[];
       nativeEvent: MouseEvent;
     }
@@ -244,7 +267,7 @@ function PowerAdminContainer(props: Props) {
             onClose();
 
             await setPowersByRoleIds(res.data.id, rolesCheckboxChose);
-            dispatch.app.updateUserInfo();
+            dispatch.app.updateUserInfo(null);
             dispatch.sys.getAllRoles();
           } else {
             message.error("添加失败");
@@ -271,7 +294,7 @@ function PowerAdminContainer(props: Props) {
 
             await setPowersByRoleIds(params.id, rolesCheckboxChose);
             dispatch.sys.getAllRoles();
-            dispatch.app.updateUserInfo();
+            dispatch.app.updateUserInfo(null);
           } else {
             message.error("修改失败");
           }
@@ -293,7 +316,7 @@ function PowerAdminContainer(props: Props) {
     const res = await dispatch.sys.delPower(params);
     if (res && res.status === 200) {
       getData(treeSelect.id);
-      dispatch.app.updateUserInfo();
+      dispatch.app.updateUserInfo(null);
       message.success("删除成功");
     } else {
       message.error(res?.message ?? "操作失败");
@@ -308,7 +331,7 @@ function PowerAdminContainer(props: Props) {
   const setPowersByRoleIds = (id: number, roleIds: number[]) => {
     const params = roles.map((item) => {
       const powersTemp = new Set(
-        item.menuAndPowers.reduce((a, b) => [...a, ...b.powers], [])
+        item.menuAndPowers.reduce((a, b) => [...a, ...b.powers], [] as number[])
       );
       if (roleIds.includes(item.id)) {
         powersTemp.add(id);
@@ -329,16 +352,17 @@ function PowerAdminContainer(props: Props) {
   // ==================
 
   // 处理原始数据，将原始数据处理为层级关系
-  const sourceData = useMemo(() => {
-    const d: Menu[] = cloneDeep(userinfo.menus);
-    d.forEach((item: Menu & { key: string }) => {
-      item.key = String(item.id);
-    });
+  const sourceData: TreeSourceData[] = useMemo(() => {
+    const menuData: Menu[] = cloneDeep(userinfo.menus);
+
+    // 这应该递归，把children数据也赋值key
+    const d: TreeSourceData[] = makeKey(menuData);
+
     // 按照sort排序
     d.sort((a, b) => {
       return a.sorts - b.sorts;
     });
-    return dataToJson(null, d) || [];
+    return dataToJson(null, d) || ([] as TreeSourceData[]);
   }, [userinfo.menus, dataToJson]);
 
   // 构建表格字段
@@ -445,6 +469,7 @@ function PowerAdminContainer(props: Props) {
         sorts: item.sorts,
         conditions: item.conditions,
         serial: index + 1,
+        control: item.id,
       };
     });
   }, [data]);

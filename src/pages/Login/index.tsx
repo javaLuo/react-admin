@@ -20,7 +20,14 @@ import LogoImg from "@/assets/logo.png";
 // 类型声明
 // ==================
 import { RootState, Dispatch } from "@/store";
-import { Role, Menu, Power, UserBasicInfo, Res } from "@/models/index.type";
+import {
+  Role,
+  Menu,
+  Power,
+  UserBasicInfo,
+  Res,
+  MenuAndPower,
+} from "@/models/index.type";
 import { CheckboxChangeEvent } from "antd/lib/checkbox";
 
 import { History } from "history";
@@ -82,7 +89,7 @@ function LoginContainer(props: Props): JSX.Element {
    * 3.通过角色信息获取其拥有的所有权限信息
    * **/
   const loginIn = useCallback(
-    async (username, password) => {
+    async (username: string, password: string) => {
       let userBasicInfo: UserBasicInfo | null = null;
       let roles: Role[] = [];
       let menus: Menu[] = [];
@@ -114,7 +121,7 @@ function LoginContainer(props: Props): JSX.Element {
       /** 3.根据菜单id 获取菜单信息 **/
       const menuAndPowers = roles.reduce(
         (a, b) => [...a, ...b.menuAndPowers],
-        []
+        [] as MenuAndPower[]
       );
       const res3 = await dispatch.sys.getMenusById({
         id: Array.from(new Set(menuAndPowers.map((item) => item.menuId))),
@@ -129,7 +136,12 @@ function LoginContainer(props: Props): JSX.Element {
       /** 4.根据权限id，获取权限信息 **/
       const res4 = await dispatch.sys.getPowerById({
         id: Array.from(
-          new Set(menuAndPowers.reduce((a, b) => [...a, ...b.powers], []))
+          new Set(
+            menuAndPowers.reduce(
+              (a, b: MenuAndPower) => [...a, ...b.powers],
+              [] as number[]
+            )
+          )
         ),
       });
       if (!res4 || res4.status !== 200) {
@@ -183,11 +195,11 @@ function LoginContainer(props: Props): JSX.Element {
   };
 
   // 验证码改变时触发
-  const onVcodeChange = (code: string): void => {
+  const onVcodeChange = (code: string | null): void => {
     form.setFieldsValue({
       vcode: code, // 开发模式自动赋值验证码，正式环境，这里应该赋值''
     });
-    setCodeValue(code);
+    setCodeValue(code || "");
   };
 
   return (

@@ -1,3 +1,4 @@
+// @ts-nocheck
 // 不需要下面这几行，只是本地发布DEMO用
 // const Mock = require("mockjs");
 // Mock.setup({
@@ -759,7 +760,7 @@ const delUser = function (p) {
   }
 };
 
-exports.mockApi = function (obj) {
+export default function (obj) {
   const url = obj.url;
   const body = obj.body;
   let params = typeof body === "string" ? JSON.parse(body) : body;
@@ -839,4 +840,4 @@ exports.mockApi = function (obj) {
     default:
       return { status: 404, data: null, message: "api not found" };
   }
-};
+}
