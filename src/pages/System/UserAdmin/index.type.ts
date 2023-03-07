@@ -3,8 +3,6 @@
 import { Role, UserBasicInfoParam } from "@/models/index.type";
 
 export type { UserBasicInfoParam, Res } from "@/models/index.type";
-import { History } from "history";
-import { match } from "react-router-dom";
 
 // 列表table的数据类型
 export type TableRecordData = {
@@ -46,10 +44,4 @@ export type RoleTreeInfo = {
   roleTreeLoading: boolean; // 控制树的loading状态，因为要先加载当前role的菜单，才能显示树
   roleTreeShow: boolean; // 角色树是否显示
   roleTreeDefault: number[]; // 用于角色树，默认需要选中的项
-};
-
-export type Props = {
-  history: History;
-  location: Location;
-  match: match;
 };

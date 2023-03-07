@@ -66,19 +66,17 @@ import {
   RoleParam,
   Role,
   Res,
-  Props,
 } from "./index.type";
 
 // ==================
 // CSS
 // ==================
 import "./index.less";
-import { MenuAndPower } from "@/models/index.type";
 
 // ==================
 // 本组件
 // ==================
-function RoleAdminContainer(props: Props) {
+function RoleAdminContainer() {
   const dispatch = useDispatch<Dispatch>();
   const p = useSelector((state: RootState) => state.app.powersCode);
   const powerTreeData = useSelector(

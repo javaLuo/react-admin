@@ -64,11 +64,6 @@ import { RootState, Dispatch } from "@/store";
 import { CheckboxValueType } from "antd/lib/checkbox/Group";
 import type { EventDataNode, DataNode } from "rc-tree/lib/interface";
 
-type Props = {
-  history: History;
-  location: Location;
-};
-
 // ==================
 // CSS
 // ==================
@@ -77,7 +72,7 @@ import "./index.less";
 // ==================
 // 本组件
 // ==================
-function PowerAdminContainer(props: Props) {
+function PowerAdminContainer() {
   const dispatch = useDispatch<Dispatch>();
   const p = useSelector((state: RootState) => state.app.powersCode);
   const roles = useSelector((state: RootState) => state.sys.roles);

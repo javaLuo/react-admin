@@ -57,7 +57,6 @@ import {
   ModalType,
   operateType,
   MenuParam,
-  Props,
   TreeSourceData,
 } from "./index.type";
 import { RootState, Dispatch } from "@/store";
@@ -71,7 +70,7 @@ import "./index.less";
 // ==================
 // 本组件
 // ==================
-function MenuAdminContainer(props: Props) {
+function MenuAdminContainer() {
   const p = useSelector((state: RootState) => state.app.powersCode);
   const dispatch = useDispatch<Dispatch>();
 

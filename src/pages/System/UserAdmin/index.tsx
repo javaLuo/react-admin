@@ -63,7 +63,6 @@ import {
   RoleTreeInfo,
   UserBasicInfoParam,
   Res,
-  Props,
 } from "./index.type";
 import { RootState, Dispatch } from "@/store";
 
@@ -75,7 +74,7 @@ import "./index.less";
 // ==================
 // 本组件
 // ==================
-function UserAdminContainer(props: Props): JSX.Element {
+function UserAdminContainer(): JSX.Element {
   const dispatch = useDispatch<Dispatch>();
   const powerTreeData = useSelector(
     (state: RootState) => state.sys.powerTreeData

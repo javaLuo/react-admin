@@ -2,9 +2,8 @@
 
 import { PowerTreeDefault } from "@/components/TreeChose/PowerTreeTable";
 import { Role } from "@/models/index.type";
-import { History } from "history";
-import { match } from "react-router-dom";
 export type { PowerTree, RoleParam, Role, Res } from "@/models/index.type";
+
 // 分页相关参数控制
 export type Page = {
   pageNum: number; // 当前页码
@@ -41,10 +40,4 @@ export type PowerTreeInfo = {
 export type SearchInfo = {
   title: string | undefined; // 用户名
   conditions: number | undefined; // 状态
-};
-
-export type Props = {
-  history: History;
-  location: Location;
-  match: match;
 };
