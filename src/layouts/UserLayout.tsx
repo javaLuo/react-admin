@@ -5,8 +5,7 @@
 // ==================
 import React from "react";
 import { useSelector } from "react-redux";
-import loadable from "@loadable/component";
-import { Route, Switch, Redirect } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 import { Layout } from "antd";
 
 // ==================
@@ -15,57 +14,26 @@ import { Layout } from "antd";
 import "./UserLayout.less";
 
 // ==================
-// 类型声明
-// ==================
-import type { RootState } from "@/store";
-import type { RouteComponentProps } from "react-router-dom";
-
-// ==================
 // 组件
 // ==================
-import Loading from "../components/Loading";
+
 import Footer from "../components/Footer";
 
 const { Content } = Layout;
 
 // ==================
-// 异步加载各路由模块
+// 类型声明
 // ==================
-const [NotFound, Login] = [
-  () => import("../pages/ErrorPages/404"),
-  () => import("../pages/Login"),
-].map((item) => {
-  return loadable(item, {
-    fallback: <Loading />,
-  });
-});
+import type { RootState } from "@/store";
 
 // ==================
 // 本组件
 // ==================
 export default function AppContainer(): JSX.Element {
-  const userinfo = useSelector((state: RootState) => state.app.userinfo);
-
-  // 切换路由时触发
-  const onEnter = (Component: any, props: RouteComponentProps) => {
-    if (userinfo.userBasicInfo) {
-      return <Redirect to="/home" />;
-    }
-    return <Component {...props} />;
-  };
-
   return (
     <Layout className="page-user">
       <Content className="content">
-        <Switch>
-          <Redirect exact from="/user" to="/user/login" />
-          <Route
-            exact
-            path="/user/login"
-            render={(props) => onEnter(Login, props)}
-          />
-          <Route component={NotFound} />
-        </Switch>
+        <Outlet />
       </Content>
       <Footer className="user-layout" />
     </Layout>

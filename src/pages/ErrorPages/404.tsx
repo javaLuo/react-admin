@@ -1,19 +1,16 @@
 /* 404 NotFound */
 
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "antd";
 import Img from "@/assets/error.gif";
-import { History } from "history";
 
 import "./index.less";
 
-interface Props {
-  history: History;
-}
-
-export default function NotFoundContainer(props: Props): JSX.Element {
+export default function NotFoundContainer(): JSX.Element {
+  const navigate = useNavigate();
   const gotoHome = (): void => {
-    props.history.replace("/");
+    navigate("/", { replace: true });
   };
   return (
     <div className="page-error">

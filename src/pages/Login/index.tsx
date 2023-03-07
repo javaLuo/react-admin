@@ -5,6 +5,7 @@
 // ==================
 import React, { useState, useEffect, useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import tools from "@/util/tools";
 
 // ==================
@@ -30,19 +31,6 @@ import {
 } from "@/models/index.type";
 import { CheckboxChangeEvent } from "antd/lib/checkbox";
 
-import { History } from "history";
-import { match } from "react-router-dom";
-
-/**
- * 除了mapState和mapDispatch
- * 每个页面都自动被注入history,location,match 3个对象
- */
-type Props = {
-  history: History;
-  location: Location;
-  match: match;
-};
-
 // ==================
 // CSS
 // ==================
@@ -51,10 +39,11 @@ import "./index.less";
 // ==================
 // 本组件
 // ==================
-function LoginContainer(props: Props): JSX.Element {
+function LoginContainer(): JSX.Element {
   const dispatch = useDispatch<Dispatch>();
   const p = useSelector((state: RootState) => state.app.powersCode);
 
+  const navigate = useNavigate();
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false); // 是否正在登录中
   const [rememberPassword, setRememberPassword] = useState(false); // 是否记住密码
@@ -179,7 +168,7 @@ function LoginContainer(props: Props): JSX.Element {
           tools.compile(JSON.stringify(res.data))
         );
         await dispatch.app.setUserInfo(res.data);
-        props.history.replace("/"); // 跳转到主页
+        navigate("/"); // 跳转到主页
       } else {
         message.error(res?.message ?? "登录失败");
         setLoading(false);

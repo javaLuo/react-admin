@@ -4,11 +4,10 @@
 // 第三方库
 // ==================
 import React, { useEffect, useCallback } from "react";
-import { Router, Route, Switch, Redirect } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-// import {createBrowserHistory as createHistory} from "history"; // URL模式的history
-import { createHashHistory as createHistory } from "history"; // 锚点模式的history
 import { message } from "antd";
+import loadable from "@loadable/component";
 
 // ==================
 // 自定义的东西
@@ -18,6 +17,8 @@ import tools from "@/util/tools";
 // ==================
 // 组件
 // ==================
+import { AuthNoLogin, AuthWithLogin, AuthNoPower } from "./AuthProvider";
+import Loading from "../components/Loading";
 import BasicLayout from "@/layouts/BasicLayout";
 import UserLayout from "@/layouts/UserLayout";
 
@@ -26,13 +27,37 @@ message.config({
   duration: 2,
 });
 
-const history = createHistory();
-
 // ==================
 // 类型声明
 // ==================
 import { RootState, Dispatch } from "@/store";
-import type { RouteComponentProps } from "react-router-dom";
+
+// ==================
+// 异步加载各路由模块
+// ==================
+const [
+  NotFound,
+  NoPower,
+  Login,
+  Home,
+  MenuAdmin,
+  PowerAdmin,
+  RoleAdmin,
+  UserAdmin,
+] = [
+  () => import("../pages/ErrorPages/404"),
+  () => import("../pages/ErrorPages/401"),
+  () => import("../pages/Login"),
+  () => import("../pages/Home"),
+  () => import("../pages/System/MenuAdmin"),
+  () => import("../pages/System/PowerAdmin"),
+  () => import("../pages/System/RoleAdmin"),
+  () => import("../pages/System/UserAdmin"),
+].map((item) => {
+  return loadable(item as any, {
+    fallback: <Loading />,
+  });
+});
 
 // ==================
 // 本组件
@@ -52,31 +77,67 @@ function RouterCom(): JSX.Element {
     }
   }, [dispatch.app, userinfo.userBasicInfo]);
 
-  /** 跳转到某个路由之前触发 **/
-  const onEnter = (Component: React.FC<any>, props: RouteComponentProps) => {
-    const userTemp = sessionStorage.getItem("userinfo");
-    if (userTemp) {
-      return <Component {...props} />;
-    }
-    return <Redirect to="/user/login" />;
-  };
-
   return (
-    <Router history={history}>
+    <Routes>
       <Route
-        render={(): JSX.Element => {
-          return (
-            <Switch>
-              <Route path="/user" component={UserLayout} />
-              <Route
-                path="/"
-                render={(props): JSX.Element => onEnter(BasicLayout, props)}
-              />
-            </Switch>
-          );
-        }}
-      />
-    </Router>
+        path="/user"
+        element={
+          <AuthWithLogin>
+            <UserLayout />
+          </AuthWithLogin>
+        }
+      >
+        <Route path="/user" element={<Navigate to="login" />}></Route>
+        <Route path="login" element={<Login />}></Route>
+        <Route path="*" element={<Navigate to="login" />} />
+      </Route>
+      <Route
+        path="/"
+        element={
+          <AuthNoLogin>
+            <BasicLayout />
+          </AuthNoLogin>
+        }
+      >
+        <Route path="/" element={<Navigate to="home" />} />
+        <Route path="home" element={<Home />} />
+        <Route
+          path="system/menuadmin"
+          element={
+            <AuthNoPower>
+              <MenuAdmin />
+            </AuthNoPower>
+          }
+        />
+        <Route
+          path="system/poweradmin"
+          element={
+            <AuthNoPower>
+              <PowerAdmin />
+            </AuthNoPower>
+          }
+        />
+        <Route
+          path="system/roleadmin"
+          element={
+            <AuthNoPower>
+              <RoleAdmin />
+            </AuthNoPower>
+          }
+        />
+        <Route
+          path="system/useradmin"
+          element={
+            <AuthNoPower>
+              <UserAdmin />
+            </AuthNoPower>
+          }
+        />
+        <Route path="404" element={<NotFound />} />
+        <Route path="401" element={<NoPower />} />
+        <Route path="*" element={<Navigate to="404" />} />
+      </Route>
+    </Routes>
   );
 }
 
