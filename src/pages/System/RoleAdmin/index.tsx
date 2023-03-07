@@ -509,7 +509,7 @@ function RoleAdminContainer() {
             current: page.pageNum,
             pageSize: page.pageSize,
             showQuickJumper: true,
-            showTotal: (total, range) => `共 ${total} 条数据`,
+            showTotal: (total) => `共 ${total} 条数据`,
             onChange: (page, pageSize) => onTablePageChange(page, pageSize),
           }}
         />

@@ -22,6 +22,7 @@ module.exports = {
   rules: {
     "prefer-const": "warn",
     "no-prototype-builtins": "off",
+    "no-empty": "warn",
     "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/ban-ts-comment": "warn",
   },

@@ -3,6 +3,7 @@
 import React, { useState, useMemo, useEffect, useCallback } from "react";
 import { Modal, Table, Checkbox, Spin } from "antd";
 import { Power, PowerTree } from "@/models/index.type";
+import { cloneDeep } from "lodash";
 
 // ==================
 // 类型声明
@@ -14,9 +15,9 @@ export type PowerTreeDefault = {
   powers: number[];
 };
 
-export type PowerLevel = Power & {
-  parent?: Power;
-  children?: Power;
+export type PowerLevel = PowerTree & {
+  parent?: PowerLevel;
+  children?: PowerLevel[];
   key?: number;
 };
 
@@ -54,11 +55,10 @@ export default function TreeTable(props: Props): JSX.Element {
 
   // 提交
   const onOk = useCallback(() => {
-    props.onOk &&
-      props.onOk({
-        menus: treeChecked,
-        powers: btnDtoChecked,
-      });
+    props.onOk?.({
+      menus: treeChecked,
+      powers: btnDtoChecked,
+    });
   }, [props, btnDtoChecked, treeChecked]);
 
   // 关闭模态框
@@ -74,9 +74,10 @@ export default function TreeTable(props: Props): JSX.Element {
     [btnDtoChecked]
   );
 
-  // TABLE btn权限选中和取消选中，需要记录哪些被选中
+  // TABLE btn权限选中和取消选中，需要记录哪些被选中 id/title/powers
   const onBtnDtoChange = useCallback(
-    (e, id, record) => {
+    (e: any, id: number, record: PowerLevel) => {
+      console.log("哈？", record);
       const old = [...btnDtoChecked];
       let treeCheckedTemp = [...treeChecked];
       if (e.target.checked) {
@@ -86,6 +87,7 @@ export default function TreeTable(props: Props): JSX.Element {
       } else {
         // 取消选中
         old.splice(old.indexOf(id), 1);
+
         // 判断当前这一行的权限中是否还有被选中的，如果全都没有选中，那当前菜单也要取消选中
         const tempMap = record.powers.map((item: Power) => item.id);
         if (
@@ -104,34 +106,56 @@ export default function TreeTable(props: Props): JSX.Element {
   );
 
   // 工具 - 递归将扁平数据转换为层级数据
-  const dataToJson = useCallback((one, data) => {
-    let kids;
-    if (!one) {
-      // 第1次递归
-      kids = data.filter((item: PowerLevel) => !item.parent);
-    } else {
-      kids = data.filter((item: PowerLevel) => item.parent === one.id);
-    }
-    kids.forEach((item: PowerLevel) => {
-      item.children = dataToJson(item, data);
-      item.key = item.id;
-    });
-    return kids.length ? kids : null;
-  }, []);
+  const dataToJson = useCallback(
+    (one: PowerLevel | undefined, data: PowerLevel[]) => {
+      let kids;
+      if (!one) {
+        // 第1次递归
+        kids = data.filter((item: PowerLevel) => !item.parent);
+      } else {
+        kids = data.filter((item: PowerLevel) => item.parent === one.id);
+      }
+      kids.forEach((item: PowerLevel) => {
+        item.children = dataToJson(item, data);
+        item.key = item.id;
+      });
+      return kids.length ? kids : undefined;
+    },
+    []
+  );
 
   // ==================
   // 计算属性 memo
   // ==================
 
+  // 工具 - 赋值Key
+  const makeKey = useCallback((data: PowerTree[]) => {
+    const newData: PowerLevel[] = [];
+    for (let i = 0; i < data.length; i++) {
+      const item: any = { ...data[i] };
+      if (item.children) {
+        item.children = makeKey(item.children);
+      }
+      const treeItem: PowerLevel = {
+        ...item,
+        key: item.id,
+      };
+      newData.push(treeItem);
+    }
+    return newData;
+  }, []);
+
   // 处理原始数据，将原始数据处理为层级关系(菜单的层级关系)
   const sourceData = useMemo(() => {
-    const d = [...props.data];
+    const powerData: PowerTree[] = cloneDeep(props.data);
+    // 这应该递归，把children数据也赋值key
+    const d: PowerLevel[] = makeKey(powerData);
     // 按照sort排序
     d.sort((a, b) => {
       return a.sorts - b.sorts;
     });
 
-    return dataToJson(null, d) || [];
+    return dataToJson(undefined, d) || [];
   }, [props.data, dataToJson]);
 
   // TABLE 列表项前面是否有多选框，并配置行为
@@ -141,8 +165,8 @@ export default function TreeTable(props: Props): JSX.Element {
 
   const tableRowSelection = useMemo(() => {
     return {
-      onChange: (selectedRowKeys: number[]): void => {
-        setTreeChecked(selectedRowKeys);
+      onChange: (selectedRowKeys: React.Key[]): void => {
+        setTreeChecked(selectedRowKeys.map((item) => Number(item)));
       },
       onSelect: (record: TableData, selected: boolean): void => {
         const t = props.data.find((item) => item.id === record.id);
@@ -171,7 +195,7 @@ export default function TreeTable(props: Props): JSX.Element {
           setBtnDtoChecked(
             props.data.reduce((v1, v2) => {
               return [...v1, ...v2.powers.map((k) => k.id)];
-            }, [])
+            }, [] as number[])
           );
         } else {
           setBtnDtoChecked([]);
@@ -196,6 +220,7 @@ export default function TreeTable(props: Props): JSX.Element {
         key: "powers",
         width: "70%",
         render: (value: Power[], record: PowerLevel): JSX.Element[] | null => {
+          console.log("东西呢：", value);
           if (value) {
             return value.map((item: Power, index: number) => {
               return (

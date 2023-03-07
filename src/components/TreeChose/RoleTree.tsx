@@ -9,9 +9,9 @@ import { Role } from "@/models/index.type";
 // ==================
 
 type RoleLevel = Role & {
-  key?: string;
-  parent?: Role;
-  children?: Role;
+  key: string | number;
+  parent?: RoleLevel;
+  children?: RoleLevel[];
 };
 
 interface Props {
@@ -35,17 +35,22 @@ export default function RoleTreeComponent(props: Props): JSX.Element {
   }, [props.defaultKeys]);
 
   // 工具 - 递归将扁平数据转换为层级数据
-  const dataToJson = useCallback((one, data) => {
-    let kids;
-    if (!one) {
-      // 第1次递归
-      kids = data.filter((item: RoleLevel) => !item.parent);
-    } else {
-      kids = data.filter((item: RoleLevel) => item.parent === one.id);
-    }
-    kids.forEach((item: RoleLevel) => (item.children = dataToJson(item, data)));
-    return kids.length ? kids : null;
-  }, []);
+  const dataToJson = useCallback(
+    (one: RoleLevel | undefined, data: RoleLevel[]) => {
+      let kids;
+      if (!one) {
+        // 第1次递归
+        kids = data.filter((item: RoleLevel) => !item.parent);
+      } else {
+        kids = data.filter((item: RoleLevel) => item.parent?.id === one.id);
+      }
+      kids.forEach(
+        (item: RoleLevel) => (item.children = dataToJson(item, data))
+      );
+      return kids.length ? kids : undefined;
+    },
+    []
+  );
 
   // 点击确定时触发
   const onOk = useCallback(() => {
@@ -63,7 +68,7 @@ export default function RoleTreeComponent(props: Props): JSX.Element {
   }, [props]);
 
   // 选中或取消选中时触发
-  const onCheck = useCallback((keys) => {
+  const onCheck = useCallback((keys: any) => {
     setNowKeys(keys);
   }, []);
 
@@ -71,13 +76,34 @@ export default function RoleTreeComponent(props: Props): JSX.Element {
   // 计算属性 memo
   // ==================
 
+  // 工具 - 赋值Key
+  const makeKey = useCallback((data: Role[]) => {
+    const newData: RoleLevel[] = [];
+    for (let i = 0; i < data.length; i++) {
+      const item: any = { ...data[i] };
+      if (item.children) {
+        item.children = makeKey(item.children);
+      }
+      const treeItem: RoleLevel = {
+        ...(item as RoleLevel),
+        key: item.id,
+      };
+      newData.push(treeItem);
+    }
+    return newData;
+  }, []);
+
   // 处理原始数据，将原始数据处理为层级关系
   const sourceData = useMemo(() => {
-    const d: RoleLevel[] = cloneDeep(props.data);
+    const roleData: Role[] = cloneDeep(props.data);
+
+    // 这应该递归，把children数据也赋值key
+    const d: RoleLevel[] = makeKey(roleData);
+
     d.forEach((item) => {
       item.key = String(item.id);
     });
-    return dataToJson(null, d) || [];
+    return dataToJson(undefined, d) || [];
   }, [props.data, dataToJson]);
 
   return (

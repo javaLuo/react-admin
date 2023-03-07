@@ -4,7 +4,6 @@
 // 所需的第三方库
 // ==================
 import React from "react";
-import { useSelector } from "react-redux";
 import { Outlet } from "react-router-dom";
 import { Layout } from "antd";
 
@@ -20,11 +19,6 @@ import "./UserLayout.less";
 import Footer from "../components/Footer";
 
 const { Content } = Layout;
-
-// ==================
-// 类型声明
-// ==================
-import type { RootState } from "@/store";
 
 // ==================
 // 本组件

@@ -35,7 +35,6 @@ export function AuthWithLogin(props: Props) {
 }
 
 // 已登录，但没有权限访问当前页面，跳401
-// 未登录的用户，重定向到登录页
 export function AuthNoPower(props: Props) {
   const location = useLocation();
   const userinfo = useSelector((state: RootState) => state.app.userinfo);

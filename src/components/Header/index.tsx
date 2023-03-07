@@ -79,7 +79,7 @@ export default function HeaderCom(props: Props): JSX.Element {
 
   // 退出登录
   const onMenuClick = useCallback(
-    (e) => {
+    (e: any) => {
       // 退出按钮被点击
       if (e.key === "logout") {
         props.onLogout();

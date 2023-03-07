@@ -542,7 +542,7 @@ function UserAdminContainer(): JSX.Element {
             current: page.pageNum,
             pageSize: page.pageSize,
             showQuickJumper: true,
-            showTotal: (t, range) => `共 ${t} 条数据`,
+            showTotal: (t) => `共 ${t} 条数据`,
             onChange: onTablePageChange,
           }}
         />

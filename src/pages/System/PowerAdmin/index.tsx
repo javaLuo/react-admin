@@ -507,7 +507,7 @@ function PowerAdminContainer() {
           dataSource={tableData}
           pagination={{
             showQuickJumper: true,
-            showTotal: (total, range) => `共 ${total} 条数据`,
+            showTotal: (total) => `共 ${total} 条数据`,
           }}
         />
       </div>

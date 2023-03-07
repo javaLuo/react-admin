@@ -3,11 +3,9 @@
 // ==================
 // 第三方库
 // ==================
-import React, { useState, useCallback } from "react";
+import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Route, useNavigate, Outlet } from "react-router-dom";
-import CacheRoute, { CacheSwitch } from "react-router-cache-route";
-import loadable from "@loadable/component";
 import { Layout, message } from "antd";
 
 // ==================
@@ -24,7 +22,6 @@ import MenuCom from "@/components/Menu";
 import Footer from "@/components/Footer";
 
 import Bread from "@/components/Bread";
-//import BreadTab from "@/components/BreadTab"; // Tab方式的导航
 
 const { Content } = Layout;
 
@@ -32,8 +29,6 @@ const { Content } = Layout;
 // 类型声明
 // ==================
 import type { RootState, Dispatch } from "@/store";
-import type { Menu } from "@/models/index.type";
-import type { History } from "history";
 
 // ==================
 // 本组件
@@ -63,14 +58,7 @@ function BasicLayoutCom(): JSX.Element {
           onToggle={() => setCollapsed(!collapsed)}
           onLogout={onLogout}
         />
-        {/* 普通面包屑导航 */}
         <Bread menus={userinfo.menus} />
-        {/* Tab方式的导航 */}
-        {/* <BreadTab
-          menus={userinfo.menus}
-          location={props.location}
-          history={props.history}
-        /> */}
         <Content className="content">
           <Outlet />
         </Content>
