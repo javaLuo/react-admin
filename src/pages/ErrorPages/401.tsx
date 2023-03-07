@@ -2,18 +2,15 @@
 
 import React from "react";
 import { Button } from "antd";
-import Img from "@/assets/error.gif";
-import { History } from "history";
+import { useNavigate } from "react-router-dom";
 
 import "./index.less";
+import Img from "@/assets/error.gif";
 
-interface Props {
-  history: History;
-}
-
-export default function NoPowerContainer(props: Props): JSX.Element {
+export default function NoPowerContainer(): JSX.Element {
+  const navigate = useNavigate();
   const gotoHome = (): void => {
-    props.history.replace("/");
+    navigate("/", { replace: true });
   };
 
   return (
