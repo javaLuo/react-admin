@@ -5,7 +5,7 @@
 // ==================
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { Layout, Menu as MenuAntd } from "antd";
-import { Link, useNavigate,useLocation } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { cloneDeep } from "lodash";
 
 const { Sider } = Layout;
@@ -50,23 +50,26 @@ export default function MenuCom(props: Props): JSX.Element {
 
   // 菜单被选择
   const onSelect = (e: any) => {
-    if(e?.key){
+    if (e?.key) {
       navigate(e.key);
     }
-  }
+  };
 
   // 工具 - 递归将扁平数据转换为层级数据
-  const dataToJson = useCallback((one: Menu | undefined, data: Menu[]): Menu[] | undefined => {
-    let kids;
-    if (!one) {
-      // 第1次递归
-      kids = data.filter((item: Menu) => !item.parent);
-    } else {
-      kids = data.filter((item: Menu) => item.parent === one.id);
-    }
-    kids.forEach((item: Menu) => (item.children = dataToJson(item, data)));
-    return kids.length ? kids : undefined;
-  }, []);
+  const dataToJson = useCallback(
+    (one: Menu | undefined, data: Menu[]): Menu[] | undefined => {
+      let kids;
+      if (!one) {
+        // 第1次递归
+        kids = data.filter((item: Menu) => !item.parent);
+      } else {
+        kids = data.filter((item: Menu) => item.parent === one.id);
+      }
+      kids.forEach((item: Menu) => (item.children = dataToJson(item, data)));
+      return kids.length ? kids : undefined;
+    },
+    []
+  );
 
   // 构建树结构
   const makeTreeDom = useCallback((data: Menu[]): JSX.Element[] => {

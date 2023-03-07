@@ -1,6 +1,6 @@
 /** 通用动态面包屑 **/
 import React, { useMemo } from "react";
-import {useLocation} from 'react-router-dom';
+import { useLocation } from "react-router-dom";
 import { Breadcrumb } from "antd";
 import { EnvironmentOutlined } from "@ant-design/icons";
 import "./index.less";

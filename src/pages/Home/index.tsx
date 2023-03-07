@@ -12,7 +12,7 @@ export default function HomePageContainer(): JSX.Element {
         <img src={ImgLogo} />
         <div className="title">React-admin</div>
         <div className="info">
-          标准React+Redux分层结构，react17、router4、antd4、webpack5、ES6+
+          标准后台管理系统解决方案，react18、router6、rematch、antd5、vite4、ES6+
         </div>
         <div className="info">动态菜单配置，权限精确到按钮</div>
       </div>

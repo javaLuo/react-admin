@@ -3,7 +3,11 @@
 import { baseUrl } from "../config";
 import axios from "axios";
 
-// 不需要下面这些mock配置，仅本地发布DEMO用
+/**
+ * MOCK模拟数据
+ * 不需要下面这些mock配置，仅本地用
+ * 正式打包需要去掉
+ * */
 import Mock from "mockjs";
 // @ts-ignore
 import mock from "../../mock/app-data.js";

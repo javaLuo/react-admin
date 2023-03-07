@@ -28,7 +28,7 @@ export type Props = {
 
 export interface TreeSourceData {
   id: number; // ID,添加时可以没有id
-  key: string|number;
+  key: string | number;
   title: string; // 标题
   icon: string; // 图标
   url: string; // 链接路径

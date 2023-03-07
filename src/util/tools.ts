@@ -135,14 +135,17 @@ const tools = {
    * 0 算有效值
    * @param {Object} obj  待处理的对象
    * **/
-  clearNull<T>(obj: T): T {
-    const temp: T = { ...obj };
-    Object.keys(temp).forEach((key) => {
-      if (temp[key] !== 0 && !temp[key]) {
-        delete temp[key];
+   clearNull<T>(obj: T): T {
+    const temp: any = { ...obj };
+    for (const key in temp) {
+      if (temp.hasOwnProperty(key)) {
+        const value = temp[key];
+        if (value === null || value === undefined) {
+          delete temp[key];
+        }
       }
-    });
-    return temp;
+    }
+    return temp as T;
   },
 };
 
