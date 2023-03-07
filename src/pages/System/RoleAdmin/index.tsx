@@ -84,7 +84,6 @@ function RoleAdminContainer() {
   );
 
   const [form] = Form.useForm();
-
   const [data, setData] = useState<Role[]>([]); // 当前页面列表数据
   const [loading, setLoading] = useState<boolean>(false); // 数据是否正在加载中
 

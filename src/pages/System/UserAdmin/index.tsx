@@ -76,11 +76,9 @@ import "./index.less";
 // ==================
 function UserAdminContainer(): JSX.Element {
   const dispatch = useDispatch<Dispatch>();
-  const powerTreeData = useSelector(
-    (state: RootState) => state.sys.powerTreeData
-  );
   const userinfo = useSelector((state: RootState) => state.app.userinfo);
   const p = useSelector((state: RootState) => state.app.powersCode);
+
   const [form] = Form.useForm();
   const [data, setData] = useState<TableRecordData[]>([]); // 当前页面列表数据
   const [loading, setLoading] = useState(false); // 数据是否正在加载中

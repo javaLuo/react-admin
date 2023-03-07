@@ -75,7 +75,6 @@ function MenuAdminContainer() {
   const dispatch = useDispatch<Dispatch>();
 
   const [form] = Form.useForm();
-
   const [data, setData] = useState<Menu[]>([]); // 所有的菜单数据（未分层级）
   const [loading, setLoading] = useState<boolean>(false); // 数据是否正在加载中
 

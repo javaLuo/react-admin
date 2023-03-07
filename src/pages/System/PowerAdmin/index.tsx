@@ -77,8 +77,8 @@ function PowerAdminContainer() {
   const p = useSelector((state: RootState) => state.app.powersCode);
   const roles = useSelector((state: RootState) => state.sys.roles);
   const userinfo = useSelector((state: RootState) => state.app.userinfo);
-  const [form] = Form.useForm();
 
+  const [form] = Form.useForm();
   const [data, setData] = useState<Power[]>([]); // 当前所选菜单下的权限数据
   const [loading, setLoading] = useState<boolean>(false); // 数据是否正在加载中
 
