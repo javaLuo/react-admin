@@ -72,33 +72,32 @@ export default function MenuCom(props: Props): JSX.Element {
   );
 
   // 构建树结构
-  const makeTreeDom = useCallback((data: Menu[]): JSX.Element[] => {
+  const makeTreeDom = useCallback((data: Menu[]): any => {
     return data.map((item: Menu) => {
       if (item.children) {
-        return (
-          <SubMenu
-            key={item.url}
-            title={
-              !item.parent && item.icon ? (
-                <span>
-                  <Icon type={item.icon} />
-                  <span>{item.title}</span>
-                </span>
-              ) : (
-                item.title
-              )
-            }
-          >
-            {makeTreeDom(item.children)}
-          </SubMenu>
-        );
+        return {
+          key: item.url,
+          label:
+            !item.parent && item.icon ? (
+              <span>
+                <Icon type={item.icon} />
+                <span>{item.title}</span>
+              </span>
+            ) : (
+              item.title
+            ),
+          children: makeTreeDom(item.children),
+        };
       } else {
-        return (
-          <Item key={item.url}>
-            {!item.parent && item.icon ? <Icon type={item.icon} /> : null}
-            <span>{item.title}</span>
-          </Item>
-        );
+        return {
+          label: (
+            <>
+              {!item.parent && item.icon ? <Icon type={item.icon} /> : null}
+              <span>{item.title}</span>
+            </>
+          ),
+          key: item.url,
+        };
       }
     });
   }, []);
@@ -136,13 +135,12 @@ export default function MenuCom(props: Props): JSX.Element {
       <MenuAntd
         theme="dark"
         mode="inline"
+        items={treeDom}
         selectedKeys={chosedKey}
         {...(props.collapsed ? {} : { openKeys })}
         onOpenChange={(keys: string[]) => setOpenKeys(keys)}
         onSelect={onSelect}
-      >
-        {treeDom}
-      </MenuAntd>
+      />
     </Sider>
   );
 }

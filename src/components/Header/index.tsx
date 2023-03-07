@@ -26,6 +26,7 @@ import "./index.less";
 // ==================
 // 类型声明
 // ==================
+import type { MenuProps } from "antd";
 import { UserInfo } from "@/models/index.type";
 
 interface Element {
@@ -78,15 +79,12 @@ export default function HeaderCom(props: Props): JSX.Element {
   }, []);
 
   // 退出登录
-  const onMenuClick = useCallback(
-    (e: any) => {
-      // 退出按钮被点击
-      if (e.key === "logout") {
-        props.onLogout();
-      }
-    },
-    [props]
-  );
+  const onMenuClick: MenuProps["onClick"] = (e) => {
+    // 退出按钮被点击
+    if (e.key === "logout") {
+      props.onLogout();
+    }
+  };
 
   const u = props.userinfo.userBasicInfo;
   return (
@@ -118,35 +116,50 @@ export default function HeaderCom(props: Props): JSX.Element {
         </Tooltip>
         {u ? (
           <Dropdown
-            overlay={
-              <Menu className="menu" selectedKeys={[]} onClick={onMenuClick}>
-                <Menu.Item>
-                  <a
-                    href="https://blog.isluo.com"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <ChromeOutlined />
-                    blog.isluo.com
-                  </a>
-                </Menu.Item>
-                <Menu.Item>
-                  <a
-                    href="https://github.com/javaLuo/react-admin"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <GithubOutlined />
-                    GitHub
-                  </a>
-                </Menu.Item>
-                <Menu.Divider />
-                <Menu.Item key="logout">
-                  <LogoutOutlined />
-                  退出登录
-                </Menu.Item>
-              </Menu>
-            }
+            menu={{
+              className: "menu",
+              onClick: onMenuClick,
+              items: [
+                {
+                  key: "item-1",
+                  label: (
+                    <a
+                      href="https://blog.isluo.com"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <ChromeOutlined />
+                      blog.isluo.com
+                    </a>
+                  ),
+                },
+                {
+                  key: "item-2",
+                  label: (
+                    <a
+                      href="https://github.com/javaLuo/react-admin"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <GithubOutlined />
+                      GitHub
+                    </a>
+                  ),
+                },
+                {
+                  type: "divider",
+                },
+                {
+                  key: "logout",
+                  label: (
+                    <>
+                      <LogoutOutlined />
+                      退出登录
+                    </>
+                  ),
+                },
+              ],
+            }}
             placement="bottomRight"
           >
             <div className="userhead all_center">
