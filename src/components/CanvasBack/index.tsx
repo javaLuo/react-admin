@@ -140,7 +140,7 @@ export default function CanvasBack(props: Props): JSX.Element {
     const step_row = height / (row - 2);
     const step_col = width / (col - 2);
 
-    data.current.dots.forEach(function (item, index) {
+    data.current.dots.forEach(function (item) {
       if (item.dx) {
         // 增
         if (item.sx < step_col / 3) {
