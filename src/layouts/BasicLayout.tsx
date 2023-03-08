@@ -5,13 +5,12 @@
 // ==================
 import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { Route, useNavigate, Outlet } from "react-router-dom";
+import { useNavigate, Outlet } from "react-router-dom";
 import { Layout, message } from "antd";
 
 // ==================
 // 自定义的东西
 // ==================
-import tools from "@/util/tools";
 import "./BasicLayout.less";
 
 // ==================
@@ -20,7 +19,6 @@ import "./BasicLayout.less";
 import Header from "@/components/Header";
 import MenuCom from "@/components/Menu";
 import Footer from "@/components/Footer";
-
 import Bread from "@/components/Bread";
 
 const { Content } = Layout;

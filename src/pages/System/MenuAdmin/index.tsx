@@ -432,12 +432,7 @@ function MenuAdminContainer() {
       <div className="l">
         <div className="title">目录结构</div>
         <div>
-          <Tree
-            defaultExpandedKeys={["0"]}
-            onSelect={onTreeSelect}
-            selectedKeys={[String(treeSelect.id)]}
-            treeData={sourceData}
-          ></Tree>
+          <Tree onSelect={onTreeSelect} treeData={sourceData} />
         </div>
       </div>
       <div className="r">

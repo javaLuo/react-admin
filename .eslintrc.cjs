@@ -19,6 +19,11 @@ module.exports = {
     tsconfigRootDir: __dirname,
   },
   plugins: ["react", "@typescript-eslint", "react-hooks"],
+  settings: {
+    react: {
+      version: "detect",
+    },
+  },
   rules: {
     "prefer-const": "warn",
     "no-prototype-builtins": "off",

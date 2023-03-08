@@ -4,7 +4,7 @@
 // 所需的各种插件
 // ==================
 import React, { useState, useEffect, useCallback } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import tools from "@/util/tools";
 
@@ -20,7 +20,7 @@ import LogoImg from "@/assets/logo.png";
 // ==================
 // 类型声明
 // ==================
-import { RootState, Dispatch } from "@/store";
+import { Dispatch } from "@/store";
 import {
   Role,
   Menu,
@@ -41,7 +41,6 @@ import "./index.less";
 // ==================
 function LoginContainer(): JSX.Element {
   const dispatch = useDispatch<Dispatch>();
-  const p = useSelector((state: RootState) => state.app.powersCode);
 
   const navigate = useNavigate();
   const [form] = Form.useForm();

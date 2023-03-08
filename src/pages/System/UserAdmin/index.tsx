@@ -127,7 +127,9 @@ function UserAdminContainer(): JSX.Element {
           roleData: res.data,
         });
       }
-    } catch {}
+    } catch {
+      //
+    }
   };
 
   // 函数 - 查询当前页面所需列表数据

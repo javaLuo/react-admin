@@ -356,7 +356,7 @@ function RoleAdminContainer() {
       title: "状态",
       dataIndex: "conditions",
       key: "conditions",
-      render: (v: number, record: TableRecordData) =>
+      render: (v: number) =>
         v === 1 ? (
           <span style={{ color: "green" }}>启用</span>
         ) : (
