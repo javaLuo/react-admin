@@ -135,7 +135,7 @@ const tools = {
    * 0 算有效值
    * @param {Object} obj  待处理的对象
    * **/
-   clearNull<T>(obj: T): T {
+  clearNull<T>(obj: T): T {
     const temp: any = { ...obj };
     for (const key in temp) {
       if (temp.hasOwnProperty(key)) {

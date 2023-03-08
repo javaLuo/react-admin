@@ -9,7 +9,6 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { cloneDeep } from "lodash";
 
 const { Sider } = Layout;
-const { SubMenu, Item } = MenuAntd;
 
 // ==================
 // 自定义的东西
@@ -21,7 +20,8 @@ import Icon from "@/components/Icon";
 // ==================
 // 类型声明
 // ==================
-import { Menu } from "@/models/index.type";
+import type { Menu } from "@/models/index.type";
+import type { ItemType } from "antd/lib/menu/hooks/useItems";
 
 interface Props {
   data: Menu[]; // 所有的菜单数据
@@ -107,7 +107,7 @@ export default function MenuCom(props: Props): JSX.Element {
   // ==================
 
   /** 处理原始数据，将原始数据处理为层级关系 **/
-  const treeDom: JSX.Element[] = useMemo(() => {
+  const treeDom: ItemType[] = useMemo(() => {
     const d: Menu[] = cloneDeep(props.data);
     // 按照sort排序
     d.sort((a, b) => {
