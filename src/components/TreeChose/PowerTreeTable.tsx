@@ -220,7 +220,6 @@ export default function TreeTable(props: Props): JSX.Element {
         key: "powers",
         width: "70%",
         render: (value: Power[], record: PowerLevel): JSX.Element[] | null => {
-          console.log("东西呢：", value);
           if (value) {
             return value.map((item: Power, index: number) => {
               return (
@@ -246,7 +245,7 @@ export default function TreeTable(props: Props): JSX.Element {
       zIndex={1001}
       width={750}
       title={props.title || "请选择"}
-      visible={props.modalShow}
+      open={props.modalShow}
       onOk={onOk}
       onCancel={onClose}
       confirmLoading={props.loading}

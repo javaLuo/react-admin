@@ -109,7 +109,7 @@ export default function RoleTreeComponent(props: Props): JSX.Element {
   return (
     <Modal
       title={props.title || "请选择"}
-      visible={props.visible}
+      open={props.visible}
       wrapClassName="menuTreeModal"
       confirmLoading={props.loading}
       onOk={onOk}

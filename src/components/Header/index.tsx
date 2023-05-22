@@ -89,15 +89,11 @@ export default function HeaderCom(props: Props): JSX.Element {
   const u = props.userinfo.userBasicInfo;
   return (
     <Header className="header">
-      <Tooltip
-        placement="bottom"
-        title={props.collapsed ? "展开菜单" : "收起菜单"}
-      >
-        <MenuFoldOutlined
-          className={props.collapsed ? "trigger fold" : "trigger"}
-          onClick={() => props.onToggle()}
-        />
-      </Tooltip>
+      <MenuFoldOutlined
+        className={props.collapsed ? "trigger fold" : "trigger"}
+        onClick={() => props.onToggle()}
+      />
+
       <div className="rightBox">
         <Tooltip placement="bottom" title={fullScreen ? "退出全屏" : "全屏"}>
           <div className="full all_center">

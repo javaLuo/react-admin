@@ -517,7 +517,7 @@ function RoleAdminContainer() {
       {/* 新增&修改&查看 模态框 */}
       <Modal
         title={{ add: "新增", up: "修改", see: "查看" }[modal.operateType]}
-        visible={modal.modalShow}
+        open={modal.modalShow}
         onOk={() => onOk()}
         onCancel={() => onClose()}
         confirmLoading={modal.modalLoading}

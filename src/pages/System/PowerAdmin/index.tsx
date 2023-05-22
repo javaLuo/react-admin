@@ -516,7 +516,7 @@ function PowerAdminContainer() {
         title={`${
           { add: "新增", up: "修改", see: "查看" }[modal.operateType]
         }权限: ${treeSelect.title}->${modal.nowData?.title ?? ""}`}
-        visible={modal.modalShow}
+        open={modal.modalShow}
         onOk={onOk}
         onCancel={onClose}
         confirmLoading={modal.modalLoading}
