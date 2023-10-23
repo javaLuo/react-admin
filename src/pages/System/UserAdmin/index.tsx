@@ -206,12 +206,7 @@ function UserAdminContainer(): JSX.Element {
       } else if (data) {
         // 查看或修改，需设置表单各控件的值为当前所选中行的数据
         form.setFieldsValue({
-          formConditions: data.conditions,
-          formDesc: data.desc,
-          formUsername: data.username,
-          formPhone: data.phone,
-          formEmail: data.email,
-          formPassword: data.password,
+          ...data,
         });
       }
     });
@@ -229,12 +224,12 @@ function UserAdminContainer(): JSX.Element {
         modalLoading: true,
       });
       const params: UserBasicInfoParam = {
-        username: values.formUsername,
-        password: values.formPassword,
-        phone: values.formPhone,
-        email: values.formEmail,
-        desc: values.formDesc,
-        conditions: values.formConditions,
+        username: values.username,
+        password: values.password,
+        phone: values.phone,
+        email: values.email,
+        desc: values.desc,
+        conditions: values.conditions,
       };
       if (modal.operateType === "add") {
         // 新增
@@ -549,10 +544,11 @@ function UserAdminContainer(): JSX.Element {
           }}
         />
       </div>
+
       {/* 新增&修改&查看 模态框 */}
       <Modal
         title={{ add: "新增", up: "修改", see: "查看" }[modal.operateType]}
-        open={modal.modalShow}
+        visible={modal.modalShow}
         onOk={onOk}
         onCancel={onClose}
         confirmLoading={modal.modalLoading}
@@ -560,12 +556,12 @@ function UserAdminContainer(): JSX.Element {
         <Form
           form={form}
           initialValues={{
-            formConditions: 1,
+            conditions: 1,
           }}
         >
           <Form.Item
             label="用户名"
-            name="formUsername"
+            name="username"
             {...formItemLayout}
             rules={[
               { required: true, whitespace: true, message: "必填" },
@@ -579,7 +575,7 @@ function UserAdminContainer(): JSX.Element {
           </Form.Item>
           <Form.Item
             label="密码"
-            name="formPassword"
+            name="password"
             {...formItemLayout}
             rules={[
               { required: true, whitespace: true, message: "必填" },
@@ -587,15 +583,14 @@ function UserAdminContainer(): JSX.Element {
               { max: 18, message: "最多输入18位字符" },
             ]}
           >
-            <Input
-              type="password"
+            <Input.Password
               placeholder="请输入密码"
               disabled={modal.operateType === "see"}
             />
           </Form.Item>
           <Form.Item
             label="电话"
-            name="formPhone"
+            name="phone"
             {...formItemLayout}
             rules={[
               () => ({
@@ -619,7 +614,7 @@ function UserAdminContainer(): JSX.Element {
           </Form.Item>
           <Form.Item
             label="邮箱"
-            name="formEmail"
+            name="email"
             {...formItemLayout}
             rules={[
               () => ({
@@ -642,7 +637,7 @@ function UserAdminContainer(): JSX.Element {
           </Form.Item>
           <Form.Item
             label="描述"
-            name="formDesc"
+            name="desc"
             {...formItemLayout}
             rules={[{ max: 100, message: "最多输入100个字符" }]}
           >
@@ -654,7 +649,7 @@ function UserAdminContainer(): JSX.Element {
           </Form.Item>
           <Form.Item
             label="状态"
-            name="formConditions"
+            name="conditions"
             {...formItemLayout}
             rules={[{ required: true, message: "请选择状态" }]}
           >
@@ -669,6 +664,7 @@ function UserAdminContainer(): JSX.Element {
           </Form.Item>
         </Form>
       </Modal>
+
       <RoleTree
         title={"分配角色"}
         data={role.roleData}
